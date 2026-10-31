@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0 - 2026-10-31
+- Table of contents in the header from two chapters on instead of three. A file with chapters always lists them, so the reader never has to guess whether a list is missing or just not required. Banner check and example files updated.
+
 ## 0.2.2 - 2026-10-31
 - Plugin directory lint: Key Vault, keepass and keyFile snippets replaced by storage account and notes examples, the healthcheck example uses promtool instead of wget.
 

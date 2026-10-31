@@ -45,7 +45,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf, see [Structure](#structure) |
 | Book | File | Header, chapters, epilogue |
 | Blurb | File header | Usage and prerequisites, see [Reading flow](#reading-flow) |
-| Table of contents | Chapter list in the header | Only in files with three or more chapters |
+| Table of contents | Chapter list in the header | In every file with two or more chapters |
 | Cast list | Imports and module-wide constants | Right below the header, before the first chapter |
 | Chapter | Chapter | Three lines of `=`, title in UPPERCASE, see [Comments](#comments) |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
@@ -94,7 +94,7 @@ There are exactly three levels inside a book: chapter, section, group comment. N
   #
   #   ./Move-StorageBlob.ps1 -Source st-old -Target st-new -WhatIf
   ```
-- **Table of contents in the header:** A file with three or more chapters lists them at the end of the header, in file order, with the exact chapter title on the left and one line on the right. The banner check compares the list with the chapters.
+- **Table of contents in the header:** A file with two or more chapters lists them at the end of the header, in file order, with the exact chapter title on the left and one line on the right. A single chapter needs no list, its banner is the whole table. The banner check compares the list with the chapters.
   ```cpp
   // NOTE:
   //   Implementation of MiniServer.h.
@@ -524,7 +524,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
 # Review checklist
 Use this list for reviews, `/code-review` and `/simplify`. Report each finding with the rule it breaks and a concrete fix. Respect [Scope](#scope): flag untouched code only in a refactoring or when asked.
 
-- [ ] **Header:** usage and prerequisites at the top of the file, a table of contents from three chapters on. → [Reading flow](#reading-flow)
+- [ ] **Header:** usage and prerequisites at the top of the file, a table of contents from two chapters on. → [Reading flow](#reading-flow)
 - [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files. → [The story](#the-story)
 - [ ] **Chapters:** a file with several phases or kinds of units has chapters, in plot order: setup → validations → action → epilogue. → [The story](#the-story)
 - [ ] **Introductions:** every variable is declared in the chapter where it first acts. → [The story](#the-story)

@@ -14,10 +14,11 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Examples are neutral, no private project details. | The plugin is public, private layouts confuse other users. |
 | 2026-10-31 | Banner check as `.scripts/Test-StorylineBanner.ps1`, run locally and in CI. | One real implementation, a check separate from the one writing the rules. |
 | 2026-10-31 | Example files live in the repo root (`examples/<language>/`), not in the plugin. | They document how all rules combine and serve as eval references, without adding to the installed skill. |
-| 2026-10-31 | The book metaphor is the frame: glossary in SKILL.md → "The story", three levels only (chapter, section, group comment), chapters in plot order, TOC from three chapters on. | Gives every rule a place in one picture, a fourth banner level would be noise. |
+| 2026-10-31 | The book metaphor is the frame: glossary in SKILL.md → "The story", three levels only (chapter, section, group comment), chapters in plot order, TOC from three chapters on (lowered to two in 0.3.0). | Gives every rule a place in one picture, a fourth banner level would be noise. |
 | 2026-10-31 | Terraform: every `.tf` file is one chapter of the module. C++ headers with one class get one chapter as the TOC of the class. | Files with one unit had no banner at all, the module as a whole did not read like a book. |
 | 2026-10-31 | Versions stay below 1.0 while the rules are moving: the initial state is 0.1.0, this round is 0.2.0. `release.yaml` tags `v<version>` from `plugin.json` on every push to `main` and publishes the release. | No tag existed yet, so the numbering was free to restart. A manual tag step was forgotten twice. |
 | 2026-10-31 | The library frame: codebase = library, folder = shelf, file = book (Terraform: folder = book). Every folder with more than one file has a shelf label, an entry point or a `README.md`. | Whoever opens a folder sees what is on the shelf without opening a file. |
+| 2026-10-31 | TOC from two chapters on, not three. | With the old threshold a two-chapter file looked like it had forgotten the list, the reader could not tell rule from omission. |
 | 2026-10-31 | Banner check also verifies structure: description per chapter, numbered steps vs. sections, TOC vs. chapters. Markdown is exempt, snippets are excerpts. | Rules a script can check do not drift. |
 
 ## Open items
@@ -30,4 +31,4 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 - [ ] C++ examples are not compiled yet (no compiler and no `Request.h` / `Response.h`).
 
 ## Next step
-v0.2.1 is released automatically. Merge the 0.2.2 PR, resubmit to the plugin directory and run `claude plugin validate .`. Afterwards watch how Claude applies the chapter order and TOC rules in a real session.
+Merge the 0.3.0 PR (TOC from two chapters on), resubmit to the plugin directory and run `claude plugin validate .`. Afterwards watch how Claude applies the chapter order and TOC rules in a real session.

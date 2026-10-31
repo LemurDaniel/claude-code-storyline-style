@@ -4,6 +4,10 @@
 #   ./.scripts/Test-StorylineBanner.ps1                   Checks the whole repo.
 #   ./.scripts/Test-StorylineBanner.ps1 -Path ./plugins   Checks one folder.
 #   ./.scripts/Test-StorylineBanner.ps1 -Verbose          Also logs every checked file.
+#
+#   Chapters:
+#     SETTINGS        Banner format, structure patterns and the checked files.
+#     CHECK BANNERS   Collects the files, checks format and structure, reports.
 
 <#
 .SYNOPSIS
@@ -19,7 +23,7 @@
     for the structure rules from SKILL.md -> "The story" and "Comments":
     - Every chapter has a description right below the frame.
     - The numbered entries of a flow chapter match the sections of the chapter.
-    - A file with three or more chapters lists them as 'Chapters:' in the header,
+    - A file with two or more chapters lists them as 'Chapters:' in the header,
       and the list matches the chapters in order.
 
     Throws when at least one rule is broken, so CI fails.
@@ -78,7 +82,7 @@ $NUMBERED_ENTRY_PATTERN = '^\d+\.\s+(?<name>.+?)(\s{2,}.*)?$'
 # The table of contents in the header starts with this line, every entry is a chapter title.
 $TOC_HEADER     = 'Chapters:'
 $TOC_ENTRY_PATTERN = '^(?<title>[A-Z][A-Z0-9 /-]*?)(\s{2,}.*)?$'
-$TOC_MIN_CHAPTERS  = 3
+$TOC_MIN_CHAPTERS  = 2
 
 # ---------------------------------------------------------------------------
 # Files

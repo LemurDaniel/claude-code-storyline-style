@@ -5,6 +5,10 @@
 #   ./Move-KeyVaultSecret.ps1 -Source kv-old -Target kv-new -WhatIf
 #   ./Move-KeyVaultSecret.ps1 -Source kv-old -Target kv-new -ExcludePatterns 'tmp-*', 'test-*'
 #   ./Move-KeyVaultSecret.ps1 -Source kv-old -Target kv-new -SubscriptionId '<SUBSCRIPTION_ID>' -IsForced
+#
+#   Chapters:
+#     LOAD AND VALIDATE SECRETS   Context switch, validations and loading the source secrets.
+#     MOVE SECRETS                Copies every secret and disables it in the source.
 
 <#
 .SYNOPSIS
