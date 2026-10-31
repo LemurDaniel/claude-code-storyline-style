@@ -199,6 +199,13 @@ Comments look the same in every language, only the comment character changes. A 
 - **Cross-references name the chapter:** When a block depends on or undoes something from another chapter, the comment says which one, with the chapter title as written in its banner (`# Restores the context switched in LOAD AND VALIDATE FILES.`). Across files the file name comes first (`// see MiniServer.h, group Routing`).
 
 ```js
+// NOTE:
+//  node ./day08.js
+//
+//  Chapters:
+//    HELPERS             Grid parsing and viewing lines.
+//    SOLVE TREE PUZZLE   Parses the input and solves both parts.
+
 // ===========================================================================
 // ===============================   HELPERS   ===============================
 // ===========================================================================
