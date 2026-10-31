@@ -410,6 +410,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   | File | Kind | Topic | Variant |
   | --- | --- | --- | --- |
   | `main.vnet.tf` | `main` | `vnet` | |
+  | `locals.generate.tf` | `locals` | `generate` | |
   | `locals.pattern.tf` | `locals` | `pattern` | |
   | `deploy.infra.dev.yaml` | `deploy` | `infra` | `dev` |
   | `deploy.infra.prod.yaml` | `deploy` | `infra` | `prod` |
