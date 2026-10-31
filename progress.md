@@ -31,6 +31,8 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | TOC in every file with chapters, also with one. Terraform: `main.tf` lists the files of the module (`variables.tf   VARIABLES`), the other `.tf` files have none. | "A single chapter needs no list" left the reader guessing again. In Terraform the folder is the book, so its TOC sits where the book starts. |
 
 ## Open items
+- [ ] **Before merging 0.4.0:** owner review of the language files `yaml-pipelines.md`, `terraform.md`, `kubernetes.md`, `javascript.md`, `docker-compose.md`, `cpp.md`.
+- [ ] Open question: an empty line after the section title in YAML (pipelines, Compose, Kubernetes) like everywhere else, or the title directly above the key?
 - [ ] Add `examples` as a required status check for `main` (Settings → Branches), next to `banners`.
 - [ ] YAML pipelines are not validated in the example check yet (`actionlint` for GitHub Actions).
 - [ ] Reference file and examples for Dockerfile.
@@ -43,4 +45,4 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 - [ ] C++ examples are not compiled yet (no compiler and no `Request.h` / `Response.h`).
 
 ## Next step
-Open and merge the 0.4.0 PR (`feature/priorities`), make `examples` a required check. Then watch in a real session whether Claude reports `Verified` / `Not verified` at the end of a task.
+Review the six language files listed under open items, then merge the 0.4.0 PR (`feature/priorities`, merging is the release) and make `examples` a required check. Then watch in a real session whether Claude reports `Verified` / `Not verified` at the end of a task.
