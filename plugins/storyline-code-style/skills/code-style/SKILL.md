@@ -46,6 +46,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | Book | File | Header, chapters, epilogue |
 | Blurb | File header | Usage and prerequisites, see [Reading flow](#reading-flow) |
 | Table of contents | Chapter list in the header | Only in files with three or more chapters |
+| Cast list | Imports and module-wide constants | Right below the header, before the first chapter |
 | Chapter | Chapter | Three lines of `=`, title in UPPERCASE, see [Comments](#comments) |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
 | Section | Section | One line of `-`, title below |
@@ -66,7 +67,7 @@ There are exactly three levels inside a book: chapter, section, group comment. N
 
 - **When a file gets chapters:** as soon as it tells more than one phase (load, validate, write) or holds more than one kind of unit (helpers plus a main flow). A file with a single phase or a single unit gets by with sections (a Bicep module, `Get-UtilsConfig.ps1`), a tiny file with none (a `.bicepparam`).
 - **Chapter order follows the plot:** setup (settings, helpers, context) → validations → the action → epilogue (cleanup, outputs, exports). Helpers either come first as a collection chapter, so the reader meets them before they act, or live in their own file. Never between two steps of the action.
-- **No character without an introduction:** a variable, constant or config value is declared in the chapter where it first acts, right before its first use. Not collected at the top of the file and not in a later chapter.
+- **No character without an introduction:** a variable or config value is declared in the chapter where it first acts, right before its first use. Not collected at the top of the file and not in a later chapter. The exception is the cast list: imports and module-wide constants (`COMMAND_NAME`, `DEFAULT_TIMEOUT_MS`) stand together below the header, because the whole book uses them.
   ```powershell
   # ---------------------------------------------------------------------------
   # Secrets

@@ -20,6 +20,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every part has i
 | Book | File | Header, chapters, epilogue (a Terraform module: the folder is the book, each file a chapter) |
 | Blurb | File header | Usage and prerequisites |
 | Table of contents | Chapter list in the header | Only in files with three or more chapters |
+| Cast list | Imports and module-wide constants | Right below the header |
 | Chapter | Chapter banner | Three lines of `=`, title in UPPERCASE centered |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
 | Section | Section banner | One line of `-`, title below |
