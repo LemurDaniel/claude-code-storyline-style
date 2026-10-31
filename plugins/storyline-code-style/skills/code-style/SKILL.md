@@ -70,13 +70,13 @@ There are exactly three levels inside a book: chapter, section, group comment. N
 - **No character without an introduction:** a variable or config value is declared in the chapter where it first acts, right before its first use. Not collected at the top of the file and not in a later chapter. The exception is the cast list: imports and module-wide constants (`COMMAND_NAME`, `DEFAULT_TIMEOUT_MS`) stand together below the header, because the whole book uses them.
   ```powershell
   # ---------------------------------------------------------------------------
-  # Secrets
+  # Files
 
-  $Secrets = Get-AzKeyVaultSecret -VaultName $Source
-  | Where-Object -Property Enabled -EQ -Value $true
+  $Files = Get-ChildItem -Path $Source -File
+  | Where-Object -Property Length -GT -Value 0
 
-  $MovedCount   = 0     # counted while moving, reported at the end
-  $SkippedCount = 0
+  $UploadedCount = 0     # counted in UPLOAD FILES, reported at the end
+  $SkippedCount  = 0
   ```
 
 ## Reading flow
@@ -363,10 +363,10 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   ]...)
   ```
   ```powershell
-  # Order of precedence: parameter > environment variable > config file > default
+  # Order of precedence: parameter > profile > config file > default
   $region = @(
       $Region                         # parameter
-      $env:UTILS_REGION               # environment variable
+      $SyncProfile.Region             # profile
       (Get-UtilsConfig).Region        # config file
       'westeurope'                    # default
   ) | Where-Object { -NOT [System.String]::IsNullOrEmpty($_) } | Select-Object -First 1
