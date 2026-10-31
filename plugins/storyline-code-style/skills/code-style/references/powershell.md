@@ -37,28 +37,33 @@
       PS> Sync-UtilsCloudFile -ProfileName notes
   #>
   ```
-- Parameters in a multi-line layout, full .NET types, `ArgumentCompleter` where possible:
+- Parameters in a multi-line layout, full .NET types and TAB completion where possible: `ValidateSet` for a fixed list, `ArgumentCompleter` for values only known at runtime.
   ```powershell
   <#
   [Required]
-  The name of the cloud sync profile.
+  The name of the cloud sync profile, one JSON file per profile in the profiles folder.
   #>
   [Parameter(
       Mandatory = $true
   )]
-  [ArgumentCompleter({ Invoke-UtilsCompleteSet @args -Set (Get-UtilsCloudSyncProfileName) })]
+  [ArgumentCompleter({
+      param ($CommandName, $ParameterName, $WordToComplete)
+      Get-ChildItem -Path (Join-Path -Path $HOME -ChildPath '.utils/profiles') -Filter "$WordToComplete*.json"
+      | Select-Object -ExpandProperty BaseName
+  })]
   [System.String]
   $ProfileName,
 
   <#
   [Optional]
-  The interval in seconds to check for changes. Default is 120 seconds.
+  The direction of the sync. Default is Both.
   #>
   [Parameter(
       Mandatory = $false
   )]
-  [System.Int32]
-  $Interval = 120,
+  [ValidateSet('Upload', 'Download', 'Both')]
+  [System.String]
+  $Direction = 'Both',
   ```
 - Pipelines with a leading `|`, no backtick continuation:
   ```powershell
