@@ -406,12 +406,18 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   - files whose name a tool expects (`docker-compose.yaml`, `package.json`, `.clang-format`)
   - languages with their own naming convention (PowerShell `Verb-Noun.ps1`, C++ class names)
   - exceptions named in a language file (e.g. `utils/` and `data/` in JavaScript)
-  ```
-  main.vnet.tf             locals.generate.tf       locals.pattern.tf
-  deploy.infra.dev.yaml    deploy.infra.prod.yaml   tmpl.bicep.infra.deploy.yaml
-  config.nginx-reverse-proxy.yaml   service.nginx-reverse-proxy.yaml
-  routes.status.js         tools.zfs.js             command.repository.download.js
-  ```
+
+  | File | Kind | Topic | Variant |
+  | --- | --- | --- | --- |
+  | `main.vnet.tf` | `main` | `vnet` | |
+  | `locals.pattern.tf` | `locals` | `pattern` | |
+  | `deploy.infra.dev.yaml` | `deploy` | `infra` | `dev` |
+  | `deploy.infra.prod.yaml` | `deploy` | `infra` | `prod` |
+  | `service.nginx-reverse-proxy.yaml` | `service` | `nginx-reverse-proxy` | |
+  | `routes.status.js` | `routes` | `status` | |
+  | `command.repository.download.js` | `command` | `repository` | `download` |
+
+  In the explorer every `deploy.*` and every `locals.*` file sorts next to its siblings on its own.
 - **Disable instead of delete:** What should temporarily not load gets a suffix or prefix (`main.search.tf.disabled`, `#Get-UtilsCacheFile.ps1`).
 - **Templates with placeholders** for recurring files (`tmpl.*`, `blueprint.js` with `${{DAY}}`).
   ```js
