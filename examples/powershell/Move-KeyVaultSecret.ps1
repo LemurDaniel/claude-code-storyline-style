@@ -123,7 +123,7 @@ BEGIN {
     $Secrets = Get-AzKeyVaultSecret -VaultName $Source
     | Where-Object -Property Enabled -EQ -Value $true
 
-    $MovedCount   = 0
+    $MovedCount   = 0     # counted in MOVE SECRETS, reported at the end
     $SkippedCount = 0
 
     Write-Verbose "[Move-KeyVaultSecret] Found $($Secrets.Count) enabled secrets in '$Source'."

@@ -35,23 +35,39 @@ For other languages only the general rules below apply, plus the language's own 
 # General
 
 ## The story
-A file is a book. Every rule below gives one part of the book its place in the code:
+A codebase is a library, a folder is a shelf, a file is a book. Every rule below gives one part of the library its place in the code:
 
-| Book | Code | Form |
+| Library | Code | Form |
 | --- | --- | --- |
+| Library | Codebase | README at the entrance, see [Structure](#structure) |
+| Shelf | Folder, cut by domain | Every shelf with more than one book has a label, see below |
+| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `module.bicep`, else `README.md` |
+| Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf, see [Structure](#structure) |
+| Book | File | Header, chapters, epilogue |
 | Blurb | File header | Usage and prerequisites, see [Reading flow](#reading-flow) |
 | Table of contents | Chapter list in the header | Only in files with three or more chapters |
+| Cast list | Imports and module-wide constants | Right below the header, before the first chapter |
 | Chapter | Chapter | Three lines of `=`, title in UPPERCASE, see [Comments](#comments) |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
 | Section | Section | One line of `-`, title below |
 | Paragraph | Group comment | One comment line inside a unit, no banner |
 | Epilogue | Cleanup | Context reset, outputs, exports: always the last chapter or section |
 
-There are exactly three levels: chapter, section, group comment. No fourth banner level, sub-chapters are sections.
+There are exactly three levels inside a book: chapter, section, group comment. No fourth banner level, sub-chapters are sections.
+
+- **The book is the file**, except where the language loads a folder as one unit (a Terraform module). Then the folder is the book and every file one chapter, see `references/terraform.md`.
+- **Every shelf has a label:** A folder with more than one file has an entry point where the language has one (`_index.js`, `Utils.psm1`, `main.tf`, `module.bicep`, the thin pipeline that calls the templates, the header of a `.cpp`). Where it has none, a short `README.md` in the folder lists the files with one line each. Whoever opens the folder knows what stands on the shelf without opening a book.
+  ```markdown
+  # PowerShell examples
+  | File | Content |
+  | --- | --- |
+  | `Get-UtilsConfig.ps1` | One function with sections only: defaults, read, merge. |
+  | `Move-KeyVaultSecret.ps1` | A script with chapters, WhatIf and a CLEAN block. |
+  ```
 
 - **When a file gets chapters:** as soon as it tells more than one phase (load, validate, write) or holds more than one kind of unit (helpers plus a main flow). A file with a single phase or a single unit gets by with sections (a Bicep module, `Get-UtilsConfig.ps1`), a tiny file with none (a `.bicepparam`).
 - **Chapter order follows the plot:** setup (settings, helpers, context) → validations → the action → epilogue (cleanup, outputs, exports). Helpers either come first as a collection chapter, so the reader meets them before they act, or live in their own file. Never between two steps of the action.
-- **No character without an introduction:** a variable, constant or config value is declared in the chapter where it first acts, right before its first use. Not collected at the top of the file and not in a later chapter.
+- **No character without an introduction:** a variable or config value is declared in the chapter where it first acts, right before its first use. Not collected at the top of the file and not in a later chapter. The exception is the cast list: imports and module-wide constants (`COMMAND_NAME`, `DEFAULT_TIMEOUT_MS`) stand together below the header, because the whole book uses them.
   ```powershell
   # ---------------------------------------------------------------------------
   # Secrets
@@ -69,8 +85,8 @@ There are exactly three levels: chapter, section, group comment. No fourth banne
   // NOTE:
   //  node .\day09-part1.js [INPUT|TEST]
   //
-  //    'node .\day09-part1.js INPUT'   to process today's input from 'day09-input.txt'.
-  //    'node .\day09-part1.js TEST'    to process today's test input from 'day09-input-test.txt'.
+  //    'node .\day09-part1.js INPUT'   to process the input from 'day09-input.txt'.
+  //    'node .\day09-part1.js TEST'    to process the test input from 'day09-input-test.txt'.
   ```
   ```powershell
   # NOTE:
@@ -133,13 +149,13 @@ There are exactly three levels: chapter, section, group comment. No fourth banne
   if (!user) return
   if (!user.isActive) return
 
-  sendMail(user)
+  grantAccess(user)
   ```
   Not like this:
   ```js
   if (user) {
       if (user.isActive) {
-          sendMail(user)
+          grantAccess(user)
       }
   }
   ```
@@ -198,7 +214,7 @@ function getViewingLine(grid, x, y, direction) { ... }
 // ==========================   SOLVE TREE PUZZLE   ==========================
 // ===========================================================================
 //
-//   1. Parse input   Reads today's input file into a grid.
+//   1. Parse input   Reads the input file into a grid.
 //   2. Part 1        Counts the trees visible from outside the grid.
 //   3. Part 2        Finds the highest scenic score of a single tree.
 //                    Ties are resolved by the first tree found.
@@ -277,7 +293,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   ```js
   // Instead of building the same URL in three places:
   function getApiUrl({ organization, project, api }) {
-      return `https://dev.azure.com/${organization}/${project}/_apis/${api}?api-version=${API_VERSION}`
+      return `https://api.example.com/${organization}/${project}/${api}?api-version=${API_VERSION}`
   }
   ```
 - **Explicit over magic:** Imports and registrations are written out, types are unambiguous, magic numbers are named constants.
@@ -509,6 +525,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
 Use this list for reviews, `/code-review` and `/simplify`. Report each finding with the rule it breaks and a concrete fix. Respect [Scope](#scope): flag untouched code only in a refactoring or when asked.
 
 - [ ] **Header:** usage and prerequisites at the top of the file, a table of contents from three chapters on. → [Reading flow](#reading-flow)
+- [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files. → [The story](#the-story)
 - [ ] **Chapters:** a file with several phases or kinds of units has chapters, in plot order: setup → validations → action → epilogue. → [The story](#the-story)
 - [ ] **Introductions:** every variable is declared in the chapter where it first acts. → [The story](#the-story)
 - [ ] **Banners:** chapters with `=` frame and centered UPPERCASE title, sections with one `-` line, 75 characters, no other banner styles. → [Comments](#comments)

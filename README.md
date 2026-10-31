@@ -2,17 +2,25 @@
 
 A code style skill for [Claude Code](https://claude.com/claude-code): every file reads top to bottom like a story.
 
+![Storyline Code Style: the codebase is a library, a folder is a shelf, a file is a book](.github/social-preview.png)
+
 File headers say how to call the file, chapter and section banners structure it, guard clauses keep the main path flat,
 data is transformed in named stages, and logs leave a narrative trail at every decision point.
 
 ## The story
 
-A file is a book. Every part of the book has its place in the code:
+A codebase is a library, a folder is a shelf, a file is a book. Every part has its place in the code:
 
-| Book | Code | Form |
+| Library | Code | Form |
 | --- | --- | --- |
+| Library | Codebase | README at the entrance |
+| Shelf | Folder, cut by domain | Every shelf with more than one book has a label |
+| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `module.bicep`, else `README.md` |
+| Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf |
+| Book | File | Header, chapters, epilogue (a Terraform module: the folder is the book, each file a chapter) |
 | Blurb | File header | Usage and prerequisites |
 | Table of contents | Chapter list in the header | Only in files with three or more chapters |
+| Cast list | Imports and module-wide constants | Right below the header |
 | Chapter | Chapter banner | Three lines of `=`, title in UPPERCASE centered |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
 | Section | Section banner | One line of `-`, title below |
@@ -76,26 +84,12 @@ Updates:
 /plugin marketplace update storyline-code-style
 ```
 
-## Recommended: core rules in your CLAUDE.md
+## AI notice
 
-Whether a skill gets loaded is up to the model, and a quick one-line fix may skip it.
-Copy this block into your `~/.claude/CLAUDE.md` so the most important rules always apply and the skill gets loaded reliably:
-
-```markdown
-# Code Style
-**Before writing, changing or reviewing code, load the `storyline-code-style:code-style` skill**, even for small fixes. It holds the full rules and the per-language files.
-The rules below always apply, even without the skill:
-- The codebase's own conventions win, these rules only fill the gaps.
-- New and changed code follows the rules. Untouched code is only restyled in a refactoring, and before going beyond the requested part, ask how far to go.
-- Code reads top to bottom: file header with usage and prerequisites, flat main path with guard clauses and early `return`.
-- Chapter banner: three lines of `=`, title in UPPERCASE centered. Section: one line of `-`, title below. Lines are 75 characters long. No other banner styles.
-- Chapters in plot order: setup → validations → action → epilogue. Every chapter has a description, a file with three or more chapters lists them in the header.
-- Comments and identifiers in English. Constants in `UPPER_SNAKE`, booleans with `is`/`has`, no magic numbers.
-- `null` goes on the left in comparisons (`$null -EQ $x`).
-- Never swallow errors silently. Error messages state the expectation. Validations are grouped in a `Validations` section.
-- Docs: `[Required]`/`[Optional]` in PowerShell, `(Required)`/`(Optional)` elsewhere, always first. No empty doc skeletons.
-- Verbose/debug log with a `[Component]` prefix at every decision point. Mutating operations support WhatIf or dry-run.
-```
+This repository is written together with [Claude Code](https://claude.com/claude-code). The rules, the reference files,
+the example files and the banner check were drafted by Claude and reviewed, decided and tested by the maintainer.
+Decisions and their reasons are logged in [`progress.md`](progress.md). If a rule or an example looks wrong,
+open an issue, it is a human call in the end.
 
 ## License
 

@@ -154,7 +154,7 @@
   // ==========================   SOLVE TREE PUZZLE   ==========================
   // ===========================================================================
   //
-  //   1. Parse input   Reads today's input file into a grid.
+  //   1. Parse input   Reads the input file into a grid.
   //   2. Part 1        Counts the trees visible from outside the grid.
   //
 
