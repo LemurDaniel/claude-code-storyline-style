@@ -43,6 +43,8 @@ $FONT_TITLE    = [System.Drawing.Font]::new('Segoe UI', 58, [System.Drawing.Font
 $FONT_SUBTITLE = [System.Drawing.Font]::new('Segoe UI', 25, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
 $FONT_CAPTION  = [System.Drawing.Font]::new('Segoe UI', 17, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
 $FONT_SMALL    = [System.Drawing.Font]::new('Segoe UI', 14, [System.Drawing.FontStyle]::Italic, [System.Drawing.GraphicsUnit]::Pixel)
+$FONT_NOTICE   = [System.Drawing.Font]::new('Segoe UI', 20, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
+$FONT_EMOJI    = [System.Drawing.Font]::new('Segoe UI Emoji', 26, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
 $FONT_CODE     = [System.Drawing.Font]::new('Cascadia Mono', 15, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
 $LINE_HEIGHT   = 22
 
@@ -77,6 +79,7 @@ $BOOK_LINES = @(
 
 $LANGUAGES = 'PowerShell  ·  Terraform  ·  Bicep  ·  GitHub Actions  ·  Azure DevOps  ·  Docker Compose  ·  JavaScript  ·  C++'
 $AI_NOTICE = 'AI generated artwork'
+$AI_ICON   = [System.Char]::ConvertFromUtf32(0x1F916)   # robot face
 
 # ---------------------------------------------------------------------------
 # Draw
@@ -93,6 +96,13 @@ $titleBrush = [System.Drawing.SolidBrush]::new($COLOR_TITLE)
 $mutedBrush = [System.Drawing.SolidBrush]::new($COLOR_MUTED)
 $panelBrush = [System.Drawing.SolidBrush]::new($COLOR_PANEL)
 $borderPen  = [System.Drawing.Pen]::new($COLOR_BORDER, 2)
+
+# AI notice with a robot icon in the top right corner.
+$noticeSize = $graphics.MeasureString($AI_NOTICE, $FONT_NOTICE)
+$iconSize   = $graphics.MeasureString($AI_ICON, $FONT_EMOJI)
+$noticeX    = $WIDTH - $MARGIN - $noticeSize.Width
+$graphics.DrawString($AI_ICON, $FONT_EMOJI, $mutedBrush, $noticeX - $iconSize.Width - 4, 44)
+$graphics.DrawString($AI_NOTICE, $FONT_NOTICE, $mutedBrush, $noticeX, 50)
 
 # Title and tagline.
 $graphics.DrawString('Storyline Code Style', $FONT_TITLE, $titleBrush, $MARGIN, 50)
@@ -127,10 +137,8 @@ foreach ($line in $BOOK_LINES) {
     $y += $LINE_HEIGHT
 }
 
-# Footer: languages on the left, AI notice on the right.
+# Footer: the languages.
 $graphics.DrawString($LANGUAGES, $FONT_CAPTION, $mutedBrush, $MARGIN + 4, $HEIGHT - 48)
-$noticeSize = $graphics.MeasureString($AI_NOTICE, $FONT_SMALL)
-$graphics.DrawString($AI_NOTICE, $FONT_SMALL, $mutedBrush, $WIDTH - $MARGIN - $noticeSize.Width, $HEIGHT - 44)
 
 $bitmap.Save($OutputPath, [System.Drawing.Imaging.ImageFormat]::Png)
 $graphics.Dispose()
