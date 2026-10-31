@@ -1,0 +1,28 @@
+# ---------------------------------------------------------------------------
+# Check Banners
+#
+#   Runs .scripts/Test-StorylineBanner.ps1 on every push and pull request.
+#   No secrets or Azure access needed, the job only reads the repo.
+#
+
+name: Check Banners
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # Banners - checks length and centering of all banner lines
+  banners:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test banner format
+        shell: pwsh
+        run: ./.scripts/Test-StorylineBanner.ps1
