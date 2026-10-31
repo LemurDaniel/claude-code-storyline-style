@@ -8,6 +8,15 @@ description: Storyline code style for every language and codebase - file headers
 Applies to every language and every codebase. Write code so it reads top to bottom like a story.
 When a codebase has its own conventions, they win. The rules here only fill the gaps.
 
+## Scope
+- **New and changed code** always follows these rules.
+- **A bug fix or feature stays focused:** untouched code around it is not restyled on the side.
+- **Refactoring, clean-up and review** put existing code in scope. Before restructuring beyond the requested part (adding chapters, renaming, splitting or moving files), ask the user how far to go:
+  - only the touched function or block
+  - the whole file
+  - the whole module or folder
+- When unsure whether a task counts as refactoring, ask instead of assuming.
+
 ## Language-specific rules
 Before writing or reviewing code in one of these languages, read the matching file from `references/` next to this file with the Read tool (once per session is enough):
 
@@ -449,3 +458,22 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   )
   ```
 - License or project headers only go where the codebase already does it.
+
+# Review checklist
+Use this list for reviews, `/code-review` and `/simplify`. Report each finding with the rule it breaks and a concrete fix. Respect [Scope](#scope): flag untouched code only in a refactoring or when asked.
+
+- [ ] **Header:** usage and prerequisites at the top of the file. → [Reading flow](#reading-flow)
+- [ ] **Banners:** chapters with `=` frame and centered UPPERCASE title, sections with one `-` line, 75 characters, no other banner styles. → [Comments](#comments)
+- [ ] **Chapter description:** numbered steps in flow chapters, one entry per unit in collection chapters, columns aligned. → [Comments](#comments)
+- [ ] **Flat main path:** guard clauses and early `return` instead of nesting. → [Reading flow](#reading-flow)
+- [ ] **Decision trees:** non-trivial blocks are described first and the code follows the description 1:1. → [Reading flow](#reading-flow)
+- [ ] **Structure:** one thing per file, dotted file names, no duplicated logic, one real implementation. → [Structure](#structure)
+- [ ] **Explicit:** no magic numbers, no hard-coded lists or environment values. → [Structure](#structure)
+- [ ] **Named stages:** no monster expressions, fallback chains with one comment per step. → [Processing data](#processing-data)
+- [ ] **Naming:** verbs first, `is`/`has` booleans with a real bool type, `UPPER_SNAKE` constants, `null` on the left, English without typos. → [API and naming](#api-and-naming)
+- [ ] **Docs:** every public unit documented, `(Required)`/`(Optional)` first, no empty skeletons, parameter docs at the parameter. → [Documentation](#documentation)
+- [ ] **Errors:** nothing swallowed, messages state the expectation, condition matches the message, validations grouped. → [Errors, logging, tests](#errors-logging-tests)
+- [ ] **Logs:** `[Component]` prefix at every decision point. → [Errors, logging, tests](#errors-logging-tests)
+- [ ] **Safety:** mutating operations support WhatIf or dry-run, changed context is reset. → [Errors, logging, tests](#errors-logging-tests)
+- [ ] **Tests:** assert concrete expected values. → [Errors, logging, tests](#errors-logging-tests)
+- [ ] **Language file:** the rules of the matching `references/*.md` are met.

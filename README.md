@@ -9,7 +9,7 @@ data is transformed in named stages, and logs leave a narrative trail at every d
 
 | File | Content |
 | --- | --- |
-| `SKILL.md` | General rules for every language: reading flow, comments and banners, structure, naming, docs, errors, logging, tests |
+| `SKILL.md` | Scope, general rules for every language (reading flow, comments and banners, structure, naming, docs, errors, logging, tests) and a review checklist |
 | `references/powershell.md` | PowerShell 7 |
 | `references/terraform.md` | Terraform |
 | `references/bicep.md` | Bicep |
@@ -48,6 +48,7 @@ Copy this block into your `~/.claude/CLAUDE.md` so the most important rules alwa
 **Before writing, changing or reviewing code, load the `storyline-code-style:code-style` skill**, even for small fixes. It holds the full rules and the per-language files.
 The rules below always apply, even without the skill:
 - The codebase's own conventions win, these rules only fill the gaps.
+- New and changed code follows the rules. Untouched code is only restyled in a refactoring, and before going beyond the requested part, ask how far to go.
 - Code reads top to bottom: file header with usage and prerequisites, flat main path with guard clauses and early `return`.
 - Chapter banner: three lines of `=`, title in UPPERCASE centered. Section: one line of `-`, title below. Lines are 75 characters long. No other banner styles.
 - Comments and identifiers in English. Constants in `UPPER_SNAKE`, booleans with `is`/`has`, no magic numbers.
