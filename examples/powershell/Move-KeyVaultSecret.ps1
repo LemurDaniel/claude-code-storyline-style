@@ -10,6 +10,7 @@
 #   Chapters:
 #     LOAD AND VALIDATE SECRETS   Context switch, validations and loading the source secrets.
 #     MOVE SECRETS                Copies every secret and disables it in the source.
+#     RESTORE CONTEXT             Switches back to the previous context, also on errors.
 #
 
 <#
@@ -207,13 +208,14 @@ PROCESS {
 
 CLEAN {
 
-    # ---------------------------------------------------------------------------
-    # Restore context
-    #   Switches back to the previous context.
-    # ---------------------------------------------------------------------------
+    # ===========================================================================
+    # ===========================   RESTORE CONTEXT   ===========================
+    # ===========================================================================
+    #
+    #   Switches back to the context switched in LOAD AND VALIDATE SECRETS.
+    #   CLEAN also runs on errors and Ctrl+C, so the caller never stays in the wrong subscription.
+    #
 
-    # Restores the context switched in LOAD AND VALIDATE SECRETS.
-    # CLEAN also runs on errors and Ctrl+C, so the caller never stays in the wrong subscription.
     if ($null -NE $PreviousContext) {
         Write-Verbose "[Move-KeyVaultSecret] Restoring context '$($PreviousContext.Name)'."
         $null = Set-AzContext -Context $PreviousContext

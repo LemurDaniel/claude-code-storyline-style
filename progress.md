@@ -38,12 +38,11 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | VS Code PoC made visible: colored bands, CodeLens, a library tree in the explorer (shelves → books → chapters → sections), status bar and jump keys on top of outline and folding. Sorted into `src/commands`, `src/views`, `src/data`, `src/utils`. | The breadcrumbs alone were too small to notice. The PoC had grown to nine flat files without anyone sorting them. |
 | 2026-10-31 | The VS Code extension stays a proof of concept in `ideas/vscode-outline/`, no packaging or Marketplace for now. | Tried by the owner in VS Code. The style itself comes first, the extension is a side track. |
 | 2026-10-31 | Rule "Shelve as the code grows" (more than five source files or several roles → shelves), a Scope note and the shelf check `Test-StorylineShelf.ps1` in the `banners` job. | The label rule existed, but nothing said when a flat folder has to be split, so a growing folder slipped through. A script checks what a rule only asks for. |
+| 2026-10-31 | YAML: no empty line after the closing section line, the key follows directly. Everywhere else an empty line. `examples` is a required check for `main` next to `banners`. | Owner decision: in YAML the frame sticks to the job, service or value it describes. |
+| 2026-10-31 | PowerShell: in a file with chapters, `CLEAN` is its own epilogue chapter (`RESTORE CONTEXT` in `Move-KeyVaultSecret.ps1`). | The outline parser found the section `Restore context` outside every chapter. The banner check does not see code blocks, so only the rule in `powershell.md` prevents it. |
 
 ## Open items
-- [ ] `Move-KeyVaultSecret.ps1`: the section `Restore context` stands in the `CLEAN` block, outside every chapter (found by the outline parser). The banner check does not see code blocks, so it passes. Give `CLEAN` its own epilogue chapter?
 - [ ] **Before merging 0.4.0:** owner review of the language files `yaml-pipelines.md`, `terraform.md`, `kubernetes.md`, `javascript.md`, `docker-compose.md`, `cpp.md`.
-- [ ] Open question: an empty line after the closing section line in YAML (pipelines, Compose, Kubernetes) like everywhere else, or the frame directly above the key?
-- [ ] Add `examples` as a required status check for `main` (Settings → Branches), next to `banners`.
 - [ ] YAML pipelines are not validated in the example check yet (`actionlint` for GitHub Actions).
 - [ ] Reference file and examples for Dockerfile.
 - [ ] kubeconform did not run locally (download into the scratchpad was blocked), only in CI.
@@ -55,4 +54,4 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 - [ ] C++ examples are not compiled yet (no compiler and no `Request.h` / `Response.h`).
 
 ## Next step
-Review the six language files listed under open items, then merge the 0.4.0 PR (`feature/priorities`, merging is the release) and make `examples` a required check. Then watch in a real session whether Claude reports `Verified` / `Not verified` at the end of a task.
+Review the six language files listed under open items, then merge the 0.4.0 PR (`feature/priorities`, merging is the release). Then watch in a real session whether Claude reports `Verified` / `Not verified` at the end of a task.

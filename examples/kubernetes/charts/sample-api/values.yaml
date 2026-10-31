@@ -25,7 +25,6 @@
 # Identity
 #   Labels shared by every service.
 # ---------------------------------------------------------------------------
-
 # (Required) Shared label of every service of the application.
 application: sample-platform
 
@@ -33,7 +32,6 @@ application: sample-platform
 # Image
 #   Registry, repository and the fixed tag.
 # ---------------------------------------------------------------------------
-
 image:
   # (Required) Registry and repository, without the tag.
   repository: registry.example.com/sample-api
@@ -44,7 +42,6 @@ image:
 # Runtime
 #   Replicas, environment and resources of the pods.
 # ---------------------------------------------------------------------------
-
 # (Optional) Number of pods. Defaults to 1.
 replicas: 1
 
@@ -67,7 +64,6 @@ healthPath: /health
 # Service
 #   Ports of the service and the container.
 # ---------------------------------------------------------------------------
-
 service:
   # (Optional) Port of the service inside the cluster. Defaults to 80.
   port: 80
@@ -84,7 +80,6 @@ dependencies:
 # Ingress
 #   Public host and certificate, off by default.
 # ---------------------------------------------------------------------------
-
 ingress:
   # (Optional) Exposes the service on a public host. Defaults to false.
   isEnabled: false

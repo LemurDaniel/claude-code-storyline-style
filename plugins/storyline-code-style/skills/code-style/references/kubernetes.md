@@ -54,7 +54,6 @@
   # Runtime
   #   Replicas, environment and resources of the pods.
   # ---------------------------------------------------------------------------
-
   # (Optional) Number of pods. Defaults to 1.
   replicas: 1
   ```

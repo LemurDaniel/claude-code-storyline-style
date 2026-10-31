@@ -58,7 +58,7 @@ Every edit here is live in all local sessions right away, so a broken rule break
 - Release: merging the PR is the release. The workflow tags `v<version>` from `plugin.json` and publishes the CHANGELOG entry, it fails when the entry is missing. No manual tags.
 
 ## Workflow
-- `main` is protected: changes only via PR, the `banners` check must pass, linear history, no force push. Work on a branch (`feature/<topic>`, `fix/<topic>`), then `gh pr create`.
+- `main` is protected: changes only via PR, the `banners` and `examples` checks must pass, linear history, no force push. Work on a branch (`feature/<topic>`, `fix/<topic>`), then `gh pr create`.
 - Commit messages: short imperative title, bullet list per change below.
 
 ## Plugin directory submission

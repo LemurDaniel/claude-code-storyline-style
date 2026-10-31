@@ -104,7 +104,7 @@
       ...
   }
   ```
-- `SupportsShouldProcess` for mutating operations. Reset changed context in `CLEAN` (PowerShell 7.3+, also runs on errors and Ctrl+C). Below 7.3 use `try`/`finally` instead.
+- `SupportsShouldProcess` for mutating operations. Reset changed context in `CLEAN` (PowerShell 7.3+, also runs on errors and Ctrl+C). Below 7.3 use `try`/`finally` instead. In a file with chapters, every block holds its own chapters and `CLEAN` is the epilogue chapter, so no section stands outside a chapter.
   ```powershell
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (...)

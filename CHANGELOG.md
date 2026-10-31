@@ -5,6 +5,8 @@
 - Every file with sections has at least one chapter, sections only live inside a chapter. Only a tiny file with one unit (a `.bicepparam`, a values override, a workflow with one job) has no banner. The banner check fails on a section outside a chapter.
 - The table of contents is its own comment block below the header (in YAML below the closing line of the header), separated by an empty line and framed by empty comment lines. The banner check fails on a table of contents inside the header.
 - C++: the groups of a class that fills a whole header chapter are sections, not group comments.
+- After the closing line of a section an empty line, in YAML (pipelines, Compose, Kubernetes / Helm) the key follows directly.
+- PowerShell: in a file with chapters, `CLEAN` is its own epilogue chapter, no section stands outside a chapter.
 - Shelve as the code grows: a folder with more than five source files or several roles side by side gets shelves before the next file goes in, also in a proof of concept. A new file counts as a change to its folder (Scope). New shelf check `.scripts/Test-StorylineShelf.ps1` in CI.
 - PowerShell, JavaScript and C++: the banner bullets that only repeated SKILL.md → "Comments" are removed.
 - Bicep: chapters and sections exactly as in SKILL.md, no Bicep-specific banner rule, an empty line after every section title.

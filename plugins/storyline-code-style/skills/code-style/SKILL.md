@@ -360,6 +360,15 @@ Comments look the same in every language, only the comment character changes. A 
 
       if ($Source -EQ $Target) {
       ```
+    - **After the closing line** an empty line, then the code. In YAML (pipelines, Compose, Kubernetes / Helm) the key follows directly, so the frame sticks to the job, service or value it describes. The header of a YAML file keeps its empty line.
+      ```yaml
+      # ---------------------------------------------------------------------------
+      # Plan
+      #   Publishes the plan as an artifact, so the approver can read it.
+      # ---------------------------------------------------------------------------
+      plan:
+        needs: config
+      ```
     - Sections only live inside a chapter. The one section-shaped block outside is the header of a YAML file (pipelines, Compose, Kubernetes) in the first line, its table of contents follows as its own block below the closing line.
   - **Both levels:**
     - Every line is 75 characters long, plus the comment character and one space.
@@ -771,7 +780,7 @@ Use this list for reviews, `/code-review` and `/simplify`. Go through every grou
 - **[Comments](#comments)**
   - [ ] **Banners:** chapters with `=` frame and centered UPPERCASE title, sections with `-` frame, title and description, 75 characters, no other banner styles.
   - [ ] **Chapter description:** every chapter has one, numbered steps in flow chapters match the section titles, one entry per unit in collection chapters, columns aligned.
-  - [ ] **Section description:** every section has one line below the title, indented by 3 spaces, closed by the second `-` line.
+  - [ ] **Section description:** every section has one line below the title, indented by 3 spaces, closed by the second `-` line. An empty line follows, in YAML the key follows directly.
   - [ ] **Comments in the code:** group comments instead of banners inside a unit, one short *what* per block, the *why* only where it is not obvious, block comment syntax only for docs.
   - [ ] **Cross-references:** comments that point elsewhere name the chapter or file.
 - **[Structure](#structure)**
