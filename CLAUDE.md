@@ -16,6 +16,7 @@ The repo is the marketplace and the plugin at once. There is no build, only Mark
 | `.scripts/Test-StorylineBanner.ps1` | Banner check (format, chapter and section descriptions, numbered steps vs. sections, table of contents), runs locally and in CI |
 | `.scripts/Test-StorylineShelf.ps1` | Shelf check (label in every folder with several source files, at most five flat source files), runs locally and in CI |
 | `.scripts/Test-StorylineExample.ps1` | Example check (PowerShell parser and PSScriptAnalyzer, terraform fmt/validate/test, bicep build, node --check, docker compose config, helm lint/template, kubeconform), runs locally and in CI |
+| `ideas/vscode-outline/` | PoC VS Code extension: colored banner bands, CodeLens, library tree in the explorer, status bar, outline and folding. Not shipped with the plugin |
 | `CHANGELOG.md` | One entry per release |
 | `.scripts/New-SocialPreview.ps1` | Renders `.github/social-preview.png` (1280x640), uploaded manually under Settings → Social preview |
 | `.scripts/New-PluginIcon.ps1` | Renders `plugins/storyline-code-style/.claude-plugin/icon.png` (1024x1024) for the plugin directory listing |

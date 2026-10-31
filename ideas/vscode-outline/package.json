@@ -1,0 +1,60 @@
+{
+  "name": "storyline-outline",
+  "displayName": "Storyline Outline",
+  "description": "Chapters and sections of the storyline code style as colored bands, CodeLens, side bar, status bar, outline and folding.",
+  "version": "0.0.2",
+  "publisher": "lemurdaniel",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "colors": [
+      {
+        "id": "storyline.chapterBackground",
+        "description": "Background of the three chapter banner lines.",
+        "defaults": { "dark": "#7ee78733", "light": "#1a7f3726", "highContrast": "#7ee78755" }
+      },
+      {
+        "id": "storyline.chapterRuler",
+        "description": "Mark of a chapter in the scrollbar.",
+        "defaults": { "dark": "#7ee787", "light": "#1a7f37", "highContrast": "#7ee787" }
+      },
+      {
+        "id": "storyline.sectionBackground",
+        "description": "Background of a section banner from frame to frame.",
+        "defaults": { "dark": "#a5d6ff1f", "light": "#0969da17", "highContrast": "#a5d6ff40" }
+      },
+      {
+        "id": "storyline.sectionRuler",
+        "description": "Mark of a section in the scrollbar.",
+        "defaults": { "dark": "#a5d6ffaa", "light": "#0969daaa", "highContrast": "#a5d6ff" }
+      }
+    ],
+    "commands": [
+      { "command": "storyline.goToBanner", "title": "Go to Chapter or Section", "category": "Storyline" },
+      { "command": "storyline.nextBanner", "title": "Next Chapter or Section", "category": "Storyline" },
+      { "command": "storyline.previousBanner", "title": "Previous Chapter or Section", "category": "Storyline" }
+    ],
+    "keybindings": [
+      { "command": "storyline.nextBanner", "key": "ctrl+alt+pagedown", "when": "editorTextFocus" },
+      { "command": "storyline.previousBanner", "key": "ctrl+alt+pageup", "when": "editorTextFocus" }
+    ],
+    "views": {
+      "explorer": [
+        { "id": "storyline.banners", "name": "Storyline", "icon": "media/storyline.svg" }
+      ]
+    }
+  },
+  "scripts": {
+    "test": "node --test test/unit/banners.parse.test.js"
+  }
+}
