@@ -57,7 +57,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | --- | --- | --- |
 | Library | Codebase | README at the entrance, see [Structure](#structure) |
 | Shelf | Folder, cut by domain | Every shelf with more than one book has a label, see below |
-| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `module.bicep`, else `README.md` |
+| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `main.bicep`, else `README.md` |
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf, see [Structure](#structure) |
 | Book | File | Header, chapters, epilogue |
 | Blurb | File header | Usage and prerequisites, see [Reading flow](#reading-flow) |
@@ -158,7 +158,7 @@ Proofreading happens after the book is written, outside the file: `Verified: par
 A book has exactly three levels: chapter (`=` frame), section (`-` line) and paragraph (one group comment inside a unit). There is no fourth level: what feels like a sub-chapter becomes a section, what feels like a sub-section becomes a paragraph.
 
 - **The book is the file**, except where the language loads a folder as one unit (a Terraform module). Then the folder is the book and every file one chapter, see `references/terraform.md`.
-- **Every shelf has a label:** A folder with more than one file has an entry point where the language has one (`_index.js`, `Utils.psm1`, `main.tf`, `module.bicep`, the thin pipeline that calls the templates, the header of a `.cpp`). Where it has none, a short `README.md` in the folder lists the files with one line each. Whoever opens the folder knows what stands on the shelf without opening a book.
+- **Every shelf has a label:** A folder with more than one file has an entry point where the language has one (`_index.js`, `Utils.psm1`, `main.tf`, `main.bicep`, the thin pipeline that calls the templates, the header of a `.cpp`). Where it has none, a short `README.md` in the folder lists the files with one line each. Whoever opens the folder knows what stands on the shelf without opening a book.
   ```markdown
   # PowerShell examples
   | File | Content |
@@ -403,7 +403,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   The kind comes first even when the folder already names it (`routes/routes.status.js`). That keeps the file name
   unique, also in an editor tab or a search. Plural when a file bundles several units (`routes.`,
   `tools.`), singular for one unit per file (`command.`, `main.`), consistent within a folder. Exceptions:
-  - entry points (`_index.js`, `main.tf`, `module.bicep`, `Utils.psm1`)
+  - entry points (`_index.js`, `main.tf`, `main.bicep`, `Utils.psm1`)
   - files whose name a tool expects (`docker-compose.yaml`, `package.json`, `.clang-format`)
   - languages with their own naming convention (PowerShell `Verb-Noun.ps1`, C++ class names)
   - exceptions named in a language file (e.g. `utils/` and `data/` in JavaScript)

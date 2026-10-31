@@ -1,15 +1,14 @@
 targetScope = 'resourceGroup'
 
 // NOTE:
-//   Deploys a Container Registry with networking and retention defaults.
-//   Requires: the shared 'lib.bicep' with typeNaming and generateName.
-//
-//   az deployment group create -g rg-sample-dev -f module.bicep -p example/module.bicepparam --what-if
+//   Deploys a Container Registry with networking and retention defaults, called from main.bicep.
+//   Requires: the shared lib.bicep with typeNaming and generateName.
 
-import { typeNaming, generateName } from '../../utility/lib.bicep'
+import { typeNaming, generateName } from '../utility/lib.bicep'
 
 // ---------------------------------------------------------------------------
 // Parameters - Naming, Location and Tags
+
 @description('(Required) Naming context passed from module to module.')
 param naming typeNaming
 
@@ -21,6 +20,7 @@ param tags object = {}
 
 // ---------------------------------------------------------------------------
 // Parameters - Container Registry
+
 @description('(Optional) The SKU of the registry. Defaults to Standard, Private access raises it to Premium.')
 param sku 'Premium' | 'Standard' | 'Basic' = 'Standard'
 
@@ -52,6 +52,7 @@ var varIsPremium = paramSku == 'Premium'
 
 // ---------------------------------------------------------------------------
 // Validations
+
 #disable-next-line no-unused-vars
 var validation = map(
   [
@@ -100,6 +101,7 @@ resource resRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
 
 // ---------------------------------------------------------------------------
 // Outputs
+
 @description('Reference for dependent modules (id, name, location, tags, naming).')
 output reference object = {
   id: resRegistry.id

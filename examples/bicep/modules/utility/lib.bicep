@@ -1,7 +1,7 @@
 // NOTE:
 //   Shared types and functions for all modules, imported per module:
 //
-//   import { typeNaming, generateName } from '../../utility/lib.bicep'
+//   import { typeNaming, generateName } from '../utility/lib.bicep'
 
 // ---------------------------------------------------------------------------
 // Types

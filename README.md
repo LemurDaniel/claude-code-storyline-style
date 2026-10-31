@@ -22,7 +22,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every part has i
 | --- | --- | --- |
 | Library | Codebase | README at the entrance |
 | Shelf | Folder, cut by domain | Every shelf with more than one book has a label |
-| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `module.bicep`, else `README.md` |
+| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `main.bicep`, else `README.md` |
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf |
 | Book | File | Header, chapters, epilogue (a Terraform module: the folder is the book, each file a chapter) |
 | Blurb | File header | Usage and prerequisites |
