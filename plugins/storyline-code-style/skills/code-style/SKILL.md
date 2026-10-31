@@ -432,11 +432,21 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   . $PSScriptRoot/Config/Set-UtilsConfig.ps1
   . $PSScriptRoot/CloudSync/Sync-UtilsCloudFile.ps1
   ```
-- **One real implementation:** Overloads, shortcuts and wrappers only delegate to it.
-  ```cpp
-  void MiniServer::get(const std::string &path, const RequestHandler &handler) { addRoute("GET", path, handler); }
-  void MiniServer::use(const RequestHandler &handler)                          { use("/", handler); }
+- **One real implementation:** The logic lives in one place. Overloads, shortcuts and wrappers hold no logic of their own, they fill in values and delegate to it.
+  ```powershell
+  # The one real implementation: knows the naming pattern.
+  function Get-UtilsResourceName {
+      param ([System.String] $Type, [System.String] $Environment)
+      return "$Type-euwe-$Environment-01"
+  }
+
+  # Shortcut: only fills in the type and delegates.
+  function Get-UtilsVnetName {
+      param ([System.String] $Environment)
+      return Get-UtilsResourceName -Type vnet -Environment $Environment
+  }
   ```
+  Not like this: `Get-UtilsVnetName` builds `"vnet-euwe-$Environment-01"` itself. When the pattern changes, the shortcut stays on the old one.
 - **No duplicated logic:** Repeated blocks move into a helper.
   ```js
   // Instead of building the same backup path in three places:
