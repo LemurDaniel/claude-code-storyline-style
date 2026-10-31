@@ -4,10 +4,12 @@
 #   ./.scripts/Test-StorylineBanner.ps1                   Checks the whole repo.
 #   ./.scripts/Test-StorylineBanner.ps1 -Path ./plugins   Checks one folder.
 #   ./.scripts/Test-StorylineBanner.ps1 -Verbose          Also logs every checked file.
+
 #
 #   Chapters:
 #     SETTINGS        Banner format, structure patterns and the checked files.
 #     CHECK BANNERS   Collects the files, checks format and structure, reports.
+#
 
 <#
 .SYNOPSIS
@@ -18,13 +20,18 @@
     and source files and checks the format rules from SKILL.md -> "Comments":
     - Every line is 75 characters long, plus the comment character and one space.
     - The chapter title sits centered, the '=' on both sides differ by at most one.
+    - Every section has a description below the title, indented by 3 spaces,
+      and a closing line of '-' below it.
 
     Source files (not Markdown, whose snippets are excerpts) are also checked
     for the structure rules from SKILL.md -> "The story" and "Comments":
+    - Every section sits inside a chapter, except a header in the first line.
     - Every chapter has a description right below the frame.
     - The numbered entries of a flow chapter match the sections of the chapter.
-    - A file with two or more chapters lists them as 'Chapters:' in the header,
+    - A file with chapters lists them as 'Chapters:' in its own block below the header,
       and the list matches the chapters in order.
+    - A Terraform module is one book, every .tf file one chapter. The header
+      of main.tf lists every file of the module with its chapter title.
 
     Throws when at least one rule is broken, so CI fails.
 
@@ -47,6 +54,9 @@ param (
     $Path = (Split-Path -Path $PSScriptRoot -Parent)
 )
 
+Set-StrictMode -Version 1.0
+$ErrorActionPreference = 'Stop'
+
 # ===========================================================================
 # ===============================   SETTINGS   ==============================
 # ===========================================================================
@@ -59,6 +69,8 @@ param (
 
 # ---------------------------------------------------------------------------
 # Banner format
+#   Line length, title spacing and the line patterns.
+# ---------------------------------------------------------------------------
 
 $BANNER_WIDTH  = 75
 $TITLE_SPACING = '   '
@@ -71,21 +83,31 @@ $TITLE_PATTERN = "^(?<left>=+)$TITLE_SPACING(?<title>.+?)$TITLE_SPACING(?<right>
 
 # ---------------------------------------------------------------------------
 # Structure
+#   Patterns for descriptions, sections and the table of contents.
+# ---------------------------------------------------------------------------
 
-# The frame lines of a chapter and the line of a section, without the comment character.
+# The frame lines of a chapter and of a section, without the comment character.
 $CHAPTER_FRAME = '=' * $BANNER_WIDTH
 $SECTION_LINE  = '-' * $BANNER_WIDTH
+
+# The description of a section is indented by 3 spaces, one of them follows the comment character.
+$SECTION_INDENT = '  '
 
 # A numbered entry of a flow chapter: '1. Name   Explanation', the name ends at two spaces.
 $NUMBERED_ENTRY_PATTERN = '^\d+\.\s+(?<name>.+?)(\s{2,}.*)?$'
 
 # The table of contents in the header starts with this line, every entry is a chapter title.
-$TOC_HEADER     = 'Chapters:'
+$TOC_HEADER        = 'Chapters:'
 $TOC_ENTRY_PATTERN = '^(?<title>[A-Z][A-Z0-9 /-]*?)(\s{2,}.*)?$'
-$TOC_MIN_CHAPTERS  = 2
+
+# In the main.tf of a Terraform module every entry is a file and its chapter: 'variables.tf   VARIABLES'.
+$MODULE_TOC_FILE          = 'main.tf'
+$MODULE_TOC_ENTRY_PATTERN = '^(?<file>[\w.-]+\.tf)\s{2,}(?<title>[A-Z][A-Z0-9 /-]*?)(\s{2,}.*)?$'
 
 # ---------------------------------------------------------------------------
 # Files
+#   Checked extensions, comment characters and skipped folders.
+# ---------------------------------------------------------------------------
 
 $FILE_EXTENSIONS = @('.md', '.ps1', '.psm1', '.tf', '.tfvars', '.hcl', '.bicep', '.bicepparam', '.yaml', '.yml', '.js', '.h', '.cpp')
 $EXCLUDED_FOLDERS = @('.git', 'node_modules', '.terraform')
@@ -105,11 +127,14 @@ $SLASH_COMMENT_EXTENSIONS = @('.js', '.h', '.cpp', '.bicep', '.bicepparam')
 #   3. Check format      Tests every banner line for length and centering and
 #                        records chapters, descriptions, sections and the TOC.
 #   4. Check structure   Tests descriptions, numbered entries and the TOC.
-#   5. Report            Lists all findings and fails when there is one.
+#   5. Check modules     Tests the TOC in main.tf of every Terraform module.
+#   6. Report            Lists all findings and fails when there is one.
 #
 
 # ---------------------------------------------------------------------------
 # Validations
+#   Fails early on a missing folder.
+# ---------------------------------------------------------------------------
 
 if (-NOT (Test-Path -Path $Path -PathType Container)) {
     throw [System.ArgumentException]::new("Path must be an existing folder, got '$Path'.")
@@ -117,6 +142,8 @@ if (-NOT (Test-Path -Path $Path -PathType Container)) {
 
 # ---------------------------------------------------------------------------
 # Collect
+#   Lists all files with a checked extension.
+# ---------------------------------------------------------------------------
 
 $Files = Get-ChildItem -Path $Path -Recurse -File
 | Where-Object -Property Extension -IN $FILE_EXTENSIONS
@@ -126,6 +153,8 @@ Write-Verbose "[Test-StorylineBanner] Found $($Files.Count) files below '$Path'.
 
 # ---------------------------------------------------------------------------
 # Check format
+#   Tests every banner line for length and centering and records the structure.
+# ---------------------------------------------------------------------------
 
 $Findings = [System.Collections.Generic.List[System.String]]::new()
 
@@ -141,9 +170,18 @@ foreach ($file in $Files) {
     $Chapters = [System.Collections.Generic.List[System.Object]]::new()
     $Toc      = [System.Collections.Generic.List[System.String]]::new()
 
+    # Only filled in a Terraform main.tf: one entry per file of the module.
+    $ModuleToc = [System.Collections.Generic.List[System.Object]]::new()
+
     # What the next line is expected to be: a frame line, a description line, a section title or a TOC entry.
     $expecting  = $null
+    $section    = $null
+    $isInToc    = $false
     $lineNumber = 0
+
+    # The two lines above the current one, for the empty lines around the table of contents.
+    $previousLine       = $null
+    $secondPreviousLine = $null
 
     foreach ($line in Get-Content -Path $file.FullName) {
         $lineNumber++
@@ -154,6 +192,37 @@ foreach ($file in $Files) {
         $commentMatch = [System.Text.RegularExpressions.Regex]::Match($trimmedLine, $commentPattern)
         $commentText  = $commentMatch.Success ? $commentMatch.Groups['text'].Value.Trim() : $null
 
+        # The table of contents below the header, one entry per line until the first other line.
+        # Its own block: an empty line and an empty comment line above, an empty comment line below.
+        if ($isInToc) {
+            $moduleTocMatch = [System.Text.RegularExpressions.Regex]::Match([System.String] $commentText, $MODULE_TOC_ENTRY_PATTERN)
+            $tocMatch       = [System.Text.RegularExpressions.Regex]::Match([System.String] $commentText, $TOC_ENTRY_PATTERN)
+
+            if ($commentMatch.Success -AND $file.Name -EQ $MODULE_TOC_FILE -AND $moduleTocMatch.Success) {
+                $ModuleToc.Add([PSCustomObject]@{
+                    File  = $moduleTocMatch.Groups['file'].Value
+                    Title = $moduleTocMatch.Groups['title'].Value
+                })
+            }
+            elseif ($commentMatch.Success -AND $tocMatch.Success) {
+                $Toc.Add($tocMatch.Groups['title'].Value)
+            }
+            else {
+                $isInToc = $false
+                if ($trimmedLine -NE $commentPrefix) {
+                    $Findings.Add("$location Table of contents must end with an empty comment line.")
+                }
+            }
+        }
+        if ($commentMatch.Success -AND $commentText -EQ $TOC_HEADER -AND $Chapters.Count -EQ 0) {
+            $isInToc = $true
+            if ($previousLine -NE $commentPrefix -OR $secondPreviousLine -NE '') {
+                $Findings.Add("$location Table of contents must stand in its own block below the header, after an empty line and an empty comment line.")
+            }
+        }
+        $secondPreviousLine = $previousLine
+        $previousLine       = $trimmedLine
+
         # The lines right after a chapter frame are its description, it ends at the first non-comment line.
         if ($expecting -EQ 'description') {
             if ($commentMatch.Success -AND $commentText -NOTMATCH '^[=-]{5,}') {
@@ -163,27 +232,47 @@ foreach ($file in $Files) {
             $expecting = $null
         }
 
+        # A section line followed by code closes a section whose opening line sat behind a label
+        # (the annotated book in SKILL.md), so the check did not see it open.
+        if ($expecting -EQ 'section title' -AND -NOT $commentMatch.Success) {
+            $expecting = $null
+            continue
+        }
+
         # The line right after a section line is the section title.
         if ($expecting -EQ 'section title') {
-            $expecting = $null
+            $expecting = 'section description'
+            $section   = [PSCustomObject]@{
+                Title          = $commentText
+                HasDescription = $false
+            }
             if ($commentMatch.Success -AND $Chapters.Count -GT 0) {
                 $Chapters[-1].Sections.Add($commentText)
+            }
+
+            # Sections only live in chapters, the one exception is a header in the first line (YAML).
+            if ($Chapters.Count -EQ 0 -AND $lineNumber -GT 2 -AND $file.Extension -IN $STRUCTURE_EXTENSIONS) {
+                $Findings.Add("$location Section '$commentText' must sit inside a chapter.")
             }
             continue
         }
 
-        # The table of contents in the header, one chapter title per line until the first other line.
-        if ($expecting -EQ 'toc entry') {
-            $tocMatch = [System.Text.RegularExpressions.Regex]::Match([System.String] $commentText, $TOC_ENTRY_PATTERN)
-            if ($commentMatch.Success -AND $tocMatch.Success) {
-                $Toc.Add($tocMatch.Groups['title'].Value)
-                continue
+        # The lines between the section title and the closing section line are its description.
+        # - '#   Fails early on equal storage accounts.' => text '  Fails early ...', indented by 3 spaces
+        $isBannerLine = $commentText -MATCH '^[=-]{5,}'
+        if ($expecting -EQ 'section description' -AND $commentMatch.Success -AND -NOT $isBannerLine) {
+            $descriptionText = $commentMatch.Groups['text'].Value
+            if (-NOT [System.String]::IsNullOrWhiteSpace($descriptionText)) {
+                $section.HasDescription = $true
+                if ($descriptionText -NOTMATCH "^$SECTION_INDENT") {
+                    $Findings.Add("$location Description of section '$($section.Title)' must be indented by 3 spaces.")
+                }
             }
-            $expecting = $null
-        }
-        if ($commentMatch.Success -AND $commentText -EQ $TOC_HEADER -AND $Chapters.Count -EQ 0) {
-            $expecting = 'toc entry'
             continue
+        }
+        if ($expecting -EQ 'section description' -AND -NOT ($isBannerLine -AND $commentText -EQ $SECTION_LINE)) {
+            $Findings.Add("$location Section '$($section.Title)' must be closed by a line of '-' below its description.")
+            $expecting = $null
         }
 
         $bannerMatch = [System.Text.RegularExpressions.Regex]::Match($trimmedLine, $BANNER_PATTERN)
@@ -199,7 +288,16 @@ foreach ($file in $Files) {
             continue
         }
 
-        # A section line, the title follows on the next line.
+        # The closing line of a section, it needs a description above.
+        if ($body -EQ $SECTION_LINE -AND $expecting -EQ 'section description') {
+            if (-NOT $section.HasDescription) {
+                $Findings.Add("$location Section '$($section.Title)' must have a description below the title.")
+            }
+            $expecting = $null
+            continue
+        }
+
+        # The opening line of a section, the title follows on the next line.
         if ($body -EQ $SECTION_LINE) {
             $expecting = 'section title'
             continue
@@ -234,15 +332,21 @@ foreach ($file in $Files) {
 
     if ($file.Extension -IN $STRUCTURE_EXTENSIONS) {
         $Structures.Add([PSCustomObject]@{
-            File     = $file.FullName
-            Chapters = $Chapters
-            Toc      = $Toc
+            File      = $file.FullName
+            Name      = $file.Name
+            Folder    = $file.DirectoryName
+            Extension = $file.Extension
+            Chapters  = $Chapters
+            Toc       = $Toc
+            ModuleToc = $ModuleToc
         })
     }
 }
 
 # ---------------------------------------------------------------------------
 # Check structure
+#   Tests descriptions, numbered entries and the TOC.
+# ---------------------------------------------------------------------------
 
 foreach ($structure in $Structures) {
 
@@ -277,11 +381,16 @@ foreach ($structure in $Structures) {
         }
     }
 
-    # From TOC_MIN_CHAPTERS on the header lists the chapters, and the list matches them in order.
+    # A Terraform file is one chapter of its module, main.tf lists them, see Check modules.
+    if ($structure.Extension -EQ '.tf') {
+        continue
+    }
+
+    # Every file with chapters lists them in the header, and the list matches them in order.
     $chapterTitles = @($structure.Chapters | ForEach-Object { $_.Title })
     $hasToc        = $structure.Toc.Count -GT 0
 
-    if (-NOT $hasToc -AND $chapterTitles.Count -GE $TOC_MIN_CHAPTERS) {
+    if (-NOT $hasToc -AND $chapterTitles.Count -GT 0) {
         $Findings.Add("$($structure.File) Header must list the $($chapterTitles.Count) chapters below '$TOC_HEADER', got none.")
         continue
     }
@@ -291,7 +400,36 @@ foreach ($structure in $Structures) {
 }
 
 # ---------------------------------------------------------------------------
+# Check modules
+#   Tests the TOC in main.tf of every Terraform module.
+# ---------------------------------------------------------------------------
+
+# Terraform loads a folder as one module, so the folder is the book and main.tf holds its table of contents.
+$Modules = $Structures
+| Where-Object -Property Extension -EQ '.tf'
+| Group-Object -Property Folder
+
+foreach ($module in $Modules) {
+    $mainFile = $module.Group | Where-Object -Property Name -EQ $MODULE_TOC_FILE
+    if ($null -EQ $mainFile) {
+        $Findings.Add("$($module.Name) Module must have a $MODULE_TOC_FILE that lists its files below '$TOC_HEADER'.")
+        continue
+    }
+
+    # Compared as sorted lists, the reading order of the files is up to the author.
+    # - variables.tf with chapter VARIABLES  => 'variables.tf   VARIABLES'
+    $expectedEntries = @($module.Group | ForEach-Object { "$($_.Name)   $(($_.Chapters | Select-Object -First 1).Title)" } | Sort-Object)
+    $listedEntries   = @($mainFile.ModuleToc | ForEach-Object { "$($_.File)   $($_.Title)" } | Sort-Object)
+
+    if (($expectedEntries -join '|') -NE ($listedEntries -join '|')) {
+        $Findings.Add("$($mainFile.File) Header must list every file of the module with its chapter, expected '$($expectedEntries -join ', ')', got '$($listedEntries -join ', ')'.")
+    }
+}
+
+# ---------------------------------------------------------------------------
 # Report
+#   Lists all findings and fails when there is one.
+# ---------------------------------------------------------------------------
 
 if ($Findings.Count -EQ 0) {
     Write-Host "[Test-StorylineBanner] All banners in $($Files.Count) files follow the format."

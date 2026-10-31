@@ -22,17 +22,18 @@ A codebase is a library, a folder is a shelf, a file is a book. Every part has i
 | --- | --- | --- |
 | Library | Codebase | README at the entrance |
 | Shelf | Folder, cut by domain | Every shelf with more than one book has a label |
-| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `module.bicep`, else `README.md` |
+| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `main.bicep`, else `README.md` |
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf |
 | Book | File | Header, chapters, epilogue (a Terraform module: the folder is the book, each file a chapter) |
 | Blurb | File header | Usage and prerequisites |
-| Table of contents | Chapter list in the header | In every file with two or more chapters |
+| Table of contents | Chapter list in the header | In every file with chapters, also with only one |
 | Cast list | Imports and module-wide constants | Right below the header |
 | Chapter | Chapter banner | Three lines of `=`, title in UPPERCASE centered |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
-| Section | Section banner | One line of `-`, title below |
+| Section | Section banner | `-` frame around the title and a one-line description |
 | Paragraph | Group comment | One comment line inside a unit, no banner |
 | Epilogue | Cleanup | Context reset, outputs, exports: always last |
+| Proofreading | Verification | Parser, linter and tests before the code counts as done |
 
 Chapters follow the plot: setup → validations → the action → epilogue. Variables are introduced in the chapter
 where they first act, and comments that point elsewhere name the chapter they mean.
@@ -49,22 +50,30 @@ where they first act, and comments that point elsewhere name the chapter they me
 
 # ---------------------------------------------------------------------------
 # Context
+#   Switches to the given subscription, keeps the previous one.
+# ---------------------------------------------------------------------------
 ```
 
+Correctness is the boundary, readability the goal: among correct solutions the one a new reader follows top to bottom
+wins, and code only counts as done after the parser, linter and tests of its language ran.
+
 The banner check in [`.scripts/Test-StorylineBanner.ps1`](.scripts/Test-StorylineBanner.ps1) runs in CI and verifies the
-banner format, that every chapter has a description, that the numbered steps match the sections and that the table of
-contents matches the chapters.
+banner format, that every chapter and section has a description, that the numbered steps match the sections and that the table of
+contents matches the chapters. The shelf check in [`.scripts/Test-StorylineShelf.ps1`](.scripts/Test-StorylineShelf.ps1)
+verifies that every folder with several source files has a label and none grows flat. The example check in [`.scripts/Test-StorylineExample.ps1`](.scripts/Test-StorylineExample.ps1)
+validates every example file with the tools of its language.
 
 ## What's inside
 
 | File | Content |
 | --- | --- |
-| `SKILL.md` | Scope, general rules for every language (reading flow, comments and banners, structure, naming, docs, errors, logging, tests) and a review checklist |
+| `SKILL.md` | Scope, priorities, general rules for every language (reading flow, comments and banners, structure, naming, docs, errors, logging, tests) and a review checklist |
 | `references/powershell.md` | PowerShell 7 |
 | `references/terraform.md` | Terraform |
 | `references/bicep.md` | Bicep |
 | `references/yaml-pipelines.md` | GitHub Actions and Azure DevOps pipelines |
 | `references/docker-compose.md` | Docker Compose |
+| `references/kubernetes.md` | Kubernetes manifests and Helm charts |
 | `references/javascript.md` | JavaScript / Node.js |
 | `references/cpp.md` | C++ |
 

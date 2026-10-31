@@ -34,7 +34,7 @@
    * @return 0 on success, non-zero on failure.
    */
   ```
-- Headers grouped by feature. `public:` and `private:` may alternate. A header with one class gets one chapter around the class, its description lists the groups and so serves as the table of contents of the class. The `.cpp` uses the same group names as chapter titles.
+- Headers grouped by feature. `public:` and `private:` may alternate. A header with one class gets one chapter around the class, every group is a section inside the class and the chapter description lists the sections, so it serves as the table of contents of the class. The header lists that one chapter like in every file. The `.cpp` uses the same group names as chapter titles.
   ```cpp
   // ===========================================================================
   // =========================   ROUTE HTTP REQUESTS   =========================
@@ -47,7 +47,10 @@
 
   class MiniServer
   {
+  // ---------------------------------------------------------------------------
   // Routing
+  //   get, post and handle, routes match method and exact path.
+  // ---------------------------------------------------------------------------
   public:
       void get(const std::string &path, const RequestHandler &handler);
       void post(const std::string &path, const RequestHandler &handler);
@@ -55,25 +58,15 @@
       void addRoute(const std::string &method, const std::string &path, const RequestHandler &handler);
       std::vector<Route> _routes;
 
+  // ---------------------------------------------------------------------------
   // Middleware
+  //   use, middlewares match a path prefix and may answer early.
+  // ---------------------------------------------------------------------------
   public:
       void use(const RequestHandler &handler);
   private:
       std::vector<Middleware> _middlewares;
   };
-  ```
-- `.cpp` files structure chapters and sections as `//` banners per `SKILL.md` → "Comments". No `/*---- * Title *` blocks.
-  ```cpp
-  // ===========================================================================
-  // =============================   MIDDLEWARE   ==============================
-  // ===========================================================================
-  //
-  //   use      Registers a handler for all paths below a prefix.
-  //   handle   Runs the matching handlers in registration order.
-  //
-
-  // ---------------------------------------------------------------------------
-  // Handle Middleware
   ```
 - Includes grouped: framework, stdlib, libraries, own.
   ```cpp
@@ -108,4 +101,9 @@
 - Logs with a component prefix, through the project's logger or `printf`.
   ```cpp
   std::printf("[MiniServer] Listening on port %u with %u workers\n", port, workerCount);
+  ```
+- **Verify** per `SKILL.md` → "Errors, logging, tests": build with the project build system and its warning flags, then run the tests.
+  ```
+  cmake --build build --config Release
+  ctest --test-dir build --output-on-failure
   ```

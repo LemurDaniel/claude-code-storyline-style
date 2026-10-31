@@ -10,12 +10,14 @@
       docker-compose.yaml
   ```
 - No `version:` key anymore, the file starts directly with `services:` (or `networks:` when networks are defined).
-- Several services in one file are separated by a `# ----` banner per `SKILL.md` → "Comments" (section level only):
+- Several services in one file get one section each inside a chapter per `SKILL.md` → "Comments", a single service needs no banner. A large file groups its services into several chapters (e.g. metrics, dashboards, proxy):
   ```yaml
   services:
 
     # ---------------------------------------------------------------------------
     # Prometheus Service
+    #   Scrapes the exporters and stores the metrics.
+    # ---------------------------------------------------------------------------
     prometheus:
       ...
   ```
@@ -50,23 +52,10 @@
       - ./config:/app/config:ro
       - ./data:/app/data
   ```
-- **`expose` instead of `ports`** when the service sits behind the reverse proxy. The proxy joins the `<service>_default` networks as `external: true`. `ports` only for things that must be reachable directly from the LAN, with a comment on what for.
+- **Every published port gets a comment** on who reaches it and what for. A port mapping opens the host, the reader should not have to guess why.
   ```yaml
-  # reverse-proxy-nginx/docker-compose.yaml
-  networks:
-    filebrowser_default:
-      external: true
-    grafana_default:
-      external: true
-
-  services:
-    nginx:
-      ...
-      ports:
-        - "443:443"   # only entry point from the LAN
-      networks:
-        - filebrowser_default
-        - grafana_default
+  ports:
+    - "443:443"   # HTTPS entry point from the LAN
   ```
 - **`environment` as a map**, not as a `- KEY=value` list. Related variables stand as a group with a comment above:
   ```yaml
@@ -85,9 +74,9 @@
   ```yaml
   GF_AUTH_ANONYMOUS_ENABLED: "false"
   ports:
-    - "9090:9090"
+    - "9090:9090"   # Prometheus UI for debugging from the LAN
   ```
-- **Volumes:** config from the repo relative (`./nginx/nginx.conf`), payload data absolute on the host storage (`/srv/...`, `/mnt/...`). What the container only reads gets `:ro`. One comment per mount or group on what lives there. Data folders of the containers (`./data`, `./config`) are in `.gitignore`.
+- **Volumes:** one comment per mount or group on what lives there. What the container only reads gets `:ro`, so the mount says its intent.
   ```yaml
   volumes:
     # Config from the repo
@@ -127,20 +116,7 @@
         GRAFANA_TAG: 11.1.0
   ```
 - Own image: `build` with `context` and `dockerfile`, plus `image: <name>:latest` and `pull_policy: build`, so `compose up` never tries to pull it.
-- Dependencies via `depends_on`, with `condition: service_healthy` when the service has a `healthcheck`. Reach other containers by service name, never by IP.
-  ```yaml
-  prometheus:
-    ...
-    healthcheck:
-      test: ["CMD", "promtool", "check", "healthy"]
-      interval: 30s
-
-  grafana:
-    ...
-    environment:
-      PROMETHEUS_URL: http://prometheus:9090   # not: http://172.18.0.3:9090
-
-    depends_on:
-      prometheus:
-        condition: service_healthy   # waits for the healthcheck, not just the container start
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `docker compose config -q` renders the file, with every required variable set in `.env` or as a placeholder.
+  ```
+  docker compose --env-file .env.example config -q
   ```

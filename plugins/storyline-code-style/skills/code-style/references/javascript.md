@@ -148,19 +148,6 @@
       .map(repository => repository.size)
       .reduce((sum, size) => sum + size, 0)
   ```
-- **Chapters and sections as `//` banners** per `SKILL.md` → "Comments", with a chapter description. No `/* #### */` boxes. Inside a class there are no banners, group comments structure it there (see next point).
-  ```js
-  // ===========================================================================
-  // ==========================   SOLVE TREE PUZZLE   ==========================
-  // ===========================================================================
-  //
-  //   1. Parse input   Reads the input file into a grid.
-  //   2. Part 1        Counts the trees visible from outside the grid.
-  //
-
-  // ---------------------------------------------------------------------------
-  // Parse input
-  ```
 - Small methods of the same kind sit under a group comment (`// Get Index`, `// Has Node by Index`).
   ```js
   // Get Index
@@ -186,4 +173,28 @@
           assert.deepStrictEqual([heap.pop(), heap.pop(), heap.pop()], [1, 3, 5])
       })
   })
+  ```
+- **Every promise is awaited or returned.** Calling an `async` function without `await` starts it and moves on to the next line right away. Its result arrives later, out of reading order, and when it fails the error escapes the surrounding `try`/`catch` as an unhandled rejection.
+  ```js
+  async function saveReport({ report }) {
+      await fs.promises.writeFile('report.json', JSON.stringify(report))   // finished before the next line
+      logger.info('Report saved')
+
+      return api.post({ path: 'reports', body: report })                   // the caller awaits it
+  }
+  ```
+  Not like this:
+  ```js
+  async function saveReport({ report }) {
+      fs.promises.writeFile('report.json', JSON.stringify(report))   // still writing, the log already says saved
+      logger.info('Report saved')
+
+      api.post({ path: 'reports', body: report })                    // the caller gets undefined, a failure goes unseen
+  }
+  ```
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `node --check` per changed file, ESLint where the project has a config, the tests with `npm test`.
+  ```
+  node --check src/commands/command.repository.download.js
+  npx eslint src
+  npm test
   ```

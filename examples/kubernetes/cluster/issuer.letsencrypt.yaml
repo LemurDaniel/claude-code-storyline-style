@@ -1,0 +1,61 @@
+# ---------------------------------------------------------------------------
+# Certificate Issuers
+#   Two cluster-wide ACME issuers for cert-manager: staging to test the setup
+#   without rate limits, production for trusted certificates.
+#   Cluster-wide, so they live outside the charts and are applied once.
+#   Requires: cert-manager and the nginx ingress controller in the cluster.
+#
+#   kubectl apply -f cluster/issuer.letsencrypt.yaml
+# ---------------------------------------------------------------------------
+
+#
+#   Chapters:
+#     CLUSTER ISSUERS   The staging and the production issuer.
+#
+
+# ===========================================================================
+# ===========================   CLUSTER ISSUERS   ===========================
+# ===========================================================================
+#
+#   Staging      Untrusted certificates, high rate limits.
+#   Production   Trusted certificates, switch over once staging works.
+#
+
+# ---------------------------------------------------------------------------
+# Staging
+#   Untrusted certificates, high rate limits.
+# ---------------------------------------------------------------------------
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: admin@example.com   # expiry notices, use a team address
+    privateKeySecretRef:
+      name: letsencrypt-staging-account-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: nginx
+
+---
+# ---------------------------------------------------------------------------
+# Production
+#   Trusted certificates, switch over once staging works.
+# ---------------------------------------------------------------------------
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-production
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@example.com
+    privateKeySecretRef:
+      name: letsencrypt-production-account-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: nginx

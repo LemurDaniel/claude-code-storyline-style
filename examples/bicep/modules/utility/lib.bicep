@@ -1,10 +1,25 @@
 // NOTE:
 //   Shared types and functions for all modules, imported per module:
 //
-//   import { typeNaming, generateName } from '../../utility/lib.bicep'
+//   import { typeNaming, generateName } from '../utility/lib.bicep'
+
+//
+//   Chapters:
+//     NAMING TYPES AND FUNCTIONS   The naming type and the name generator.
+//
+
+// ===========================================================================
+// =====================   NAMING TYPES AND FUNCTIONS   ======================
+// ===========================================================================
+//
+//   Types                Shared types, imported by every module.
+//   Functions - Naming   Generates resource names from the naming context.
+//
 
 // ---------------------------------------------------------------------------
 // Types
+//   Shared types, imported by every module.
+// ---------------------------------------------------------------------------
 
 @export()
 @description('Naming context passed from module to module.')
@@ -16,6 +31,8 @@ type typeNaming = {
 
 // ---------------------------------------------------------------------------
 // Functions - Naming
+//   Generates resource names from the naming context.
+// ---------------------------------------------------------------------------
 
 // Resource types without dashes in their name (e.g. registries, storage accounts) get a compact name.
 var varCompactResourceTypes = [

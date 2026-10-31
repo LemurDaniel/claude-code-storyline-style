@@ -1,3 +1,14 @@
+# NOTE:
+#   Module container-registry, called with a resource group reference and one registry object.
+
+#
+#   Chapters:
+#     variables.tf         VARIABLES
+#     locals.registry.tf   RESOLVE REGISTRY SETTINGS
+#     main.tf              DEPLOY CONTAINER REGISTRY
+#     outputs.tf           OUTPUTS
+#
+
 # ===========================================================================
 # ======================   DEPLOY CONTAINER REGISTRY   ======================
 # ===========================================================================

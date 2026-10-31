@@ -1,17 +1,32 @@
 # ---------------------------------------------------------------------------
 # Monitoring
-#
 #   Prometheus scrapes the host via Node Exporter, Grafana shows the dashboards.
 #   Only Grafana sits behind the reverse proxy, the rest stays internal.
 #   Requires: a .env next to this file with GF_ADMIN_PASSWORD.
 #
 #   docker compose up -d
+# ---------------------------------------------------------------------------
+
+#
+#   Chapters:
+#     MONITORING SERVICES   Node Exporter, Prometheus and Grafana.
 #
 
 services:
 
+  # ===========================================================================
+  # =========================   MONITORING SERVICES   =========================
+  # ===========================================================================
+  #
+  #   Node Exporter Service   Exposes the metrics of the host.
+  #   Prometheus Service      Scrapes Node Exporter and stores the metrics.
+  #   Grafana Service         Shows the dashboards behind the reverse proxy.
+  #
+
   # ---------------------------------------------------------------------------
   # Node Exporter Service
+  #   Exposes the metrics of the host.
+  # ---------------------------------------------------------------------------
   node-exporter:
     container_name: node-exporter
     restart: unless-stopped
@@ -31,6 +46,8 @@ services:
 
   # ---------------------------------------------------------------------------
   # Prometheus Service
+  #   Scrapes Node Exporter and stores the metrics.
+  # ---------------------------------------------------------------------------
   prometheus:
     container_name: prometheus
     restart: unless-stopped
@@ -62,6 +79,8 @@ services:
 
   # ---------------------------------------------------------------------------
   # Grafana Service
+  #   Shows the dashboards behind the reverse proxy.
+  # ---------------------------------------------------------------------------
   grafana:
     container_name: grafana
     restart: unless-stopped

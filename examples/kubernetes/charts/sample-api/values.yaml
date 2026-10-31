@@ -1,0 +1,89 @@
+# ---------------------------------------------------------------------------
+# Default Values
+#   Defaults for every environment, the values of an environment only hold the differences.
+#
+#   helm upgrade --install sample-api ./charts/sample-api --namespace sample-dev --create-namespace -f ./env/values.sample-api.dev.yaml
+# ---------------------------------------------------------------------------
+
+#
+#   Chapters:
+#     CHART VALUES   One section per area of the chart.
+#
+
+# ===========================================================================
+# ============================   CHART VALUES   =============================
+# ===========================================================================
+#
+#   Identity   Labels shared by every service.
+#   Image      Registry, repository and the fixed tag.
+#   Runtime    Replicas, environment and resources of the pods.
+#   Service    Ports of the service and the container.
+#   Ingress    Public host and certificate, off by default.
+#
+
+# ---------------------------------------------------------------------------
+# Identity
+#   Labels shared by every service.
+# ---------------------------------------------------------------------------
+# (Required) Shared label of every service of the application.
+application: sample-platform
+
+# ---------------------------------------------------------------------------
+# Image
+#   Registry, repository and the fixed tag.
+# ---------------------------------------------------------------------------
+image:
+  # (Required) Registry and repository, without the tag.
+  repository: registry.example.com/sample-api
+  # (Required) Fixed version, never latest. Set per environment.
+  tag: ""
+
+# ---------------------------------------------------------------------------
+# Runtime
+#   Replicas, environment and resources of the pods.
+# ---------------------------------------------------------------------------
+# (Optional) Number of pods. Defaults to 1.
+replicas: 1
+
+# (Optional) Passed to the app as ASPNETCORE_ENVIRONMENT. Defaults to Development.
+environment: Development
+
+# (Optional) Requests and limits of the container.
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 25m
+  limits:
+    memory: 1Gi
+    cpu: 500m
+
+# (Optional) Health endpoint for the readiness and liveness probe. Defaults to /health.
+healthPath: /health
+
+# ---------------------------------------------------------------------------
+# Service
+#   Ports of the service and the container.
+# ---------------------------------------------------------------------------
+service:
+  # (Optional) Port of the service inside the cluster. Defaults to 80.
+  port: 80
+  # (Optional) Port the app listens on in the container. Defaults to 8080.
+  targetPort: 8080
+
+# (Optional) Other services of the application, reached by their cluster DNS name.
+# - ExportAPI: export-api  => ExportAPI__BaseAddress=http://export-api.<namespace>.svc.cluster.local
+dependencies:
+  ExportAPI: export-api
+  NotificationService: notification-service
+
+# ---------------------------------------------------------------------------
+# Ingress
+#   Public host and certificate, off by default.
+# ---------------------------------------------------------------------------
+ingress:
+  # (Optional) Exposes the service on a public host. Defaults to false.
+  isEnabled: false
+  # (Required when enabled) The public host name.
+  host: ""
+  # (Optional) ClusterIssuer of the cluster. Defaults to staging.
+  clusterIssuer: letsencrypt-staging

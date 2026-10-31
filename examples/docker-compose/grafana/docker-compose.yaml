@@ -1,11 +1,10 @@
 # ---------------------------------------------------------------------------
 # Grafana
-#
 #   Dashboards behind the reverse proxy at /grafana.
 #   Requires: a .env next to this file with GF_ADMIN_PASSWORD.
 #
 #   docker compose up -d
-#
+# ---------------------------------------------------------------------------
 
 services:
   grafana:

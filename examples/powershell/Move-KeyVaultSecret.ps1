@@ -5,10 +5,13 @@
 #   ./Move-KeyVaultSecret.ps1 -Source kv-old -Target kv-new -WhatIf
 #   ./Move-KeyVaultSecret.ps1 -Source kv-old -Target kv-new -ExcludePatterns 'tmp-*', 'test-*'
 #   ./Move-KeyVaultSecret.ps1 -Source kv-old -Target kv-new -SubscriptionId '<SUBSCRIPTION_ID>' -IsForced
+
 #
 #   Chapters:
 #     LOAD AND VALIDATE SECRETS   Context switch, validations and loading the source secrets.
 #     MOVE SECRETS                Copies every secret and disables it in the source.
+#     RESTORE CONTEXT             Switches back to the previous context, also on errors.
+#
 
 <#
 .SYNOPSIS
@@ -89,6 +92,10 @@ param (
 
 BEGIN {
 
+    # BEGIN, PROCESS and CLEAN share the script scope, so both settings hold for all blocks.
+    Set-StrictMode -Version 1.0
+    $ErrorActionPreference = 'Stop'
+
     # ===========================================================================
     # ======================   LOAD AND VALIDATE SECRETS   ======================
     # ===========================================================================
@@ -100,6 +107,8 @@ BEGIN {
 
     # ---------------------------------------------------------------------------
     # Context
+    #   Switches to the given subscription, keeps the previous one.
+    # ---------------------------------------------------------------------------
 
     $PreviousContext = Get-AzContext
 
@@ -110,6 +119,8 @@ BEGIN {
 
     # ---------------------------------------------------------------------------
     # Validations
+    #   Fails early on equal or missing Key Vaults.
+    # ---------------------------------------------------------------------------
 
     if ($Source -EQ $Target) {
         throw [System.ArgumentException]::new('Source and Target must be different Key Vaults.')
@@ -123,6 +134,8 @@ BEGIN {
 
     # ---------------------------------------------------------------------------
     # Secrets
+    #   Loads all enabled secrets of the source.
+    # ---------------------------------------------------------------------------
 
     $Secrets = Get-AzKeyVaultSecret -VaultName $Source
     | Where-Object -Property Enabled -EQ -Value $true
@@ -195,11 +208,14 @@ PROCESS {
 
 CLEAN {
 
-    # ---------------------------------------------------------------------------
-    # Restore context
+    # ===========================================================================
+    # ===========================   RESTORE CONTEXT   ===========================
+    # ===========================================================================
+    #
+    #   Switches back to the context switched in LOAD AND VALIDATE SECRETS.
+    #   CLEAN also runs on errors and Ctrl+C, so the caller never stays in the wrong subscription.
+    #
 
-    # Restores the context switched in LOAD AND VALIDATE SECRETS.
-    # CLEAN also runs on errors and Ctrl+C, so the caller never stays in the wrong subscription.
     if ($null -NE $PreviousContext) {
         Write-Verbose "[Move-KeyVaultSecret] Restoring context '$($PreviousContext.Name)'."
         $null = Set-AzContext -Context $PreviousContext

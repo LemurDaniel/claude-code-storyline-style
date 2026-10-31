@@ -17,37 +17,38 @@
     }
   }
   ```
-- Modules live under `modules/<category>/<module>/` with `module.bicep` as entry point and an `example/` that deploys the module with test values:
+- **One module is one book:** every module is a single file `module.<name>.bicep`, the name says what it deploys. Modules are grouped by category in `modules/<category>/` (`container/`, `data/`, `network/`), a category with more than one module has a `README.md` listing them. `main.bicep` is the entry point and calls the modules, `main.<env>.bicepparam` holds the values per environment and is the test deployment at the same time.
   ```
-  modules/resources/containerRegistry/
-    module.bicep
-    example/
-      module.bicep
-      module.bicepparam
+  main.bicep
+  main.dev.bicepparam
+  main.prod.bicepparam
+  modules/
+    container/
+      module.registry.bicep
+    data/
+      README.md
+      module.storage.bicep
+      module.postgres.bicep
+    utility/
+      lib.bicep
   ```
-- Sections are separated by a `// ----` banner per `SKILL.md` → "Comments", in a fixed order: parameters (naming, location, tags) → parameters (resource) → validations → deployment → outputs. A module with one resource gets by without chapters.
+  Not like this: one folder per module with a `module.bicep` and an `example/` folder, so every open tab is called `module.bicep`.
+- **Chapters and sections exactly as in `SKILL.md` → "Comments" and "The story"**, nothing Bicep specific. In a module the plot order reads: parameters → validations → deployment → outputs.
   ```bicep
   // ---------------------------------------------------------------------------
-  // Parameters - Naming, Location and Tags
-  param naming typeNaming
-  param location string = resourceGroup().location
-  param tags object = {}
-
+  // Parameters
+  //   Context and settings of the module.
   // ---------------------------------------------------------------------------
-  // Parameters - Container Registry
+
+  param naming typeNaming
   param sku 'Premium' | 'Standard' | 'Basic' = 'Standard'
 
   // ---------------------------------------------------------------------------
   // Validations
+  //   Fails the deployment on settings that do not fit together.
+  // ---------------------------------------------------------------------------
+
   ...
-
-  // ---------------------------------------------------------------------------
-  // Deployment
-  resource resRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = { ... }
-
-  // ---------------------------------------------------------------------------
-  // Outputs
-  output id string = resRegistry.id
   ```
 - **Typed object parameters with optional fields.** A `param*` variable then normalizes the defaults:
   ```bicep
@@ -135,12 +136,17 @@
     naming: naming
   }
   ```
-- `.bicepparam` with `using`, a `// NOTE:` comment on values that need permissions or prerequisites.
+- `main.<env>.bicepparam` with `using 'main.bicep'`, only the values that differ from the defaults, a `// NOTE:` comment on values that need permissions or prerequisites.
   ```bicep
-  using 'module.bicep'
+  using 'main.bicep'
 
-  param sku = 'Premium'
+  param storageSku = 'Standard_ZRS'
 
-  // NOTE: The deploying identity needs 'User Access Administrator' to assign AcrPull.
-  param pullPrincipalIds = ['<PRINCIPAL_ID>']
+  // NOTE: Ranges in CIDR notation, the deploying agent must be inside one of them to push images.
+  param registryIpRules = ['<OFFICE_IP_RANGE>']
+  ```
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `bicep build` per template and `bicep build-params` per `.bicepparam`, no linter warning left.
+  ```
+  bicep build main.bicep --stdout
+  bicep build-params main.dev.bicepparam --stdout
   ```

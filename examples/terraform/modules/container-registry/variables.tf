@@ -8,6 +8,8 @@
 
 # ---------------------------------------------------------------------------
 # Context
+#   The resource group reference passed down by the parent.
+# ---------------------------------------------------------------------------
 
 variable "resource_group_reference" {
   nullable    = false
@@ -27,6 +29,8 @@ variable "resource_group_reference" {
 
 # ---------------------------------------------------------------------------
 # Container Registry
+#   One configuration object with all registry settings.
+# ---------------------------------------------------------------------------
 
 variable "container_registry" {
   nullable    = false

@@ -1,0 +1,13 @@
+# ---------------------------------------------------------------------------
+# Dev Values
+#   Only the differences to charts/sample-api/values.yaml.
+#
+#   helm upgrade --install sample-api ./charts/sample-api --namespace sample-dev --create-namespace -f ./env/values.sample-api.dev.yaml
+# ---------------------------------------------------------------------------
+
+image:
+  tag: "1.5.0-rc.1"   # release candidate, promoted to prod once tested
+
+ingress:
+  isEnabled: true
+  host: sample-api.dev.example.com

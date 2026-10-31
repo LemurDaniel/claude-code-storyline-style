@@ -13,28 +13,6 @@
   . $PSScriptRoot/Config/Get-UtilsConfig.ps1
   . $PSScriptRoot/CloudSync/Sync-UtilsCloudFile.ps1
   ```
-- **Chapters and sections as `#` banners**, per `SKILL.md` → "Comments", with a chapter description. Chapters get the `=` frame with a centered title, sections the `# ----` line as in YAML pipelines. No `<# #### #>` blocks and no `#####` lines.
-  ```powershell
-  # ===========================================================================
-  # ======================   LOAD AND VALIDATE CONFIG   =======================
-  # ===========================================================================
-  #
-  #   1. Config        Loads the owner from the config file.
-  #   2. Validations   Fails early on a missing owner.
-  #
-
-  # ---------------------------------------------------------------------------
-  # Config
-
-  $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
-
-  # ---------------------------------------------------------------------------
-  # Validations
-
-  if ([System.String]::IsNullOrEmpty($Config.owner)) {
-      throw [System.ArgumentException]::new("Config '$ConfigPath' must contain an 'owner'.")
-  }
-  ```
 - Verb-Noun with a module prefix (`Get-UtilsConfig`, `Invoke-AzureRest`), aliases for frequent commands (`[Alias('tf')]`).
   ```powershell
   function Invoke-TerraformCommand {
@@ -59,28 +37,33 @@
       PS> Sync-UtilsCloudFile -ProfileName notes
   #>
   ```
-- Parameters in a multi-line layout, full .NET types, `ArgumentCompleter` where possible:
+- Parameters in a multi-line layout, full .NET types and TAB completion where possible: `ValidateSet` for a fixed list, `ArgumentCompleter` for values only known at runtime.
   ```powershell
   <#
   [Required]
-  The name of the cloud sync profile.
+  The name of the cloud sync profile, one JSON file per profile in the profiles folder.
   #>
   [Parameter(
       Mandatory = $true
   )]
-  [ArgumentCompleter({ Invoke-UtilsCompleteSet @args -Set (Get-UtilsCloudSyncProfileName) })]
+  [ArgumentCompleter({
+      param ($CommandName, $ParameterName, $WordToComplete)
+      Get-ChildItem -Path (Join-Path -Path $HOME -ChildPath '.utils/profiles') -Filter "$WordToComplete*.json"
+      | Select-Object -ExpandProperty BaseName
+  })]
   [System.String]
   $ProfileName,
 
   <#
   [Optional]
-  The interval in seconds to check for changes. Default is 120 seconds.
+  The direction of the sync. Default is Both.
   #>
   [Parameter(
       Mandatory = $false
   )]
-  [System.Int32]
-  $Interval = 120,
+  [ValidateSet('Upload', 'Download', 'Both')]
+  [System.String]
+  $Direction = 'Both',
   ```
 - Pipelines with a leading `|`, no backtick continuation:
   ```powershell
@@ -121,7 +104,7 @@
       ...
   }
   ```
-- `SupportsShouldProcess` for mutating operations. Reset changed context in `CLEAN` (PowerShell 7.3+, also runs on errors and Ctrl+C). Below 7.3 use `try`/`finally` instead.
+- `SupportsShouldProcess` for mutating operations. Reset changed context in `CLEAN` (PowerShell 7.3+, also runs on errors and Ctrl+C). Below 7.3 use `try`/`finally` instead. In a file with chapters, every block holds its own chapters and `CLEAN` is the epilogue chapter, so no section stands outside a chapter.
   ```powershell
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (...)
@@ -174,4 +157,21 @@
           Get-UtilsResourceName -Type $Type -Environment tst | Should -Be $Expected
       }
   }
+  ```
+- **Strict from the first line:** every script and every `.psm1` sets `Set-StrictMode -Version 1.0` and `$ErrorActionPreference = 'Stop'` right after `param` (in `BEGIN` when the script uses blocks). Function files inherit both from the `.psm1`. Version 1.0 catches misspelled variables, `Latest` would also throw on missing properties and break checks like `$null -EQ $Config.Profiles`. `Stop` does not cover native commands, check `$LASTEXITCODE` after them.
+  ```powershell
+  param (...)
+
+  Set-StrictMode -Version 1.0
+  $ErrorActionPreference = 'Stop'
+
+  terraform init -input=false
+  if ($LASTEXITCODE -NE 0) {
+      throw [System.InvalidOperationException]::new("terraform init must succeed, got exit code $LASTEXITCODE.")
+  }
+  ```
+- **Verify** per `SKILL.md` → "Errors, logging, tests": parse every changed file, run `Invoke-ScriptAnalyzer -Severity Warning, Error` and the Pester tests of the module.
+  ```powershell
+  Invoke-ScriptAnalyzer -Path ./Utils -Recurse -Severity Warning, Error
+  Invoke-Pester -Path ./Utils/tests
   ```

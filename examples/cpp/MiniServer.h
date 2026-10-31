@@ -6,6 +6,11 @@
 //   server.get("/api/status", handleStatus);
 //   server.begin(Http::MiniServer::DEFAULT_PORT);
 
+//
+//   Chapters:
+//     ROUTE HTTP REQUESTS   The MiniServer class with lifecycle, routing and middleware.
+//
+
 #pragma once
 
 #include <cstdint>
@@ -26,7 +31,7 @@ namespace Http
     //   Routing      get, post and handle, routes match method and exact path.
     //   Middleware   use, middlewares match a path prefix and may answer early.
     //
-    //   The implementation follows the same groups, see MiniServer.cpp.
+    //   The implementation follows the same sections, see MiniServer.cpp.
     //
 
     using RequestHandler = std::function<void(Request &, Response &)>;
@@ -36,7 +41,10 @@ namespace Http
      */
     class MiniServer
     {
+    // ---------------------------------------------------------------------------
     // Lifecycle
+    //   begin and stop, the running flag and the port.
+    // ---------------------------------------------------------------------------
     public:
         static constexpr uint16_t DEFAULT_PORT = 80;
 
@@ -56,7 +64,10 @@ namespace Http
         bool _isRunning = false;
         uint16_t _port = 0;
 
+    // ---------------------------------------------------------------------------
     // Routing
+    //   get, post and handle, routes match method and exact path.
+    // ---------------------------------------------------------------------------
     public:
         /**
          * @brief Registers a handler for GET requests on an exact path.
@@ -90,7 +101,10 @@ namespace Http
         void addRoute(const std::string &method, const std::string &path, const RequestHandler &handler);
         std::vector<Route> _routes;
 
+    // ---------------------------------------------------------------------------
     // Middleware
+    //   use, middlewares match a path prefix and may answer early.
+    // ---------------------------------------------------------------------------
     public:
         /**
          * @brief Registers a middleware for all paths.

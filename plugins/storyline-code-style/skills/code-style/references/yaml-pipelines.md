@@ -6,13 +6,12 @@
   ```yaml
   # ---------------------------------------------------------------------------
   # Azure Authentication via Workload Identity Federation (OIDC)
-  #
   #   No client secrets or certificates needed.
   #
   #   Required GitHub Secrets:
   #     AZURE_CLIENT_ID   Client ID of the App Registration or Managed Identity
   #     AZURE_TENANT_ID   Azure AD Tenant ID
-  #
+  # ---------------------------------------------------------------------------
   ```
 - **Dangerous steps only behind an explicit switch:** First WhatIf or plan, then approval, then deploy. `apply` or deploy never runs without a preview first.
 - **Allowed values sit at the parameter**, either as `values`/`options` or as a comment next to it:
@@ -92,8 +91,12 @@
         New-AzResourceGroupDeployment @Deployment -ResourceGroupName $env:RESOURCE_GROUP -Verbose
   ```
 - **Never template expressions directly in scripts:** neither `${{ }}` in `run:` (GitHub Actions) nor in `inline:`/`script:` (Azure DevOps). Values reach the script via `env:` and are read as `$env:NAME`, otherwise script injection is possible (see above and the `config` job under GitHub Actions).
-- The results of WhatIf or plan are published as an artifact so the approver can read them.
+- The results of WhatIf or plan are published as an artifact so the approver can read them. The artifact name carries the stage, so the approver opens the right one.
 - Placeholders instead of real names in templates (`<PROJECT>/<REPO_NAME>`, `rg-sample-dev`).
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `actionlint` for GitHub Actions where installed, inline scripts with the checks of their language. Azure DevOps has no local validator, a run with only the preview stage is the check.
+  ```
+  actionlint .github/workflows/deploy.infra.dev.yaml
+  ```
 
 ## GitHub Actions
 - One file per environment (`deploy.infra.<env>.yaml`) that calls a shared reusable workflow `tmpl.*`.
@@ -111,12 +114,14 @@
         environment: dev
       secrets: inherit
   ```
-- Jobs separated by `# ----` banners. A central `config` job computes shared values.
+- Several jobs get one section each inside a chapter, a single job needs no banner. A large pipeline groups them into several chapters (e.g. build, deploy). A central `config` job computes shared values.
   ```yaml
   jobs:
 
     # ---------------------------------------------------------------------------
-    # Config - computes shared values once for all following jobs
+    # Config
+    #   Computes shared values once for all following jobs.
+    # ---------------------------------------------------------------------------
     config:
       runs-on: ubuntu-latest
       outputs:
@@ -131,6 +136,8 @@
 
     # ---------------------------------------------------------------------------
     # Plan
+    #   Publishes the plan as an artifact, so the approver can read it.
+    # ---------------------------------------------------------------------------
     plan:
       needs: config
       ...
@@ -250,17 +257,21 @@
       type: string
       default: LatestVersion
   ```
-- **Jobs and step groups separated by `# ----` banners** (as in GitHub Actions), job names with a stage suffix so they are unique per stage:
+- **Jobs and step groups as sections inside a chapter** (as in GitHub Actions), job names with a stage suffix so they are unique per stage:
   ```yaml
   jobs:
     # ---------------------------------------------------------------------------
     # WhatIf
+    #   Previews the changes of the stage.
+    # ---------------------------------------------------------------------------
     - job: what_if_${{ parameters.stage }}
       displayName: WhatIf Bicep
       ...
 
     # ---------------------------------------------------------------------------
     # Validation
+    #   Waits up to three days for the manual approval.
+    # ---------------------------------------------------------------------------
     - job: validate_${{ parameters.stage }}
       displayName: Approve Bicep
       pool: server
@@ -275,6 +286,8 @@
 
     # ---------------------------------------------------------------------------
     # Deploy
+    #   Deploys once the preview passed and the approval was given.
+    # ---------------------------------------------------------------------------
     - job: deploy_${{ parameters.stage }}
       dependsOn:
         - what_if_${{ parameters.stage }}
@@ -302,12 +315,4 @@
     - ${{ each subModule in parameters.checkoutSubModules }}:
         - checkout: ${{ subModule.alias }}
           path: s/$(Build.Repository.Name)/${{ subModule.path }}
-  ```
-- Write the WhatIf output via `Start-Transcript` into `$(Build.ArtifactStagingDirectory)` and publish it with the stage name:
-  ```yaml
-  - task: PublishPipelineArtifact@1
-    displayName: Bicep WhatIf Artifact
-    inputs:
-      targetPath: $(Build.ArtifactStagingDirectory)/bicep_whatif.txt
-      artifact: bicep_whatif_${{ parameters.stage }}
   ```

@@ -1,3 +1,11 @@
+# NOTE:
+#   terraform plan -var-file=env/dev.tfvars
+
+#
+#   Chapters:
+#     CONTAINER REGISTRY - DEV   Settings of the container registry for dev.
+#
+
 # ===========================================================================
 # ======================   CONTAINER REGISTRY - DEV   =======================
 # ===========================================================================
