@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.4.0 - 2026-10-31
+- Table of contents in every file with chapters, also with only one. Terraform: the header of `main.tf` lists every `.tf` file of the module with its chapter, the banner check compares the list with the files.
 - "The story" in `SKILL.md`: two annotated examples below the glossary, a folder tree (library, shelf, shelf label, call number) and one book with every part named on the left.
 - Priorities in `SKILL.md`: correctness is the boundary, readability the goal, everything else comes after. Rules serve readability, a deliberate deviation gets a comment saying why. Reviews report correctness first.
 - Verify before done (proofreading): run the parser, linter, formatter check and tests of the language, name every check that could not run. Every language file has a `Verify` line.

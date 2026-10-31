@@ -34,7 +34,7 @@
    * @return 0 on success, non-zero on failure.
    */
   ```
-- Headers grouped by feature. `public:` and `private:` may alternate. A header with one class gets one chapter around the class, its description lists the groups and so serves as the table of contents of the class. The `.cpp` uses the same group names as chapter titles.
+- Headers grouped by feature. `public:` and `private:` may alternate. A header with one class gets one chapter around the class, its description lists the groups and so serves as the table of contents of the class. The header lists that one chapter like in every file. The `.cpp` uses the same group names as chapter titles.
   ```cpp
   // ===========================================================================
   // =========================   ROUTE HTTP REQUESTS   =========================

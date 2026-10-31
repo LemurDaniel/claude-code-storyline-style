@@ -26,6 +26,17 @@
   # ---------------------------------------------------------------------------
   # Name
   ```
+- **The table of contents of the module sits in `main.tf`:** its header lists every `.tf` file of the module with its chapter title, in reading order (variables → locals → main → outputs). The other `.tf` files have no list of their own, the banner check compares the list with the files.
+  ```hcl
+  # NOTE:
+  #   Module container-registry, called with a resource group reference and one registry object.
+  #
+  #   Chapters:
+  #     variables.tf         VARIABLES
+  #     locals.registry.tf   RESOLVE REGISTRY SETTINGS
+  #     main.tf              DEPLOY CONTAINER REGISTRY
+  #     outputs.tf           OUTPUTS
+  ```
 - Config per environment as `env/<env>.tfvars`, with a chapter banner and description at the top (`SKILL.md` → "Comments") and one comment per block. Run with `terraform plan -var-file=env/dev.tfvars`.
   ```hcl
   # ===========================================================================

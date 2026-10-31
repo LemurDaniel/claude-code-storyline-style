@@ -60,7 +60,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf, see [Structure](#structure) |
 | Book | File | Header, chapters, epilogue |
 | Blurb | File header | Usage and prerequisites, see [Reading flow](#reading-flow) |
-| Table of contents | Chapter list in the header | In every file with two or more chapters |
+| Table of contents | Chapter list in the header | In every file with chapters, also with only one |
 | Cast list | Imports and module-wide constants | Right below the header, before the first chapter |
 | Chapter | Chapter | Three lines of `=`, title in UPPERCASE, see [Comments](#comments) |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
@@ -195,7 +195,7 @@ A book has exactly three levels: chapter (`=` frame), section (`-` line) and par
   #
   #   ./Move-StorageBlob.ps1 -Source st-old -Target st-new -WhatIf
   ```
-- **Table of contents in the header:** A file with two or more chapters lists them at the end of the header, in file order, with the exact chapter title on the left and one line on the right. A single chapter needs no list, its banner is the whole table. The banner check compares the list with the chapters.
+- **Table of contents in the header:** A file with chapters lists them at the end of the header, in file order, with the exact chapter title on the left and one line on the right. Also a single chapter, so the reader never has to guess whether the list is missing or not required. The banner check compares the list with the chapters.
   ```cpp
   // NOTE:
   //   Implementation of MiniServer.h.
@@ -245,6 +245,15 @@ A book has exactly three levels: chapter (`=` frame), section (`-` line) and par
   ...
   ```
 - **Split files into chapters:** Chapter and section banners structure the file, the format is described under [Comments](#comments), when and in which order under [The story](#the-story).
+  The outline of `Move-StorageBlob.ps1` from [The story](#the-story), read from top to bottom:
+  ```
+  LOAD AND VALIDATE BLOBS   Chapter    setup and validations
+    Validations             Section
+    Blobs                   Section
+  MOVE BLOBS                Chapter    the action
+    Copy                    Section
+    Report                  Section    the epilogue
+  ```
 - **Flat main path:** Guard clauses and early `return` instead of nesting.
   ```js
   if (!user) return
@@ -658,7 +667,7 @@ Use this list for reviews, `/code-review` and `/simplify`. Report each finding w
 - [ ] **Correct:** the code does what it claims, edge cases (empty, `null`, `0`, missing file) are handled, nothing is assumed untested. → [Priorities](#priorities)
 - [ ] **Readable:** a new reader follows the file top to bottom without jumping. Where not, that is the first finding after correctness. → [Priorities](#priorities)
 - [ ] **Verified:** parser, linter and tests of the language ran, every check that could not run is named. → [Errors, logging, tests](#errors-logging-tests)
-- [ ] **Header:** usage and prerequisites at the top of the file, a table of contents from two chapters on. → [Reading flow](#reading-flow)
+- [ ] **Header:** usage and prerequisites at the top of the file, a table of contents in every file with chapters. → [Reading flow](#reading-flow)
 - [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files. → [The story](#the-story)
 - [ ] **Chapters:** a file with several phases or kinds of units has chapters, in plot order: setup → validations → action → epilogue. → [The story](#the-story)
 - [ ] **Introductions:** every variable is declared in the chapter where it first acts. → [The story](#the-story)

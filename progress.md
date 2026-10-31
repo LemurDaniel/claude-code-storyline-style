@@ -26,6 +26,7 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | PowerShell `Set-StrictMode -Version 1.0`, not `Latest`. | `Latest` throws on missing properties and breaks `$null -EQ $Config.Profiles` checks, 1.0 still catches misspelled variables. |
 | 2026-10-31 | Example files get one pass at the end of a change set, not after every rule edit. Snippets still change with their rule. | Owner request: adjusting the examples after every single change is wasted work. |
 | 2026-10-31 | No core block in `~/.claude/identity.md`, the sync rule is removed from `CLAUDE.md`. | The section never existed, the junction to the skill is the only source of the rules. |
+| 2026-10-31 | TOC in every file with chapters, also with one. Terraform: `main.tf` lists the files of the module (`variables.tf   VARIABLES`), the other `.tf` files have none. | "A single chapter needs no list" left the reader guessing again. In Terraform the folder is the book, so its TOC sits where the book starts. |
 
 ## Open items
 - [ ] Add `examples` as a required status check for `main` (Settings → Branches), next to `banners`.

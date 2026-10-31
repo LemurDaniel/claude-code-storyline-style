@@ -23,8 +23,10 @@
     for the structure rules from SKILL.md -> "The story" and "Comments":
     - Every chapter has a description right below the frame.
     - The numbered entries of a flow chapter match the sections of the chapter.
-    - A file with two or more chapters lists them as 'Chapters:' in the header,
+    - A file with chapters lists them as 'Chapters:' in the header,
       and the list matches the chapters in order.
+    - A Terraform module is one book, every .tf file one chapter. The header
+      of main.tf lists every file of the module with its chapter title.
 
     Throws when at least one rule is broken, so CI fails.
 
@@ -83,9 +85,12 @@ $SECTION_LINE  = '-' * $BANNER_WIDTH
 $NUMBERED_ENTRY_PATTERN = '^\d+\.\s+(?<name>.+?)(\s{2,}.*)?$'
 
 # The table of contents in the header starts with this line, every entry is a chapter title.
-$TOC_HEADER     = 'Chapters:'
+$TOC_HEADER        = 'Chapters:'
 $TOC_ENTRY_PATTERN = '^(?<title>[A-Z][A-Z0-9 /-]*?)(\s{2,}.*)?$'
-$TOC_MIN_CHAPTERS  = 2
+
+# In the main.tf of a Terraform module every entry is a file and its chapter: 'variables.tf   VARIABLES'.
+$MODULE_TOC_FILE          = 'main.tf'
+$MODULE_TOC_ENTRY_PATTERN = '^(?<file>[\w.-]+\.tf)\s{2,}(?<title>[A-Z][A-Z0-9 /-]*?)(\s{2,}.*)?$'
 
 # ---------------------------------------------------------------------------
 # Files
@@ -108,7 +113,8 @@ $SLASH_COMMENT_EXTENSIONS = @('.js', '.h', '.cpp', '.bicep', '.bicepparam')
 #   3. Check format      Tests every banner line for length and centering and
 #                        records chapters, descriptions, sections and the TOC.
 #   4. Check structure   Tests descriptions, numbered entries and the TOC.
-#   5. Report            Lists all findings and fails when there is one.
+#   5. Check modules     Tests the TOC in main.tf of every Terraform module.
+#   6. Report            Lists all findings and fails when there is one.
 #
 
 # ---------------------------------------------------------------------------
@@ -144,6 +150,9 @@ foreach ($file in $Files) {
     $Chapters = [System.Collections.Generic.List[System.Object]]::new()
     $Toc      = [System.Collections.Generic.List[System.String]]::new()
 
+    # Only filled in a Terraform main.tf: one entry per file of the module.
+    $ModuleToc = [System.Collections.Generic.List[System.Object]]::new()
+
     # What the next line is expected to be: a frame line, a description line, a section title or a TOC entry.
     $expecting  = $null
     $lineNumber = 0
@@ -175,8 +184,17 @@ foreach ($file in $Files) {
             continue
         }
 
-        # The table of contents in the header, one chapter title per line until the first other line.
+        # The table of contents in the header, one entry per line until the first other line.
         if ($expecting -EQ 'toc entry') {
+            $moduleTocMatch = [System.Text.RegularExpressions.Regex]::Match([System.String] $commentText, $MODULE_TOC_ENTRY_PATTERN)
+            if ($commentMatch.Success -AND $file.Name -EQ $MODULE_TOC_FILE -AND $moduleTocMatch.Success) {
+                $ModuleToc.Add([PSCustomObject]@{
+                    File  = $moduleTocMatch.Groups['file'].Value
+                    Title = $moduleTocMatch.Groups['title'].Value
+                })
+                continue
+            }
+
             $tocMatch = [System.Text.RegularExpressions.Regex]::Match([System.String] $commentText, $TOC_ENTRY_PATTERN)
             if ($commentMatch.Success -AND $tocMatch.Success) {
                 $Toc.Add($tocMatch.Groups['title'].Value)
@@ -237,9 +255,13 @@ foreach ($file in $Files) {
 
     if ($file.Extension -IN $STRUCTURE_EXTENSIONS) {
         $Structures.Add([PSCustomObject]@{
-            File     = $file.FullName
-            Chapters = $Chapters
-            Toc      = $Toc
+            File      = $file.FullName
+            Name      = $file.Name
+            Folder    = $file.DirectoryName
+            Extension = $file.Extension
+            Chapters  = $Chapters
+            Toc       = $Toc
+            ModuleToc = $ModuleToc
         })
     }
 }
@@ -280,16 +302,46 @@ foreach ($structure in $Structures) {
         }
     }
 
-    # From TOC_MIN_CHAPTERS on the header lists the chapters, and the list matches them in order.
+    # A Terraform file is one chapter of its module, main.tf lists them, see Check modules.
+    if ($structure.Extension -EQ '.tf') {
+        continue
+    }
+
+    # Every file with chapters lists them in the header, and the list matches them in order.
     $chapterTitles = @($structure.Chapters | ForEach-Object { $_.Title })
     $hasToc        = $structure.Toc.Count -GT 0
 
-    if (-NOT $hasToc -AND $chapterTitles.Count -GE $TOC_MIN_CHAPTERS) {
+    if (-NOT $hasToc -AND $chapterTitles.Count -GT 0) {
         $Findings.Add("$($structure.File) Header must list the $($chapterTitles.Count) chapters below '$TOC_HEADER', got none.")
         continue
     }
     if ($hasToc -AND (($structure.Toc -join '|') -NE ($chapterTitles -join '|'))) {
         $Findings.Add("$($structure.File) Header lists chapters '$($structure.Toc -join ', ')', but the file has '$($chapterTitles -join ', ')'.")
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Check modules
+
+# Terraform loads a folder as one module, so the folder is the book and main.tf holds its table of contents.
+$Modules = $Structures
+| Where-Object -Property Extension -EQ '.tf'
+| Group-Object -Property Folder
+
+foreach ($module in $Modules) {
+    $mainFile = $module.Group | Where-Object -Property Name -EQ $MODULE_TOC_FILE
+    if ($null -EQ $mainFile) {
+        $Findings.Add("$($module.Name) Module must have a $MODULE_TOC_FILE that lists its files below '$TOC_HEADER'.")
+        continue
+    }
+
+    # Compared as sorted lists, the reading order of the files is up to the author.
+    # - variables.tf with chapter VARIABLES  => 'variables.tf   VARIABLES'
+    $expectedEntries = @($module.Group | ForEach-Object { "$($_.Name)   $(($_.Chapters | Select-Object -First 1).Title)" } | Sort-Object)
+    $listedEntries   = @($mainFile.ModuleToc | ForEach-Object { "$($_.File)   $($_.Title)" } | Sort-Object)
+
+    if (($expectedEntries -join '|') -NE ($listedEntries -join '|')) {
+        $Findings.Add("$($mainFile.File) Header must list every file of the module with its chapter, expected '$($expectedEntries -join ', ')', got '$($listedEntries -join ', ')'.")
     }
 }
 
