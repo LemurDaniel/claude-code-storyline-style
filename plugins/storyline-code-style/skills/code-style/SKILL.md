@@ -702,27 +702,55 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
 - License or project headers only go where the codebase already does it.
 
 # Review checklist
-Use this list for reviews, `/code-review` and `/simplify`. Report each finding with the rule it breaks and a concrete fix, ordered by [Priorities](#priorities): correctness first, then readability, then the rest. Respect [Scope](#scope): flag untouched code only in a refactoring or when asked.
+Use this list for reviews, `/code-review` and `/simplify`. Go through every group in order, each group mirrors one section of the rules and each item one rule. Report each finding with the rule it breaks and a concrete fix, ordered by [Priorities](#priorities): correctness first, then readability, then the rest. Respect [Scope](#scope): flag untouched code only in a refactoring or when asked.
 
-- [ ] **Correct:** the code does what it claims, edge cases (empty, `null`, `0`, missing file) are handled, nothing is assumed untested. → [Priorities](#priorities)
-- [ ] **Readable:** a new reader follows the file top to bottom without jumping. Where not, that is the first finding after correctness. → [Priorities](#priorities)
-- [ ] **Verified:** parser, linter and tests of the language ran, every check that could not run is named. → [Errors, logging, tests](#errors-logging-tests)
-- [ ] **Header:** usage and prerequisites at the top of the file, a table of contents in every file with chapters. → [Reading flow](#reading-flow)
-- [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files. → [The story](#the-story)
-- [ ] **Chapters:** a file with several phases or kinds of units has chapters, in plot order: setup → validations → action → epilogue. → [The story](#the-story)
-- [ ] **Introductions:** every variable is declared in the chapter where it first acts. → [The story](#the-story)
-- [ ] **Banners:** chapters with `=` frame and centered UPPERCASE title, sections with one `-` line, 75 characters, no other banner styles. → [Comments](#comments)
-- [ ] **Chapter description:** every chapter has one, numbered steps in flow chapters match the section titles, one entry per unit in collection chapters, columns aligned. → [Comments](#comments)
-- [ ] **Cross-references:** comments that point elsewhere name the chapter or file. → [Comments](#comments)
-- [ ] **Flat main path:** guard clauses and early `return` instead of nesting. → [Reading flow](#reading-flow)
-- [ ] **Decision trees:** non-trivial blocks are described first and the code follows the description 1:1. → [Reading flow](#reading-flow)
-- [ ] **Structure:** one thing per file, dotted file names, no duplicated logic, one real implementation. → [Structure](#structure)
-- [ ] **Explicit:** no magic numbers, no hard-coded lists or environment values. → [Structure](#structure)
-- [ ] **Named stages:** no monster expressions, fallback chains with one comment per step, non-obvious reshapes show a sample input and output. → [Processing data](#processing-data)
-- [ ] **Naming:** verbs first, `is`/`has` booleans with a real bool type, `UPPER_SNAKE` constants, `null` on the left, English without typos. → [API and naming](#api-and-naming)
-- [ ] **Docs:** every public unit documented, `(Required)`/`(Optional)` first, no empty skeletons, parameter docs at the parameter. → [Documentation](#documentation)
-- [ ] **Errors:** nothing swallowed, messages state the expectation, condition matches the message, validations grouped. → [Errors, logging, tests](#errors-logging-tests)
-- [ ] **Logs:** `[Component]` prefix at every decision point. → [Errors, logging, tests](#errors-logging-tests)
-- [ ] **Safety:** mutating operations support WhatIf or dry-run, changed context is reset. → [Errors, logging, tests](#errors-logging-tests)
-- [ ] **Tests:** assert concrete expected values, every test file opens with a chapter that lists its cases. → [Errors, logging, tests](#errors-logging-tests)
-- [ ] **Language file:** the rules of the matching `references/*.md` are met.
+- **[Priorities](#priorities)**
+  - [ ] **Correct:** the code does what it claims, edge cases (empty, `null`, `0`, missing file) are handled, nothing is assumed untested.
+  - [ ] **Readable:** a new reader follows the file top to bottom without jumping. Where not, that is the first finding after correctness.
+  - [ ] **Deviations:** a spot that breaks a rule on purpose carries a comment saying why.
+- **[The story](#the-story)**
+  - [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files.
+  - [ ] **Chapters:** a file with several phases or kinds of units has chapters, a small one gets by with sections.
+  - [ ] **Plot order:** setup → validations → action → epilogue, helpers first or in their own file, never between two steps.
+  - [ ] **Introductions:** every variable is declared in the chapter where it first acts, imports and module-wide constants stand as cast list below the header.
+- **[Reading flow](#reading-flow)**
+  - [ ] **Header:** usage and prerequisites at the top of the file.
+  - [ ] **Table of contents:** every file with chapters lists them in the header, a Terraform module in `main.tf`.
+  - [ ] **Describe first:** algorithms and unfamiliar mechanisms get a short concept, non-trivial blocks a decision tree, and the code follows it 1:1.
+  - [ ] **Flat main path:** guard clauses and early `return` instead of nesting.
+  - [ ] **Together:** state, configuration and functions of a feature sit next to each other, not sorted by visibility or type.
+- **[Comments](#comments)**
+  - [ ] **Banners:** chapters with `=` frame and centered UPPERCASE title, sections with one `-` line, 75 characters, no other banner styles.
+  - [ ] **Chapter description:** every chapter has one, numbered steps in flow chapters match the section titles, one entry per unit in collection chapters, columns aligned.
+  - [ ] **Comments in the code:** group comments instead of banners inside a unit, one short *what* per block, the *why* only where it is not obvious, block comment syntax only for docs.
+  - [ ] **Cross-references:** comments that point elsewhere name the chapter or file.
+- **[Structure](#structure)**
+  - [ ] **One thing per file:** the file name matches the content, folders cut by domain, one entry point per library.
+  - [ ] **File names:** dotted `<kind>.<topic>[.<variant>]`, or the exception of the language.
+  - [ ] **One implementation:** no duplicated logic, shortcuts and wrappers only delegate.
+  - [ ] **Explicit:** no magic numbers, imports and registrations written out, no hard-coded lists or environment values.
+  - [ ] **Bundled values:** reused parameter sets as one object, a context object instead of single values, configuration per environment separate from the code.
+- **[Processing data](#processing-data)**
+  - [ ] **Fallback chains:** the order of precedence above, one comment per step.
+  - [ ] **Named stages:** no monster expressions, every step named after what it delivers.
+  - [ ] **Shape change:** a non-obvious parse or reshape shows a sample input and its output.
+- **[API and naming](#api-and-naming)**
+  - [ ] **Caller:** short entry points, sensible defaults, autocompletion where the language has it.
+  - [ ] **Names:** verbs first, `is`/`has` booleans with a real bool type, `UPPER_SNAKE` constants, consistent casing, English without typos.
+  - [ ] **`null` on the left** in comparisons.
+- **[Documentation](#documentation)**
+  - [ ] **Public units:** purpose, parameters with default, return value and an example.
+  - [ ] **Doc format:** `(Required)`/`(Optional)` first, no empty skeletons, parameter docs at the parameter.
+- **[Errors, logging, tests](#errors-logging-tests)**
+  - [ ] **Errors:** nothing swallowed, messages state the expectation, the condition matches the message.
+  - [ ] **Validations:** early but after the variables are set, several rules grouped in a `Validations` section.
+  - [ ] **Logs:** `[Component]` prefix at every decision point.
+  - [ ] **Safety:** mutating operations support WhatIf or dry-run, changed context is reset.
+  - [ ] **Tests:** assert concrete expected values, every test file opens with a chapter that lists its cases.
+  - [ ] **Verified:** parser, linter and tests of the language ran, every check that could not run is named.
+- **[Format](#format)**
+  - [ ] **Formatter:** the defaults of the language formatter, deviations only as the language file says.
+  - [ ] **Long chains:** broken line by line, the operator at the start of the line.
+  - [ ] **License headers:** only where the codebase already has them.
+- **[Language-specific rules](#language-specific-rules)**
+  - [ ] **Language file:** the rules of the matching `references/*.md` are met.
