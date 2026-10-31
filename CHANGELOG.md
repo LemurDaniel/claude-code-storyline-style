@@ -4,6 +4,7 @@
 - Sections stand out more: a `-` frame around the title and a one-line description indented by 3 spaces. In a flow chapter the description repeats the explanation of the numbered step. YAML headers use the same frame, `Name - explanation` titles are split into title and description. The banner check fails on a section without description or closing line.
 - Every file with sections has at least one chapter, sections only live inside a chapter. Only a tiny file with one unit (a `.bicepparam`, a values override, a workflow with one job) has no banner. The banner check fails on a section outside a chapter.
 - The table of contents is its own comment block below the header (in YAML below the closing line of the header), separated by an empty line and framed by empty comment lines. The banner check fails on a table of contents inside the header.
+- C++: the groups of a class that fills a whole header chapter are sections, not group comments.
 - PowerShell, JavaScript and C++: the banner bullets that only repeated SKILL.md → "Comments" are removed.
 - Bicep: chapters and sections exactly as in SKILL.md, no Bicep-specific banner rule, an empty line after every section title.
 - Bicep: one module is one file `module.<name>.bicep` in a category folder with a `README.md`, `main.bicep` is the entry point and `main.<env>.bicepparam` the test deployment. No more folder and `example/` per module.
