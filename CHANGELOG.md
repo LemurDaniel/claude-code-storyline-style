@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.2 - 2026-10-31
+- Plugin directory lint: Key Vault, keepass and keyFile snippets replaced by storage account and notes examples, the healthcheck example uses promtool instead of wget.
+
 ## 0.2.1 - 2026-10-31
 - Plugin directory lint: SKILL.md snippets no longer resolve a token, build a remote URL or copy a secret value. Neutral examples (region, backup path, blob upload) instead.
 
