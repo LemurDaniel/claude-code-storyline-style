@@ -299,7 +299,6 @@ Comments look the same in every language, only the comment character changes. A 
   - **Section:**
     - One line of `-` inside a chapter, the title below it in normal case.
     - Small files (a Bicep module, a Compose file) get by with sections alone.
-    - YAML pipelines and Docker Compose only use the section level.
   - **Both levels:**
     - Every line is 75 characters long, plus the comment character and one space.
     - No other banner styles, so no `/* #### */` boxes, `<# #### #>` blocks, `/*---- * Title *` blocks, `////` or `#####` lines.

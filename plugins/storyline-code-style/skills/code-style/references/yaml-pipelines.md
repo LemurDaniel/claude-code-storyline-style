@@ -115,7 +115,7 @@
         environment: dev
       secrets: inherit
   ```
-- Jobs separated by `# ----` banners. A central `config` job computes shared values.
+- Jobs separated by `# ----` banners, a large pipeline groups them into chapters (e.g. build, deploy). A central `config` job computes shared values.
   ```yaml
   jobs:
 
