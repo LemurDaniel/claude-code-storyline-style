@@ -15,6 +15,7 @@ The repo is the marketplace and the plugin at once. There is no build, only Mark
 | `examples/<language>/` | Complete example files, one simple and one more complex per language. Repo only, not shipped with the plugin |
 | `.scripts/Test-StorylineBanner.ps1` | Banner check (format, chapter descriptions, numbered steps vs. sections, table of contents), runs locally and in CI |
 | `CHANGELOG.md` | One entry per release |
+| `.scripts/New-SocialPreview.ps1` | Renders `.github/social-preview.png` (1280x640), uploaded manually under Settings → Social preview |
 | `.github/workflows/check.banners.yaml` | Runs the banner check on every push and PR |
 | `.github/workflows/release.yaml` | On a tag `v<version>`: checks version and CHANGELOG, publishes the GitHub release |
 | `progress.md` | Goal, decisions, open items, next step |
