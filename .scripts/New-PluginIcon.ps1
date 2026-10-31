@@ -26,6 +26,8 @@ Add-Type -AssemblyName System.Drawing
 
 # ---------------------------------------------------------------------------
 # Settings
+#   Size, margin and colors of the icon.
+# ---------------------------------------------------------------------------
 
 $SIZE   = 1024
 $MARGIN = 112
@@ -42,6 +44,8 @@ $FONT_TITLE = [System.Drawing.Font]::new('Cascadia Mono', 150, [System.Drawing.F
 
 # ---------------------------------------------------------------------------
 # Draw
+#   Draws the icon and saves it as PNG.
+# ---------------------------------------------------------------------------
 
 $bitmap = [System.Drawing.Bitmap]::new($SIZE, $SIZE)
 $bitmap.SetResolution(96, 96)

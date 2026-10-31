@@ -109,6 +109,8 @@ async function command(options) {
 
         // ---------------------------------------------------------------------------
         // Options
+        //   Resolves the target folder and the force flag.
+        // ---------------------------------------------------------------------------
 
         // Order of precedence: option > config file > default
         const targetFolder = options.target           // option
@@ -118,6 +120,8 @@ async function command(options) {
 
         // ---------------------------------------------------------------------------
         // Validations
+        //   Fails early on a missing owner.
+        // ---------------------------------------------------------------------------
 
         if (typeof options.owner !== 'string' || options.owner.trim() === '') {
             throw new Error(`owner must be a non-empty string, got '${options.owner}'`)
@@ -125,6 +129,8 @@ async function command(options) {
 
         // ---------------------------------------------------------------------------
         // Repositories
+        //   Loads all repositories of the owner, archived ones are skipped.
+        // ---------------------------------------------------------------------------
 
         const repositories = await GitHub.instance.getRepositories({ owner: options.owner })
         const activeRepositories = repositories
@@ -134,6 +140,8 @@ async function command(options) {
 
         // ---------------------------------------------------------------------------
         // Download
+        //   Clones the repositories one after another.
+        // ---------------------------------------------------------------------------
 
         // One after another on purpose, parallel clones quickly hit the rate limit of the git host.
         const downloadedPaths = []

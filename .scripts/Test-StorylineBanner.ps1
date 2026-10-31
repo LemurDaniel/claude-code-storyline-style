@@ -18,6 +18,8 @@
     and source files and checks the format rules from SKILL.md -> "Comments":
     - Every line is 75 characters long, plus the comment character and one space.
     - The chapter title sits centered, the '=' on both sides differ by at most one.
+    - Every section has a description below the title, indented by 3 spaces,
+      and a closing line of '-' below it.
 
     Source files (not Markdown, whose snippets are excerpts) are also checked
     for the structure rules from SKILL.md -> "The story" and "Comments":
@@ -64,6 +66,8 @@ $ErrorActionPreference = 'Stop'
 
 # ---------------------------------------------------------------------------
 # Banner format
+#   Line length, title spacing and the line patterns.
+# ---------------------------------------------------------------------------
 
 $BANNER_WIDTH  = 75
 $TITLE_SPACING = '   '
@@ -76,10 +80,15 @@ $TITLE_PATTERN = "^(?<left>=+)$TITLE_SPACING(?<title>.+?)$TITLE_SPACING(?<right>
 
 # ---------------------------------------------------------------------------
 # Structure
+#   Patterns for descriptions, sections and the table of contents.
+# ---------------------------------------------------------------------------
 
-# The frame lines of a chapter and the line of a section, without the comment character.
+# The frame lines of a chapter and of a section, without the comment character.
 $CHAPTER_FRAME = '=' * $BANNER_WIDTH
 $SECTION_LINE  = '-' * $BANNER_WIDTH
+
+# The description of a section is indented by 3 spaces, one of them follows the comment character.
+$SECTION_INDENT = '  '
 
 # A numbered entry of a flow chapter: '1. Name   Explanation', the name ends at two spaces.
 $NUMBERED_ENTRY_PATTERN = '^\d+\.\s+(?<name>.+?)(\s{2,}.*)?$'
@@ -94,6 +103,8 @@ $MODULE_TOC_ENTRY_PATTERN = '^(?<file>[\w.-]+\.tf)\s{2,}(?<title>[A-Z][A-Z0-9 /-
 
 # ---------------------------------------------------------------------------
 # Files
+#   Checked extensions, comment characters and skipped folders.
+# ---------------------------------------------------------------------------
 
 $FILE_EXTENSIONS = @('.md', '.ps1', '.psm1', '.tf', '.tfvars', '.hcl', '.bicep', '.bicepparam', '.yaml', '.yml', '.js', '.h', '.cpp')
 $EXCLUDED_FOLDERS = @('.git', 'node_modules', '.terraform')
@@ -119,6 +130,8 @@ $SLASH_COMMENT_EXTENSIONS = @('.js', '.h', '.cpp', '.bicep', '.bicepparam')
 
 # ---------------------------------------------------------------------------
 # Validations
+#   Fails early on a missing folder.
+# ---------------------------------------------------------------------------
 
 if (-NOT (Test-Path -Path $Path -PathType Container)) {
     throw [System.ArgumentException]::new("Path must be an existing folder, got '$Path'.")
@@ -126,6 +139,8 @@ if (-NOT (Test-Path -Path $Path -PathType Container)) {
 
 # ---------------------------------------------------------------------------
 # Collect
+#   Lists all files with a checked extension.
+# ---------------------------------------------------------------------------
 
 $Files = Get-ChildItem -Path $Path -Recurse -File
 | Where-Object -Property Extension -IN $FILE_EXTENSIONS
@@ -135,6 +150,8 @@ Write-Verbose "[Test-StorylineBanner] Found $($Files.Count) files below '$Path'.
 
 # ---------------------------------------------------------------------------
 # Check format
+#   Tests every banner line for length and centering and records the structure.
+# ---------------------------------------------------------------------------
 
 $Findings = [System.Collections.Generic.List[System.String]]::new()
 
@@ -155,6 +172,7 @@ foreach ($file in $Files) {
 
     # What the next line is expected to be: a frame line, a description line, a section title or a TOC entry.
     $expecting  = $null
+    $section    = $null
     $lineNumber = 0
 
     foreach ($line in Get-Content -Path $file.FullName) {
@@ -175,13 +193,42 @@ foreach ($file in $Files) {
             $expecting = $null
         }
 
+        # A section line followed by code closes a section whose opening line sat behind a label
+        # (the annotated book in SKILL.md), so the check did not see it open.
+        if ($expecting -EQ 'section title' -AND -NOT $commentMatch.Success) {
+            $expecting = $null
+            continue
+        }
+
         # The line right after a section line is the section title.
         if ($expecting -EQ 'section title') {
-            $expecting = $null
+            $expecting = 'section description'
+            $section   = [PSCustomObject]@{
+                Title          = $commentText
+                HasDescription = $false
+            }
             if ($commentMatch.Success -AND $Chapters.Count -GT 0) {
                 $Chapters[-1].Sections.Add($commentText)
             }
             continue
+        }
+
+        # The lines between the section title and the closing section line are its description.
+        # - '#   Fails early on equal storage accounts.' => text '  Fails early ...', indented by 3 spaces
+        $isBannerLine = $commentText -MATCH '^[=-]{5,}'
+        if ($expecting -EQ 'section description' -AND $commentMatch.Success -AND -NOT $isBannerLine) {
+            $descriptionText = $commentMatch.Groups['text'].Value
+            if (-NOT [System.String]::IsNullOrWhiteSpace($descriptionText)) {
+                $section.HasDescription = $true
+                if ($descriptionText -NOTMATCH "^$SECTION_INDENT") {
+                    $Findings.Add("$location Description of section '$($section.Title)' must be indented by 3 spaces.")
+                }
+            }
+            continue
+        }
+        if ($expecting -EQ 'section description' -AND -NOT ($isBannerLine -AND $commentText -EQ $SECTION_LINE)) {
+            $Findings.Add("$location Section '$($section.Title)' must be closed by a line of '-' below its description.")
+            $expecting = $null
         }
 
         # The table of contents in the header, one entry per line until the first other line.
@@ -220,7 +267,16 @@ foreach ($file in $Files) {
             continue
         }
 
-        # A section line, the title follows on the next line.
+        # The closing line of a section, it needs a description above.
+        if ($body -EQ $SECTION_LINE -AND $expecting -EQ 'section description') {
+            if (-NOT $section.HasDescription) {
+                $Findings.Add("$location Section '$($section.Title)' must have a description below the title.")
+            }
+            $expecting = $null
+            continue
+        }
+
+        # The opening line of a section, the title follows on the next line.
         if ($body -EQ $SECTION_LINE) {
             $expecting = 'section title'
             continue
@@ -268,6 +324,8 @@ foreach ($file in $Files) {
 
 # ---------------------------------------------------------------------------
 # Check structure
+#   Tests descriptions, numbered entries and the TOC.
+# ---------------------------------------------------------------------------
 
 foreach ($structure in $Structures) {
 
@@ -322,6 +380,8 @@ foreach ($structure in $Structures) {
 
 # ---------------------------------------------------------------------------
 # Check modules
+#   Tests the TOC in main.tf of every Terraform module.
+# ---------------------------------------------------------------------------
 
 # Terraform loads a folder as one module, so the folder is the book and main.tf holds its table of contents.
 $Modules = $Structures
@@ -347,6 +407,8 @@ foreach ($module in $Modules) {
 
 # ---------------------------------------------------------------------------
 # Report
+#   Lists all findings and fails when there is one.
+# ---------------------------------------------------------------------------
 
 if ($Findings.Count -EQ 0) {
     Write-Host "[Test-StorylineBanner] All banners in $($Files.Count) files follow the format."

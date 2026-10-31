@@ -41,6 +41,8 @@ function Get-UtilsConfig {
 
     # ---------------------------------------------------------------------------
     # Defaults
+    #   The values every config falls back to.
+    # ---------------------------------------------------------------------------
 
     $DefaultConfig = [PSCustomObject]@{
         Region   = 'westeurope'
@@ -49,6 +51,8 @@ function Get-UtilsConfig {
 
     # ---------------------------------------------------------------------------
     # Read config
+    #   Reads the config file, a missing file counts as empty.
+    # ---------------------------------------------------------------------------
 
     try {
         $Config = Get-Content -Path $ConfigPath -Raw -ErrorAction Stop | ConvertFrom-Json
@@ -62,6 +66,8 @@ function Get-UtilsConfig {
 
     # ---------------------------------------------------------------------------
     # Merge defaults
+    #   Fills every missing key with its default.
+    # ---------------------------------------------------------------------------
 
     # Every key missing in the file falls back to its default.
     foreach ($property in $DefaultConfig.PSObject.Properties) {

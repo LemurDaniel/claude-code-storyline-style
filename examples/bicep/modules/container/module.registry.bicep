@@ -8,6 +8,8 @@ import { typeNaming, generateName } from '../utility/lib.bicep'
 
 // ---------------------------------------------------------------------------
 // Parameters - Naming, Location and Tags
+//   Context passed from module to module.
+// ---------------------------------------------------------------------------
 
 @description('(Required) Naming context passed from module to module.')
 param naming typeNaming
@@ -20,6 +22,8 @@ param tags object = {}
 
 // ---------------------------------------------------------------------------
 // Parameters - Container Registry
+//   SKU and network access of the registry.
+// ---------------------------------------------------------------------------
 
 @description('(Optional) The SKU of the registry. Defaults to Standard, Private access raises it to Premium.')
 param sku 'Premium' | 'Standard' | 'Basic' = 'Standard'
@@ -52,6 +56,8 @@ var varIsPremium = paramSku == 'Premium'
 
 // ---------------------------------------------------------------------------
 // Validations
+//   Fails the deployment on settings that do not fit together.
+// ---------------------------------------------------------------------------
 
 #disable-next-line no-unused-vars
 var validation = map(
@@ -70,6 +76,8 @@ var validation = map(
 
 // ---------------------------------------------------------------------------
 // Deployment
+//   The registry with its network rules.
+// ---------------------------------------------------------------------------
 
 // Restricted access denies everything except the IP rules.
 var varNetworkRuleSet = {
@@ -101,6 +109,8 @@ resource resRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
 
 // ---------------------------------------------------------------------------
 // Outputs
+//   Reference and login server for dependent modules.
+// ---------------------------------------------------------------------------
 
 @description('Reference for dependent modules (id, name, location, tags, naming).')
 output reference object = {

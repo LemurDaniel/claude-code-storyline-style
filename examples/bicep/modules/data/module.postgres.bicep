@@ -8,6 +8,8 @@ import { typeNaming, generateName } from '../utility/lib.bicep'
 
 // ---------------------------------------------------------------------------
 // Parameters - Naming, Location and Tags
+//   Context passed from module to module.
+// ---------------------------------------------------------------------------
 
 @description('(Required) Naming context passed from module to module.')
 param naming typeNaming
@@ -20,6 +22,8 @@ param tags object = {}
 
 // ---------------------------------------------------------------------------
 // Parameters - PostgreSQL
+//   Compute, storage and version of the server.
+// ---------------------------------------------------------------------------
 
 @description('(Optional) Compute tier and size. Defaults to the smallest burstable size.')
 param sku {
@@ -43,6 +47,8 @@ var varIsHighlyAvailable = paramSku.tier != 'Burstable'
 
 // ---------------------------------------------------------------------------
 // Validations
+//   Fails the deployment on settings that do not fit together.
+// ---------------------------------------------------------------------------
 
 #disable-next-line no-unused-vars
 var validation = map(
@@ -57,6 +63,8 @@ var validation = map(
 
 // ---------------------------------------------------------------------------
 // Deployment
+//   The flexible server.
+// ---------------------------------------------------------------------------
 
 resource resPostgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
   name: generateName(naming, 'Microsoft.DBforPostgreSQL/flexibleServers')
@@ -82,6 +90,8 @@ resource resPostgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
 
 // ---------------------------------------------------------------------------
 // Outputs
+//   Reference for dependent modules.
+// ---------------------------------------------------------------------------
 
 @description('Reference for dependent modules (id, name, location, tags, naming).')
 output reference object = {

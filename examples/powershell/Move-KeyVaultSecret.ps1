@@ -104,6 +104,8 @@ BEGIN {
 
     # ---------------------------------------------------------------------------
     # Context
+    #   Switches to the given subscription, keeps the previous one.
+    # ---------------------------------------------------------------------------
 
     $PreviousContext = Get-AzContext
 
@@ -114,6 +116,8 @@ BEGIN {
 
     # ---------------------------------------------------------------------------
     # Validations
+    #   Fails early on equal or missing Key Vaults.
+    # ---------------------------------------------------------------------------
 
     if ($Source -EQ $Target) {
         throw [System.ArgumentException]::new('Source and Target must be different Key Vaults.')
@@ -127,6 +131,8 @@ BEGIN {
 
     # ---------------------------------------------------------------------------
     # Secrets
+    #   Loads all enabled secrets of the source.
+    # ---------------------------------------------------------------------------
 
     $Secrets = Get-AzKeyVaultSecret -VaultName $Source
     | Where-Object -Property Enabled -EQ -Value $true
@@ -201,6 +207,8 @@ CLEAN {
 
     # ---------------------------------------------------------------------------
     # Restore context
+    #   Switches back to the previous context.
+    # ---------------------------------------------------------------------------
 
     # Restores the context switched in LOAD AND VALIDATE SECRETS.
     # CLEAN also runs on errors and Ctrl+C, so the caller never stays in the wrong subscription.

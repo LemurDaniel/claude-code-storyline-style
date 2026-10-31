@@ -25,6 +25,8 @@ Add-Type -AssemblyName System.Drawing
 
 # ---------------------------------------------------------------------------
 # Settings
+#   Size, margin, colors and texts of the preview.
+# ---------------------------------------------------------------------------
 
 $WIDTH  = 1280
 $HEIGHT = 640
@@ -84,6 +86,8 @@ $AI_NOTICE = 'AI generated artwork'
 
 # ---------------------------------------------------------------------------
 # Draw
+#   Draws the preview and saves it as PNG.
+# ---------------------------------------------------------------------------
 
 $bitmap = [System.Drawing.Bitmap]::new($WIDTH, $HEIGHT)
 $bitmap.SetResolution(96, 96)

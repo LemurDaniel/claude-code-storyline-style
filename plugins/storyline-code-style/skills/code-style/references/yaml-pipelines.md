@@ -6,13 +6,12 @@
   ```yaml
   # ---------------------------------------------------------------------------
   # Azure Authentication via Workload Identity Federation (OIDC)
-  #
   #   No client secrets or certificates needed.
   #
   #   Required GitHub Secrets:
   #     AZURE_CLIENT_ID   Client ID of the App Registration or Managed Identity
   #     AZURE_TENANT_ID   Azure AD Tenant ID
-  #
+  # ---------------------------------------------------------------------------
   ```
 - **Dangerous steps only behind an explicit switch:** First WhatIf or plan, then approval, then deploy. `apply` or deploy never runs without a preview first.
 - **Allowed values sit at the parameter**, either as `values`/`options` or as a comment next to it:
@@ -120,7 +119,9 @@
   jobs:
 
     # ---------------------------------------------------------------------------
-    # Config - computes shared values once for all following jobs
+    # Config
+    #   Computes shared values once for all following jobs.
+    # ---------------------------------------------------------------------------
     config:
       runs-on: ubuntu-latest
       outputs:
@@ -135,6 +136,8 @@
 
     # ---------------------------------------------------------------------------
     # Plan
+    #   Publishes the plan as an artifact, so the approver can read it.
+    # ---------------------------------------------------------------------------
     plan:
       needs: config
       ...
@@ -259,12 +262,16 @@
   jobs:
     # ---------------------------------------------------------------------------
     # WhatIf
+    #   Previews the changes of the stage.
+    # ---------------------------------------------------------------------------
     - job: what_if_${{ parameters.stage }}
       displayName: WhatIf Bicep
       ...
 
     # ---------------------------------------------------------------------------
     # Validation
+    #   Waits up to three days for the manual approval.
+    # ---------------------------------------------------------------------------
     - job: validate_${{ parameters.stage }}
       displayName: Approve Bicep
       pool: server
@@ -279,6 +286,8 @@
 
     # ---------------------------------------------------------------------------
     # Deploy
+    #   Deploys once the preview passed and the approval was given.
+    # ---------------------------------------------------------------------------
     - job: deploy_${{ parameters.stage }}
       dependsOn:
         - what_if_${{ parameters.stage }}

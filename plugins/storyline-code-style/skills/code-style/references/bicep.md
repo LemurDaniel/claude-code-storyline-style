@@ -37,12 +37,16 @@
   ```bicep
   // ---------------------------------------------------------------------------
   // Parameters
+  //   Context and settings of the module.
+  // ---------------------------------------------------------------------------
 
   param naming typeNaming
   param sku 'Premium' | 'Standard' | 'Basic' = 'Standard'
 
   // ---------------------------------------------------------------------------
   // Validations
+  //   Fails the deployment on settings that do not fit together.
+  // ---------------------------------------------------------------------------
 
   ...
   ```

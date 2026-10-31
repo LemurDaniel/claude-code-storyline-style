@@ -10,6 +10,8 @@ import { typeNaming } from 'modules/utility/lib.bicep'
 
 // ---------------------------------------------------------------------------
 // Parameters
+//   Naming context and tags passed to every module.
+// ---------------------------------------------------------------------------
 
 @description('(Required) Naming context of the environment.')
 param naming typeNaming
@@ -31,6 +33,8 @@ param databaseSku {
 
 // ---------------------------------------------------------------------------
 // Deployment - Container
+//   Deploys the container registry.
+// ---------------------------------------------------------------------------
 
 module registry 'modules/container/module.registry.bicep' = {
   name: 'registry'
@@ -48,6 +52,8 @@ module registry 'modules/container/module.registry.bicep' = {
 
 // ---------------------------------------------------------------------------
 // Deployment - Data
+//   Deploys the storage account and the PostgreSQL server.
+// ---------------------------------------------------------------------------
 
 module storage 'modules/data/module.storage.bicep' = {
   name: 'storage'
@@ -73,6 +79,8 @@ module postgres 'modules/data/module.postgres.bicep' = {
 
 // ---------------------------------------------------------------------------
 // Outputs
+//   Endpoints of the deployed resources.
+// ---------------------------------------------------------------------------
 
 @description('The login server of the registry, e.g. for docker login.')
 output registryLoginServer string = registry.outputs.loginServer

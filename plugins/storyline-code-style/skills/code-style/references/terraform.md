@@ -25,6 +25,8 @@
 
   # ---------------------------------------------------------------------------
   # Name
+  #   Takes the configured name or generates one from the naming context.
+  # ---------------------------------------------------------------------------
   ```
 - **The table of contents of the module sits in `main.tf`:** its header lists every `.tf` file of the module with its chapter title, in reading order (variables → locals → main → outputs). The other `.tf` files have no list of their own, the banner check compares the list with the files.
   ```hcl

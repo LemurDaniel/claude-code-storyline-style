@@ -8,6 +8,8 @@ import { typeNaming, generateName } from '../utility/lib.bicep'
 
 // ---------------------------------------------------------------------------
 // Parameters - Naming, Location and Tags
+//   Context passed from module to module.
+// ---------------------------------------------------------------------------
 
 @description('(Required) Naming context passed from module to module.')
 param naming typeNaming
@@ -20,6 +22,8 @@ param tags object = {}
 
 // ---------------------------------------------------------------------------
 // Parameters - Storage Account
+//   Replication and the private blob containers.
+// ---------------------------------------------------------------------------
 
 @description('(Optional) Replication of the account. Defaults to Standard_LRS.')
 param sku 'Standard_LRS' | 'Standard_ZRS' | 'Standard_GRS' = 'Standard_LRS'
@@ -29,6 +33,8 @@ param containerNames string[] = []
 
 // ---------------------------------------------------------------------------
 // Deployment
+//   The storage account with its containers.
+// ---------------------------------------------------------------------------
 
 resource resStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: generateName(naming, 'Microsoft.Storage/storageAccounts')
@@ -61,6 +67,8 @@ resource resContainers 'Microsoft.Storage/storageAccounts/blobServices/container
 
 // ---------------------------------------------------------------------------
 // Outputs
+//   Reference and blob endpoint for dependent modules.
+// ---------------------------------------------------------------------------
 
 @description('Reference for dependent modules (id, name, location, tags, naming).')
 output reference object = {

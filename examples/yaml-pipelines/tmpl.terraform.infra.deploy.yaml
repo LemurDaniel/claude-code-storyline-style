@@ -1,6 +1,5 @@
 # ---------------------------------------------------------------------------
 # Terraform Infrastructure Deployment (reusable workflow)
-#
 #   Azure Authentication via Workload Identity Federation (OIDC).
 #   No client secrets or certificates needed.
 #
@@ -14,7 +13,7 @@
 #
 #   Required GitHub Environments:
 #     dev, tst, prd           Required reviewers approve the plan before apply
-#
+# ---------------------------------------------------------------------------
 
 name: Terraform Infrastructure Deployment
 
@@ -44,7 +43,9 @@ env:
 jobs:
 
   # ---------------------------------------------------------------------------
-  # Config - computes shared values once for all following jobs
+  # Config
+  #   Computes shared values once for all following jobs.
+  # ---------------------------------------------------------------------------
   config:
     runs-on: ubuntu-latest
     outputs:
@@ -66,7 +67,9 @@ jobs:
           "var_file=env/$($env:ENVIRONMENT).tfvars" >> $env:GITHUB_OUTPUT
 
   # ---------------------------------------------------------------------------
-  # Plan - publishes the plan as an artifact, so the approver can read it
+  # Plan
+  #   Publishes the plan as an artifact, so the approver can read it.
+  # ---------------------------------------------------------------------------
   plan:
     needs: config
     runs-on: ubuntu-latest
@@ -101,7 +104,9 @@ jobs:
             tfplan.txt
 
   # ---------------------------------------------------------------------------
-  # Apply - only with the apply input and after the approval on the environment
+  # Apply
+  #   Only with the apply input and after the approval on the environment.
+  # ---------------------------------------------------------------------------
   apply:
     needs: [config, plan]
     if: ${{ inputs.apply == true }}

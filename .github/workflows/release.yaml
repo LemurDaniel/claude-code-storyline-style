@@ -1,6 +1,5 @@
 # ---------------------------------------------------------------------------
 # Release
-#
 #   Runs on every push to main. Reads the version from plugin.json and, when
 #   no tag 'v<version>' exists yet, creates the tag and the GitHub release.
 #   The CHANGELOG.md entry of that version becomes the release notes.
@@ -9,7 +8,7 @@
 #   The banner check runs first, a broken banner blocks the release.
 #
 #   No secrets needed, GITHUB_TOKEN with 'contents: write' creates tag and release.
-#
+# ---------------------------------------------------------------------------
 
 name: Release
 
@@ -24,7 +23,9 @@ permissions:
 jobs:
 
   # ---------------------------------------------------------------------------
-  # Release - tags the version from plugin.json and publishes the release
+  # Release
+  #   Tags the version from plugin.json and publishes the release.
+  # ---------------------------------------------------------------------------
   release:
     runs-on: ubuntu-latest
     steps:

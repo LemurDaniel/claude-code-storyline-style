@@ -65,7 +65,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | Cast list | Imports and module-wide constants | Right below the header, before the first chapter |
 | Chapter | Chapter | Three lines of `=`, title in UPPERCASE, see [Comments](#comments) |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
-| Section | Section | One line of `-`, title below |
+| Section | Section | `-` frame around the title and a one-line description |
 | Paragraph | Group comment | One comment line inside a unit, no banner |
 | Epilogue | Cleanup | Context reset, outputs, exports: always the last chapter or section |
 | Proofreading | Verification | Parser, linter and tests before the code counts as done, see [Errors, logging, tests](#errors-logging-tests) |
@@ -111,6 +111,8 @@ Chapter intro      #
 
 Section            # ---------------------------------------------------------------------------
                    # Validations
+                   #   Fails early on equal storage accounts.
+                   # ---------------------------------------------------------------------------
 
                    if ($Source -EQ $Target) {
                        throw [System.ArgumentException]::new('Source and Target must be different storage accounts.')
@@ -118,6 +120,8 @@ Section            # -----------------------------------------------------------
 
                    # ---------------------------------------------------------------------------
                    # Blobs
+                   #   Loads all blobs of the source container.
+                   # ---------------------------------------------------------------------------
                    ...
 
                    # ===========================================================================
@@ -130,6 +134,8 @@ Section            # -----------------------------------------------------------
 
                    # ---------------------------------------------------------------------------
                    # Copy
+                   #   Copies every blob into the target container.
+                   # ---------------------------------------------------------------------------
 
                    $CopiedCount = 0     # reported in Report
 
@@ -149,13 +155,15 @@ Paragraph                  # Source
 
 Epilogue           # ---------------------------------------------------------------------------
                    # Report
+                   #   Returns the number of copied blobs.
+                   # ---------------------------------------------------------------------------
 
                    return [PSCustomObject]@{ Copied = $CopiedCount }
 ```
 
 Proofreading happens after the book is written, outside the file: `Verified: parser, Invoke-ScriptAnalyzer, Pester (12 passed)`.
 
-A book has exactly three levels: chapter (`=` frame), section (`-` line) and paragraph (one group comment inside a unit). There is no fourth level: what feels like a sub-chapter becomes a section, what feels like a sub-section becomes a paragraph.
+A book has exactly three levels: chapter (`=` frame), section (`-` frame) and paragraph (one group comment inside a unit). There is no fourth level: what feels like a sub-chapter becomes a section, what feels like a sub-section becomes a paragraph.
 
 - **The book is the file**, except where the language loads a folder as one unit (a Terraform module). Then the folder is the book and every file one chapter, see `references/terraform.md`.
 - **Every shelf has a label:** A folder with more than one file has an entry point where the language has one (`_index.js`, `Utils.psm1`, `main.tf`, `main.bicep`, the thin pipeline that calls the templates, the header of a `.cpp`). Where it has none, a short `README.md` in the folder lists the files with one line each. Whoever opens the folder knows what stands on the shelf without opening a book.
@@ -173,6 +181,8 @@ A book has exactly three levels: chapter (`=` frame), section (`-` line) and par
   ```powershell
   # ---------------------------------------------------------------------------
   # Files
+  #   Loads every non-empty file of the source folder.
+  # ---------------------------------------------------------------------------
 
   $Files = Get-ChildItem -Path $Source -File
   | Where-Object -Property Length -GT -Value 0
@@ -322,7 +332,16 @@ Comments look the same in every language, only the comment character changes. A 
         Rule of thumb: "what happens first?" is answered by a flow chapter, "what is in here?" by a collection chapter.
       - Something that applies to all steps (e.g. "files are only written on change") goes into its own paragraph below.
   - **Section:**
-    - One line of `-` inside a chapter, the title below it in normal case.
+    - Two lines of `-` inside a chapter. Between them the title in normal case and below it the description, indented by 3 spaces.
+    - **Description:** Every section has one, one line on what the section does, continuation lines only when it does not fit. In a flow chapter it repeats the explanation of the numbered step, so both read the same. In a file header (YAML, Compose, Kubernetes) the description holds usage and prerequisites, blocks separated by an empty comment line.
+      ```powershell
+      # ---------------------------------------------------------------------------
+      # Validations
+      #   Fails early on equal storage accounts.
+      # ---------------------------------------------------------------------------
+
+      if ($Source -EQ $Target) {
+      ```
     - Small files (a Bicep module, a Compose file) get by with sections alone.
   - **Both levels:**
     - Every line is 75 characters long, plus the comment character and one space.
@@ -364,12 +383,16 @@ function getViewingLine(grid, x, y, direction) { ... }
 
 // ---------------------------------------------------------------------------
 // Parse input
+//   Reads the input file into a grid.
+// ---------------------------------------------------------------------------
 
 // Split the input into one grid row per line.
 const grid = parseGrid(fs.readFileSync(INPUT_FILE, 'utf-8'))
 
 // ---------------------------------------------------------------------------
 // Part 1
+//   Counts the trees visible from outside the grid.
+// ---------------------------------------------------------------------------
 
 const visibleTrees = countVisibleTrees(grid)
 ```
@@ -385,6 +408,8 @@ const visibleTrees = countVisibleTrees(grid)
 
 # ---------------------------------------------------------------------------
 # Config
+#   Loads the owner and resolves the region.
+# ---------------------------------------------------------------------------
 
 $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
 ```
@@ -636,6 +661,8 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   ```powershell
   # ---------------------------------------------------------------------------
   # Validations
+  #   Fails early on equal or missing storage accounts.
+  # ---------------------------------------------------------------------------
 
   if ($Source -EQ $Target) {
       throw [System.ArgumentException]::new('Source and Target must be different storage accounts.')
@@ -721,8 +748,9 @@ Use this list for reviews, `/code-review` and `/simplify`. Go through every grou
   - [ ] **Flat main path:** guard clauses and early `return` instead of nesting.
   - [ ] **Together:** state, configuration and functions of a feature sit next to each other, not sorted by visibility or type.
 - **[Comments](#comments)**
-  - [ ] **Banners:** chapters with `=` frame and centered UPPERCASE title, sections with one `-` line, 75 characters, no other banner styles.
+  - [ ] **Banners:** chapters with `=` frame and centered UPPERCASE title, sections with `-` frame, title and description, 75 characters, no other banner styles.
   - [ ] **Chapter description:** every chapter has one, numbered steps in flow chapters match the section titles, one entry per unit in collection chapters, columns aligned.
+  - [ ] **Section description:** every section has one line below the title, indented by 3 spaces, closed by the second `-` line.
   - [ ] **Comments in the code:** group comments instead of banners inside a unit, one short *what* per block, the *why* only where it is not obvious, block comment syntax only for docs.
   - [ ] **Cross-references:** comments that point elsewhere name the chapter or file.
 - **[Structure](#structure)**

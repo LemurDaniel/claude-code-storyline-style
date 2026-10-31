@@ -8,6 +8,8 @@
 
 # ---------------------------------------------------------------------------
 # Name
+#   Takes the configured name or generates one from the naming context.
+# ---------------------------------------------------------------------------
 
 /*
   Order of precedence for the registry name:
@@ -29,6 +31,8 @@ locals {
 
 # ---------------------------------------------------------------------------
 # SKU
+#   Raises the SKU to Premium for private access, derives retention.
+# ---------------------------------------------------------------------------
 
 /*
   Derives the SKU dependent settings, Premium unlocks private access and retention.

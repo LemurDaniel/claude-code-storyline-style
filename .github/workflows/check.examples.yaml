@@ -1,10 +1,9 @@
 # ---------------------------------------------------------------------------
 # Check Examples
-#
 #   Runs .scripts/Test-StorylineExample.ps1 on every push and pull request.
 #   Installs every tool first, -IsStrict fails when one is still missing.
 #   No secrets or Azure access needed, the job only reads the repo.
-#
+# ---------------------------------------------------------------------------
 
 name: Check Examples
 
@@ -18,7 +17,9 @@ permissions:
 jobs:
 
   # ---------------------------------------------------------------------------
-  # Examples - validates every example file with the tools of its language
+  # Examples
+  #   Validates every example file with the tools of its language.
+  # ---------------------------------------------------------------------------
   examples:
     runs-on: ubuntu-latest
     steps:

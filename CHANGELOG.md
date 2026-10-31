@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.4.0 - 2026-10-31
+- Sections stand out more: a `-` frame around the title and a one-line description indented by 3 spaces. In a flow chapter the description repeats the explanation of the numbered step. YAML headers use the same frame, `Name - explanation` titles are split into title and description. The banner check fails on a section without description or closing line.
 - PowerShell, JavaScript and C++: the banner bullets that only repeated SKILL.md → "Comments" are removed.
 - Bicep: chapters and sections exactly as in SKILL.md, no Bicep-specific banner rule, an empty line after every section title.
 - Bicep: one module is one file `module.<name>.bicep` in a category folder with a `README.md`, `main.bicep` is the entry point and `main.<env>.bicepparam` the test deployment. No more folder and `example/` per module.

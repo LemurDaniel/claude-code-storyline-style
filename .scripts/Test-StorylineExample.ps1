@@ -71,6 +71,8 @@ $ErrorActionPreference = 'Stop'
 
 # ---------------------------------------------------------------------------
 # Tools
+#   The command each language check needs.
+# ---------------------------------------------------------------------------
 
 # Language => command that has to be found, the check is skipped without it.
 $TOOLS = [ordered]@{
@@ -90,6 +92,8 @@ $KUBECONFORM_ARGUMENTS = @('-strict', '-ignore-missing-schemas', '-summary')
 
 # ---------------------------------------------------------------------------
 # Files
+#   Which files each check reads and which folders are skipped.
+# ---------------------------------------------------------------------------
 
 $EXCLUDED_FOLDERS = @('.git', 'node_modules', '.terraform')
 
@@ -128,6 +132,8 @@ $MANIFEST_KIND_PATTERN        = '(?m)^kind:\s'
 
 # ---------------------------------------------------------------------------
 # Validations
+#   Fails early on a missing folder.
+# ---------------------------------------------------------------------------
 
 if (-NOT (Test-Path -Path $Path -PathType Container)) {
     throw [System.ArgumentException]::new("Path must be an existing folder, got '$Path'.")
@@ -135,6 +141,8 @@ if (-NOT (Test-Path -Path $Path -PathType Container)) {
 
 # ---------------------------------------------------------------------------
 # Collect
+#   Lists all files, finds the installed tools and creates the work folder.
+# ---------------------------------------------------------------------------
 
 $Path  = (Resolve-Path -Path $Path).Path
 $Files = Get-ChildItem -Path $Path -Recurse -File
@@ -186,6 +194,8 @@ function Invoke-ExampleCommand {
 
 # ---------------------------------------------------------------------------
 # PowerShell
+#   Parses every script and runs PSScriptAnalyzer.
+# ---------------------------------------------------------------------------
 
 # The parser is part of PowerShell, so it always runs. The analyzer only when installed.
 $PowerShellFiles = $Files | Where-Object -Property Extension -IN '.ps1', '.psm1'
@@ -206,6 +216,8 @@ foreach ($file in $PowerShellFiles) {
 
 # ---------------------------------------------------------------------------
 # Terraform
+#   Checks the format, then validates and tests every module.
+# ---------------------------------------------------------------------------
 
 # A module is every folder with its own .tf files. The copy keeps init from writing into the repo.
 $TerraformModules = $Files
@@ -236,6 +248,8 @@ if ($IsInstalled['Terraform'] -AND $TerraformModules.Count -GT 0) {
 
 # ---------------------------------------------------------------------------
 # Bicep
+#   Builds every template and parameter file.
+# ---------------------------------------------------------------------------
 
 if ($IsInstalled['Bicep']) {
     foreach ($file in $Files | Where-Object -Property Extension -EQ '.bicep') {
@@ -248,6 +262,8 @@ if ($IsInstalled['Bicep']) {
 
 # ---------------------------------------------------------------------------
 # JavaScript
+#   Checks the syntax of every file.
+# ---------------------------------------------------------------------------
 
 if ($IsInstalled['JavaScript']) {
     foreach ($file in $Files | Where-Object -Property Extension -EQ '.js') {
@@ -257,6 +273,8 @@ if ($IsInstalled['JavaScript']) {
 
 # ---------------------------------------------------------------------------
 # Docker Compose
+#   Renders every compose file with placeholder variables.
+# ---------------------------------------------------------------------------
 
 if ($IsInstalled['Docker Compose']) {
     foreach ($file in $Files | Where-Object -Property Name -IN $COMPOSE_FILE_NAMES) {
@@ -273,6 +291,8 @@ if ($IsInstalled['Docker Compose']) {
 
 # ---------------------------------------------------------------------------
 # Helm
+#   Lints and renders every chart per values.<env>.yaml.
+# ---------------------------------------------------------------------------
 
 # Every chart is linted and rendered once per values.<env>.yaml, Kubernetes validates the output.
 $Charts = @($Files | Where-Object -Property Name -EQ 'Chart.yaml' | Select-Object -ExpandProperty DirectoryName)
@@ -296,6 +316,8 @@ if ($IsInstalled['Helm']) {
 
 # ---------------------------------------------------------------------------
 # Kubernetes
+#   Validates the rendered charts and every plain manifest.
+# ---------------------------------------------------------------------------
 
 # Plain manifests live outside every chart, the templates of a chart are checked through their rendered output.
 $PlainManifests = $Files
@@ -314,12 +336,16 @@ if ($IsInstalled['Kubernetes']) {
 
 # ---------------------------------------------------------------------------
 # Cleanup
+#   Removes the work folder.
+# ---------------------------------------------------------------------------
 
 # Removes the work folder created in Collect.
 Remove-Item -Path $WorkFolder -Recurse -Force
 
 # ---------------------------------------------------------------------------
 # Report
+#   Lists all findings and skipped checks, fails on a finding.
+# ---------------------------------------------------------------------------
 
 # Invoke-ExampleCommand returns $null for a passed check, List[String].Add turns it into ''.
 $Failures = @($Findings | Where-Object { -NOT [System.String]::IsNullOrEmpty($_) })

@@ -29,10 +29,12 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Bicep: one module is one file `module.<name>.bicep`, grouped in category folders with a README, `main.bicep` plus `main.<env>.bicepparam` replace the `example/` folders. | One folder per module with `module.bicep` and `example/` made every tab read `module.bicep`, the module was not a book of its own. |
 | 2026-10-31 | No core block in `~/.claude/identity.md`, the sync rule is removed from `CLAUDE.md`. | The section never existed, the junction to the skill is the only source of the rules. |
 | 2026-10-31 | TOC in every file with chapters, also with one. Terraform: `main.tf` lists the files of the module (`variables.tf   VARIABLES`), the other `.tf` files have none. | "A single chapter needs no list" left the reader guessing again. In Terraform the folder is the book, so its TOC sits where the book starts. |
+| 2026-10-31 | Section = `-` frame (two lines) around the title and a one-line description, indented by 3 spaces. Also for YAML headers. Folded into 0.4.0. | Owner request: sections did not stand out enough next to the `=` chapters. Picked from four variants (frame, title in the line, marker, frame + description). |
 
 ## Open items
 - [ ] **Before merging 0.4.0:** owner review of the language files `yaml-pipelines.md`, `terraform.md`, `kubernetes.md`, `javascript.md`, `docker-compose.md`, `cpp.md`.
-- [ ] Open question: an empty line after the section title in YAML (pipelines, Compose, Kubernetes) like everywhere else, or the title directly above the key?
+- [ ] Open question: an empty line after the closing section line in YAML (pipelines, Compose, Kubernetes) like everywhere else, or the frame directly above the key?
+- [ ] Open question: the section description repeats the numbered step of a flow chapter word for word. Keep both, or shorten the numbered list to names only?
 - [ ] Add `examples` as a required status check for `main` (Settings → Branches), next to `banners`.
 - [ ] YAML pipelines are not validated in the example check yet (`actionlint` for GitHub Actions).
 - [ ] Reference file and examples for Dockerfile.

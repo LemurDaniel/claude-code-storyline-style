@@ -1,9 +1,8 @@
 # ---------------------------------------------------------------------------
 # Deploy Infrastructure (dev)
-#
 #   Thin entry point, the logic lives in tmpl.terraform.infra.deploy.yaml.
 #   Starts manually, 'apply' only runs when the input is checked.
-#
+# ---------------------------------------------------------------------------
 
 name: Deploy Infrastructure (dev)
 

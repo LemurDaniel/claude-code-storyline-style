@@ -1,10 +1,9 @@
 # ---------------------------------------------------------------------------
 # Prod Values
-#
 #   Only the differences to values.yaml.
 #
 #   helm upgrade --install sample-api ./charts/sample-api --namespace sample-prod --create-namespace -f ./charts/sample-api/values.prod.yaml
-#
+# ---------------------------------------------------------------------------
 
 image:
   tag: "1.4.1"

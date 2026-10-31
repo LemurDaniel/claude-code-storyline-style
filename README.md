@@ -30,7 +30,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every part has i
 | Cast list | Imports and module-wide constants | Right below the header |
 | Chapter | Chapter banner | Three lines of `=`, title in UPPERCASE centered |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
-| Section | Section banner | One line of `-`, title below |
+| Section | Section banner | `-` frame around the title and a one-line description |
 | Paragraph | Group comment | One comment line inside a unit, no banner |
 | Epilogue | Cleanup | Context reset, outputs, exports: always last |
 | Proofreading | Verification | Parser, linter and tests before the code counts as done |
@@ -50,13 +50,15 @@ where they first act, and comments that point elsewhere name the chapter they me
 
 # ---------------------------------------------------------------------------
 # Context
+#   Switches to the given subscription, keeps the previous one.
+# ---------------------------------------------------------------------------
 ```
 
 Correctness is the boundary, readability the goal: among correct solutions the one a new reader follows top to bottom
 wins, and code only counts as done after the parser, linter and tests of its language ran.
 
 The banner check in [`.scripts/Test-StorylineBanner.ps1`](.scripts/Test-StorylineBanner.ps1) runs in CI and verifies the
-banner format, that every chapter has a description, that the numbered steps match the sections and that the table of
+banner format, that every chapter and section has a description, that the numbered steps match the sections and that the table of
 contents matches the chapters. The example check in [`.scripts/Test-StorylineExample.ps1`](.scripts/Test-StorylineExample.ps1)
 validates every example file with the tools of its language.
 

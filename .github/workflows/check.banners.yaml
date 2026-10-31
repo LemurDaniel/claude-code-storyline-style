@@ -1,9 +1,8 @@
 # ---------------------------------------------------------------------------
 # Check Banners
-#
 #   Runs .scripts/Test-StorylineBanner.ps1 on every push and pull request.
 #   No secrets or Azure access needed, the job only reads the repo.
-#
+# ---------------------------------------------------------------------------
 
 name: Check Banners
 
@@ -17,7 +16,9 @@ permissions:
 jobs:
 
   # ---------------------------------------------------------------------------
-  # Banners - checks format and structure of all chapters and sections
+  # Banners
+  #   Checks format and structure of all chapters and sections.
+  # ---------------------------------------------------------------------------
   banners:
     runs-on: ubuntu-latest
     steps:
