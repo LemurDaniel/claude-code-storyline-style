@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "storyline-code-style",
+  "description": "A code style for Claude Code where every file reads top to bottom like a story: file headers, chapter and section banners, flat main paths, named transformation steps, documented parameters and logs as a narrative trail.",
+  "owner": {
+    "name": "LemurDaniel"
+  },
+  "plugins": [
+    {
+      "name": "storyline-code-style",
+      "description": "Code style skill for PowerShell, Terraform, Bicep, YAML pipelines (GitHub Actions / Azure DevOps), Docker Compose, JavaScript / Node.js and C++. General rules plus one reference file per language, loaded only when needed.",
+      "author": {
+        "name": "LemurDaniel"
+      },
+      "category": "development",
+      "source": "./plugins/storyline-code-style",
+      "homepage": "https://github.com/LemurDaniel/claude-code-storyline-style"
+    }
+  ]
+}
