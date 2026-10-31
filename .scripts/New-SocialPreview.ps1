@@ -1,6 +1,5 @@
 # NOTE:
-#   Requires: PowerShell 7 on Windows (System.Drawing, fonts Segoe UI and Cascadia Mono)
-#   and .github/assets/twemoji-robot.png.
+#   Requires: PowerShell 7 on Windows (System.Drawing, fonts Segoe UI and Cascadia Mono).
 #
 #   ./.scripts/New-SocialPreview.ps1 -OutputPath ./.github/social-preview.png
 #
@@ -79,9 +78,6 @@ $BOOK_LINES = @(
 
 $LANGUAGES = 'PowerShell  ·  Terraform  ·  Bicep  ·  GitHub Actions  ·  Azure DevOps  ·  Docker Compose  ·  JavaScript  ·  C++'
 $AI_NOTICE = 'AI generated artwork'
-# Twemoji 'robot' (CC BY 4.0, https://github.com/jdecked/twemoji), GDI+ cannot render color emoji fonts.
-$AI_ICON_PATH = Join-Path -Path $PSScriptRoot -ChildPath '../.github/assets/twemoji-robot.png'
-$AI_ICON_SIZE = 36
 
 # ---------------------------------------------------------------------------
 # Draw
@@ -99,12 +95,9 @@ $mutedBrush = [System.Drawing.SolidBrush]::new($COLOR_MUTED)
 $panelBrush = [System.Drawing.SolidBrush]::new($COLOR_PANEL)
 $borderPen  = [System.Drawing.Pen]::new($COLOR_BORDER, 2)
 
-# AI notice with a robot icon in the top right corner.
+# AI notice in the top right corner.
 $noticeSize = $graphics.MeasureString($AI_NOTICE, $FONT_NOTICE)
 $noticeX    = $WIDTH - $MARGIN - $noticeSize.Width
-$icon = [System.Drawing.Image]::FromFile($AI_ICON_PATH)
-$graphics.DrawImage($icon, [System.Drawing.Rectangle]::new([int]($noticeX - $AI_ICON_SIZE - 10), 44, $AI_ICON_SIZE, $AI_ICON_SIZE))
-$icon.Dispose()
 $graphics.DrawString($AI_NOTICE, $FONT_NOTICE, $mutedBrush, $noticeX, 50)
 
 # Title and tagline.
