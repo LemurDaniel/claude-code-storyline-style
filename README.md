@@ -2,6 +2,8 @@
 
 A code style skill for [Claude Code](https://claude.com/claude-code): every file reads top to bottom like a story.
 
+![Storyline Code Style: the codebase is a library, a folder is a shelf, a file is a book](.github/social-preview.png)
+
 File headers say how to call the file, chapter and section banners structure it, guard clauses keep the main path flat,
 data is transformed in named stages, and logs leave a narrative trail at every decision point.
 
