@@ -7,6 +7,13 @@ A code style skill for [Claude Code](https://claude.com/claude-code): every file
 File headers say how to call the file, chapter and section banners structure it, guard clauses keep the main path flat,
 data is transformed in named stages, and logs leave a narrative trail at every decision point.
 
+## AI notice
+
+This repository is written together with [Claude Code](https://claude.com/claude-code). The rules, the reference files,
+the example files and the banner check were drafted by Claude and reviewed, decided and tested by the maintainer.
+Decisions and their reasons are logged in [`progress.md`](progress.md). If a rule or an example looks wrong,
+open an issue, it is a human call in the end.
+
 ## The story
 
 A codebase is a library, a folder is a shelf, a file is a book. Every part has its place in the code:
@@ -19,7 +26,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every part has i
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf |
 | Book | File | Header, chapters, epilogue (a Terraform module: the folder is the book, each file a chapter) |
 | Blurb | File header | Usage and prerequisites |
-| Table of contents | Chapter list in the header | Only in files with three or more chapters |
+| Table of contents | Chapter list in the header | In every file with two or more chapters |
 | Cast list | Imports and module-wide constants | Right below the header |
 | Chapter | Chapter banner | Three lines of `=`, title in UPPERCASE centered |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
@@ -83,13 +90,6 @@ Updates:
 ```
 /plugin marketplace update storyline-code-style
 ```
-
-## AI notice
-
-This repository is written together with [Claude Code](https://claude.com/claude-code). The rules, the reference files,
-the example files and the banner check were drafted by Claude and reviewed, decided and tested by the maintainer.
-Decisions and their reasons are logged in [`progress.md`](progress.md). If a rule or an example looks wrong,
-open an issue, it is a human call in the end.
 
 ## License
 

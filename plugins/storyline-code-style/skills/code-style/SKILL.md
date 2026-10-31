@@ -45,7 +45,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf, see [Structure](#structure) |
 | Book | File | Header, chapters, epilogue |
 | Blurb | File header | Usage and prerequisites, see [Reading flow](#reading-flow) |
-| Table of contents | Chapter list in the header | Only in files with three or more chapters |
+| Table of contents | Chapter list in the header | In every file with two or more chapters |
 | Cast list | Imports and module-wide constants | Right below the header, before the first chapter |
 | Chapter | Chapter | Three lines of `=`, title in UPPERCASE, see [Comments](#comments) |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
@@ -94,7 +94,7 @@ There are exactly three levels inside a book: chapter, section, group comment. N
   #
   #   ./Move-StorageBlob.ps1 -Source st-old -Target st-new -WhatIf
   ```
-- **Table of contents in the header:** A file with three or more chapters lists them at the end of the header, in file order, with the exact chapter title on the left and one line on the right. The banner check compares the list with the chapters.
+- **Table of contents in the header:** A file with two or more chapters lists them at the end of the header, in file order, with the exact chapter title on the left and one line on the right. A single chapter needs no list, its banner is the whole table. The banner check compares the list with the chapters.
   ```cpp
   // NOTE:
   //   Implementation of MiniServer.h.
@@ -199,6 +199,13 @@ Comments look the same in every language, only the comment character changes. A 
 - **Cross-references name the chapter:** When a block depends on or undoes something from another chapter, the comment says which one, with the chapter title as written in its banner (`# Restores the context switched in LOAD AND VALIDATE FILES.`). Across files the file name comes first (`// see MiniServer.h, group Routing`).
 
 ```js
+// NOTE:
+//  node ./day08.js
+//
+//  Chapters:
+//    HELPERS             Grid parsing and viewing lines.
+//    SOLVE TREE PUZZLE   Parses the input and solves both parts.
+
 // ===========================================================================
 // ===============================   HELPERS   ===============================
 // ===========================================================================
@@ -381,9 +388,17 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   ```
   ```js
   const lines       = input.split('\n')
+  // '1000\n2000\n\n3000' => [[1000, 2000], [3000]]
   const elfCalories = lines.join(',').split(',,').map(group => group.split(',').map(Number))
   const elfTotals   = elfCalories.map(calories => calories.reduce((a, b) => a + b, 0))
   const maxCalories = Math.max(...elfTotals)
+  ```
+- **Show the shape change:** A non-obvious parse or reshape (split, slice, regex, flatten) gets one comment with a sample input and what comes out. The reader sees the result without running the expression in their head. Several variants get one line each.
+  ```hcl
+  # Takes the resource type without provider and kind.
+  # - azurerm_storage_account::data_lake  => storage_account
+  # - azurerm_disk                        => disk
+  type = join("_", slice(split("_", local.resource_without_kind), 1, length(split("_", local.resource_without_kind))))
   ```
 
 ## API and naming
@@ -503,6 +518,16 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   }
   ```
   Not like this: `{ Get-UtilsResourceName -Type vnet } | Should -Not -Throw`
+- **A test file says what it covers:** It opens with a chapter whose title names the tested behavior, the description is a collection with one entry per test case (see [Comments](#comments)). Whoever opens the file sees the cases without reading the asserts.
+  ```hcl
+  # ===========================================================================
+  # ==========================   RESOLVE PATTERNS   ===========================
+  # ===========================================================================
+  #
+  #   provider_default_pattern   Falls back to the provider default pattern.
+  #   kind_pattern               Prefers the pattern of the kind (disk::os).
+  #
+  ```
 
 ## Format
 - The defaults of the language's usual formatter. Indentation and deviations are in the language's file.
@@ -524,7 +549,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
 # Review checklist
 Use this list for reviews, `/code-review` and `/simplify`. Report each finding with the rule it breaks and a concrete fix. Respect [Scope](#scope): flag untouched code only in a refactoring or when asked.
 
-- [ ] **Header:** usage and prerequisites at the top of the file, a table of contents from three chapters on. → [Reading flow](#reading-flow)
+- [ ] **Header:** usage and prerequisites at the top of the file, a table of contents from two chapters on. → [Reading flow](#reading-flow)
 - [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files. → [The story](#the-story)
 - [ ] **Chapters:** a file with several phases or kinds of units has chapters, in plot order: setup → validations → action → epilogue. → [The story](#the-story)
 - [ ] **Introductions:** every variable is declared in the chapter where it first acts. → [The story](#the-story)
@@ -535,11 +560,11 @@ Use this list for reviews, `/code-review` and `/simplify`. Report each finding w
 - [ ] **Decision trees:** non-trivial blocks are described first and the code follows the description 1:1. → [Reading flow](#reading-flow)
 - [ ] **Structure:** one thing per file, dotted file names, no duplicated logic, one real implementation. → [Structure](#structure)
 - [ ] **Explicit:** no magic numbers, no hard-coded lists or environment values. → [Structure](#structure)
-- [ ] **Named stages:** no monster expressions, fallback chains with one comment per step. → [Processing data](#processing-data)
+- [ ] **Named stages:** no monster expressions, fallback chains with one comment per step, non-obvious reshapes show a sample input and output. → [Processing data](#processing-data)
 - [ ] **Naming:** verbs first, `is`/`has` booleans with a real bool type, `UPPER_SNAKE` constants, `null` on the left, English without typos. → [API and naming](#api-and-naming)
 - [ ] **Docs:** every public unit documented, `(Required)`/`(Optional)` first, no empty skeletons, parameter docs at the parameter. → [Documentation](#documentation)
 - [ ] **Errors:** nothing swallowed, messages state the expectation, condition matches the message, validations grouped. → [Errors, logging, tests](#errors-logging-tests)
 - [ ] **Logs:** `[Component]` prefix at every decision point. → [Errors, logging, tests](#errors-logging-tests)
 - [ ] **Safety:** mutating operations support WhatIf or dry-run, changed context is reset. → [Errors, logging, tests](#errors-logging-tests)
-- [ ] **Tests:** assert concrete expected values. → [Errors, logging, tests](#errors-logging-tests)
+- [ ] **Tests:** assert concrete expected values, every test file opens with a chapter that lists its cases. → [Errors, logging, tests](#errors-logging-tests)
 - [ ] **Language file:** the rules of the matching `references/*.md` are met.
