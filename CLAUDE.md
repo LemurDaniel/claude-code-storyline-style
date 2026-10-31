@@ -18,7 +18,7 @@ The repo is the marketplace and the plugin at once. There is no build, only Mark
 | `.scripts/New-SocialPreview.ps1` | Renders `.github/social-preview.png` (1280x640), uploaded manually under Settings → Social preview |
 | `.scripts/New-PluginIcon.ps1` | Renders `plugins/storyline-code-style/.claude-plugin/icon.png` (1024x1024) for the plugin directory listing |
 | `.github/workflows/check.banners.yaml` | Runs the banner check on every push and PR |
-| `.github/workflows/release.yaml` | On a tag `v<version>`: checks version and CHANGELOG, publishes the GitHub release |
+| `.github/workflows/release.yaml` | On every push to `main`: reads the version from `plugin.json`, creates tag and GitHub release when the tag is missing |
 | `progress.md` | Goal, decisions, open items, next step |
 | `README.md` | The story, contents and installation |
 
@@ -45,7 +45,7 @@ Every edit here is live in all local sessions right away, so a broken rule break
 
 ## Releases
 - Bump `version` in `plugin.json` (SemVer): a new or changed rule is minor, a wording or example fix is patch. Add the entry `## <version> - <date>` to `CHANGELOG.md`.
-- Release: after the PR is merged, `git tag v<version>` on `main` and push the tag. The workflow fails when tag, `plugin.json` and CHANGELOG disagree.
+- Release: merging the PR is the release. The workflow tags `v<version>` from `plugin.json` and publishes the CHANGELOG entry, it fails when the entry is missing. No manual tags.
 
 ## Workflow
 - `main` is protected: changes only via PR, the `banners` check must pass, linear history, no force push. Work on a branch (`feature/<topic>`, `fix/<topic>`), then `gh pr create`.
