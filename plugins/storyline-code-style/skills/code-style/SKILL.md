@@ -573,8 +573,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   ```powershell
   if ($null -EQ $Subscription) { ... }   # not: if ($Subscription -EQ $null)
   ```
-- Comments and identifiers in English. No typos in names.
-  Not like this: `$maxmiumLifetimeExtension`, `"[INORMATION]"`, `Tennant`.
+- Comments and identifiers in English, without typos. A misspelled name spreads to every caller and is hard to rename later.
 
 ## Documentation
 - **Every public unit is documented:** purpose, parameters (with default and whether required or optional), return value and an example. The format is the language's usual one.
