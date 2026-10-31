@@ -7,7 +7,21 @@
 #   docker compose up -d
 # ---------------------------------------------------------------------------
 
+#
+#   Chapters:
+#     MONITORING SERVICES   Node Exporter, Prometheus and Grafana.
+#
+
 services:
+
+  # ===========================================================================
+  # =========================   MONITORING SERVICES   =========================
+  # ===========================================================================
+  #
+  #   Node Exporter Service   Exposes the metrics of the host.
+  #   Prometheus Service      Scrapes Node Exporter and stores the metrics.
+  #   Grafana Service         Shows the dashboards behind the reverse proxy.
+  #
 
   # ---------------------------------------------------------------------------
   # Node Exporter Service

@@ -6,10 +6,12 @@
 #   ./.scripts/Test-StorylineExample.ps1                    Checks all example files.
 #   ./.scripts/Test-StorylineExample.ps1 -IsStrict          Fails on a missing tool (CI).
 #   ./.scripts/Test-StorylineExample.ps1 -Verbose           Also logs every checked file.
+
 #
 #   Chapters:
 #     SETTINGS         Checked tools, file patterns and the work folder.
 #     CHECK EXAMPLES   Runs the checks of every language and reports.
+#
 
 <#
 .SYNOPSIS

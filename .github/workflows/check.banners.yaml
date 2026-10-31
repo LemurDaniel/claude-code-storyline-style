@@ -15,10 +15,6 @@ permissions:
 
 jobs:
 
-  # ---------------------------------------------------------------------------
-  # Banners
-  #   Checks format and structure of all chapters and sections.
-  # ---------------------------------------------------------------------------
   banners:
     runs-on: ubuntu-latest
     steps:

@@ -114,7 +114,7 @@
         environment: dev
       secrets: inherit
   ```
-- Jobs separated by `# ----` banners, a large pipeline groups them into chapters (e.g. build, deploy). A central `config` job computes shared values.
+- Several jobs get one section each inside a chapter, a single job needs no banner. A large pipeline groups them into several chapters (e.g. build, deploy). A central `config` job computes shared values.
   ```yaml
   jobs:
 
@@ -257,7 +257,7 @@
       type: string
       default: LatestVersion
   ```
-- **Jobs and step groups separated by `# ----` banners** (as in GitHub Actions), job names with a stage suffix so they are unique per stage:
+- **Jobs and step groups as sections inside a chapter** (as in GitHub Actions), job names with a stage suffix so they are unique per stage:
   ```yaml
   jobs:
     # ---------------------------------------------------------------------------

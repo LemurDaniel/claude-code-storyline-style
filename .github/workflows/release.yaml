@@ -22,10 +22,6 @@ permissions:
 
 jobs:
 
-  # ---------------------------------------------------------------------------
-  # Release
-  #   Tags the version from plugin.json and publishes the release.
-  # ---------------------------------------------------------------------------
   release:
     runs-on: ubuntu-latest
     steps:

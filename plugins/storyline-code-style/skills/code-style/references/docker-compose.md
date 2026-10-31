@@ -10,7 +10,7 @@
       docker-compose.yaml
   ```
 - No `version:` key anymore, the file starts directly with `services:` (or `networks:` when networks are defined).
-- Several services in one file are separated by a `# ----` banner per `SKILL.md` → "Comments". A large file groups its services into chapters (e.g. metrics, dashboards, proxy):
+- Several services in one file get one section each inside a chapter per `SKILL.md` → "Comments", a single service needs no banner. A large file groups its services into several chapters (e.g. metrics, dashboards, proxy):
   ```yaml
   services:
 

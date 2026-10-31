@@ -5,6 +5,22 @@
 #   helm upgrade --install sample-api ./charts/sample-api --namespace sample-dev --create-namespace -f ./charts/sample-api/values.dev.yaml
 # ---------------------------------------------------------------------------
 
+#
+#   Chapters:
+#     CHART VALUES   One section per area of the chart.
+#
+
+# ===========================================================================
+# ============================   CHART VALUES   =============================
+# ===========================================================================
+#
+#   Identity   Labels shared by every service.
+#   Image      Registry, repository and the fixed tag.
+#   Runtime    Replicas, environment and resources of the pods.
+#   Service    Ports of the service and the container.
+#   Ingress    Public host and certificate, off by default.
+#
+
 # ---------------------------------------------------------------------------
 # Identity
 #   Labels shared by every service.

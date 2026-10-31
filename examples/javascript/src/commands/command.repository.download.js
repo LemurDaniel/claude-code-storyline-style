@@ -5,10 +5,12 @@
 //
 //    'repository.download --owner octo-org'           clones all repositories of 'octo-org'.
 //    'repository.download --owner octo-org --force'   replaces existing folders.
+
 //
 //  Chapters:
 //    HELPERS                 Target path and clone of one repository.
 //    DOWNLOAD REPOSITORIES   Options, validations, loading and cloning all repositories.
+//
 
 import fs from 'node:fs'
 import path from 'node:path'

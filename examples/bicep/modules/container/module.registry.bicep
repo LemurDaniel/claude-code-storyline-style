@@ -4,7 +4,23 @@ targetScope = 'resourceGroup'
 //   Deploys a Container Registry with networking and retention defaults, called from main.bicep.
 //   Requires: the shared lib.bicep with typeNaming and generateName.
 
+//
+//   Chapters:
+//     DEPLOY CONTAINER REGISTRY   Parameters, validations, the registry and its outputs.
+//
+
 import { typeNaming, generateName } from '../utility/lib.bicep'
+
+// ===========================================================================
+// ======================   DEPLOY CONTAINER REGISTRY   ======================
+// ===========================================================================
+//
+//   1. Parameters - Naming, Location and Tags   Context passed from module to module.
+//   2. Parameters - Container Registry          SKU and network access of the registry.
+//   3. Validations                              Fails the deployment on settings that do not fit together.
+//   4. Deployment                               The registry with its network rules.
+//   5. Outputs                                  Reference and login server for dependent modules.
+//
 
 // ---------------------------------------------------------------------------
 // Parameters - Naming, Location and Tags

@@ -32,12 +32,14 @@
   ```hcl
   # NOTE:
   #   Module container-registry, called with a resource group reference and one registry object.
+
   #
   #   Chapters:
   #     variables.tf         VARIABLES
   #     locals.registry.tf   RESOLVE REGISTRY SETTINGS
   #     main.tf              DEPLOY CONTAINER REGISTRY
   #     outputs.tf           OUTPUTS
+  #
   ```
 - Config per environment as `env/<env>.tfvars`, with a chapter banner and description at the top (`SKILL.md` → "Comments") and one comment per block. Run with `terraform plan -var-file=env/dev.tfvars`.
   ```hcl

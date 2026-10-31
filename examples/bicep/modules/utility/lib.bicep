@@ -3,6 +3,19 @@
 //
 //   import { typeNaming, generateName } from '../utility/lib.bicep'
 
+//
+//   Chapters:
+//     NAMING TYPES AND FUNCTIONS   The naming type and the name generator.
+//
+
+// ===========================================================================
+// =====================   NAMING TYPES AND FUNCTIONS   ======================
+// ===========================================================================
+//
+//   Types                Shared types, imported by every module.
+//   Functions - Naming   Generates resource names from the naming context.
+//
+
 // ---------------------------------------------------------------------------
 // Types
 //   Shared types, imported by every module.

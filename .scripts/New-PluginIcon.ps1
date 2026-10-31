@@ -6,6 +6,11 @@
 #   The plugin directory takes a square PNG, 512 to 2048 px, under 2 MB. The icon
 #   is a chapter banner: three bars, the middle one carries the title.
 
+#
+#   Chapters:
+#     RENDER PLUGIN ICON   Sets size and colors, draws the icon and saves it.
+#
+
 [CmdletBinding()]
 param (
     <#
@@ -23,6 +28,14 @@ Set-StrictMode -Version 1.0
 $ErrorActionPreference = 'Stop'
 
 Add-Type -AssemblyName System.Drawing
+
+# ===========================================================================
+# =========================   RENDER PLUGIN ICON   ==========================
+# ===========================================================================
+#
+#   1. Settings   Size, margin and colors of the icon.
+#   2. Draw       Draws the icon and saves it as PNG.
+#
 
 # ---------------------------------------------------------------------------
 # Settings

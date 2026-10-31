@@ -16,10 +16,6 @@ permissions:
 
 jobs:
 
-  # ---------------------------------------------------------------------------
-  # Examples
-  #   Validates every example file with the tools of its language.
-  # ---------------------------------------------------------------------------
   examples:
     runs-on: ubuntu-latest
     steps:

@@ -5,6 +5,11 @@
 #
 #   Upload the result under GitHub -> Settings -> General -> Social preview.
 
+#
+#   Chapters:
+#     RENDER SOCIAL PREVIEW   Sets size, colors and texts, draws the preview and saves it.
+#
+
 [CmdletBinding()]
 param (
     <#
@@ -22,6 +27,14 @@ Set-StrictMode -Version 1.0
 $ErrorActionPreference = 'Stop'
 
 Add-Type -AssemblyName System.Drawing
+
+# ===========================================================================
+# ========================   RENDER SOCIAL PREVIEW   ========================
+# ===========================================================================
+#
+#   1. Settings   Size, margin, colors and texts of the preview.
+#   2. Draw       Draws the preview and saves it as PNG.
+#
 
 # ---------------------------------------------------------------------------
 # Settings

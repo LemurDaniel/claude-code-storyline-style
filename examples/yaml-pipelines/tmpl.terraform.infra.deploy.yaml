@@ -15,6 +15,11 @@
 #     dev, tst, prd           Required reviewers approve the plan before apply
 # ---------------------------------------------------------------------------
 
+#
+#   Chapters:
+#     PLAN AND APPLY TERRAFORM   Shared config, plan and the approved apply.
+#
+
 name: Terraform Infrastructure Deployment
 
 on:
@@ -41,6 +46,15 @@ env:
   ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
 jobs:
+
+  # ===========================================================================
+  # ======================   PLAN AND APPLY TERRAFORM   =======================
+  # ===========================================================================
+  #
+  #   1. Config   Computes shared values once for all following jobs.
+  #   2. Plan     Publishes the plan as an artifact, so the approver can read it.
+  #   3. Apply    Only with the apply input and after the approval on the environment.
+  #
 
   # ---------------------------------------------------------------------------
   # Config

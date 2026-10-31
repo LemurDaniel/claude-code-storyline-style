@@ -4,7 +4,23 @@ targetScope = 'resourceGroup'
 //   Deploys a PostgreSQL flexible server with Entra ID authentication only, called from main.bicep.
 //   Requires: the shared lib.bicep with typeNaming and generateName.
 
+//
+//   Chapters:
+//     DEPLOY POSTGRESQL SERVER   Parameters, validations, the server and its outputs.
+//
+
 import { typeNaming, generateName } from '../utility/lib.bicep'
+
+// ===========================================================================
+// ======================   DEPLOY POSTGRESQL SERVER   =======================
+// ===========================================================================
+//
+//   1. Parameters - Naming, Location and Tags   Context passed from module to module.
+//   2. Parameters - PostgreSQL                  Compute, storage and version of the server.
+//   3. Validations                              Fails the deployment on settings that do not fit together.
+//   4. Deployment                               The flexible server.
+//   5. Outputs                                  Reference for dependent modules.
+//
 
 // ---------------------------------------------------------------------------
 // Parameters - Naming, Location and Tags

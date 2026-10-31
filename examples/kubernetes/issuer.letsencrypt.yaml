@@ -8,6 +8,19 @@
 #   kubectl apply -f issuer.letsencrypt.yaml
 # ---------------------------------------------------------------------------
 
+#
+#   Chapters:
+#     CLUSTER ISSUERS   The staging and the production issuer.
+#
+
+# ===========================================================================
+# ===========================   CLUSTER ISSUERS   ===========================
+# ===========================================================================
+#
+#   Staging      Untrusted certificates, high rate limits.
+#   Production   Trusted certificates, switch over once staging works.
+#
+
 # ---------------------------------------------------------------------------
 # Staging
 #   Untrusted certificates, high rate limits.

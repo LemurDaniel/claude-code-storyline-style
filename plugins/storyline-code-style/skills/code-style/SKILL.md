@@ -61,7 +61,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf, see [Structure](#structure) |
 | Book | File | Header, chapters, epilogue |
 | Blurb | File header | Usage and prerequisites, see [Reading flow](#reading-flow) |
-| Table of contents | Chapter list in the header | In every file with chapters, also with only one |
+| Table of contents | Chapter list below the header | Own comment block, in every file with chapters, also with only one |
 | Cast list | Imports and module-wide constants | Right below the header, before the first chapter |
 | Chapter | Chapter | Three lines of `=`, title in UPPERCASE, see [Comments](#comments) |
 | Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
@@ -89,10 +89,12 @@ Blurb              # NOTE:
                    #   Requires: Az.Storage and a logged in context (Connect-AzAccount).
                    #
                    #   ./Move-StorageBlob.ps1 -Source st-old -Target st-new -WhatIf
+
                    #
 Table of contents  #   Chapters:
                    #     LOAD AND VALIDATE BLOBS   Validations and the blobs of the source.
                    #     MOVE BLOBS                Copies every blob and reports the count.
+                   #
 
                    param (...)
 
@@ -171,11 +173,11 @@ A book has exactly three levels: chapter (`=` frame), section (`-` frame) and pa
   # PowerShell examples
   | File | Content |
   | --- | --- |
-  | `Get-UtilsConfig.ps1` | One function with sections only: defaults, read, merge. |
+  | `Get-UtilsConfig.ps1` | One function with one chapter: defaults, read, merge. |
   | `Move-StorageBlob.ps1` | A script with chapters, WhatIf and a CLEAN block. |
   ```
 
-- **When a file gets chapters:** as soon as it tells more than one phase (load, validate, write) or holds more than one kind of unit (helpers plus a main flow). A file with a single phase or a single unit gets by with sections (a Bicep module, `Get-UtilsConfig.ps1`), a tiny file with none (a `.bicepparam`).
+- **Every file with sections has chapters:** sections only live inside a chapter, so a file with a single phase gets one chapter around its sections (a Bicep module, `Get-UtilsConfig.ps1`). More chapters as soon as it tells more than one phase (load, validate, write) or holds more than one kind of unit (helpers plus a main flow). Only a tiny file with one unit gets no banner at all (a `.bicepparam`, a values override, a workflow with one job), its header says what it does.
 - **Chapter order follows the plot:** setup (settings, helpers, context) → validations → the action → epilogue (cleanup, outputs, exports). Helpers either come first as a collection chapter, so the reader meets them before they act, or live in their own file. Never between two steps of the action.
 - **No character without an introduction:** a variable or config value is declared in the chapter where it first acts, right before its first use. Not collected at the top of the file and not in a later chapter. The exception is the cast list: imports and module-wide constants (`COMMAND_NAME`, `DEFAULT_TIMEOUT_MS`) stand together below the header, because the whole book uses them.
   ```powershell
@@ -206,16 +208,18 @@ A book has exactly three levels: chapter (`=` frame), section (`-` frame) and pa
   #
   #   ./Move-StorageBlob.ps1 -Source st-old -Target st-new -WhatIf
   ```
-- **Table of contents in the header:** A file with chapters lists them at the end of the header, in file order, with the exact chapter title on the left and one line on the right. Also a single chapter, so the reader never has to guess whether the list is missing or not required. The banner check compares the list with the chapters.
+- **Table of contents below the header:** A file with chapters lists them in its own comment block right below the header, separated by an empty line and framed by an empty comment line above and below. In a YAML file it follows the closing line of the header. The chapters stand in file order, with the exact chapter title on the left and one line on the right. Also a single chapter, so the reader never has to guess whether the list is missing or not required. The banner check compares the list with the chapters.
   ```cpp
   // NOTE:
   //   Implementation of MiniServer.h.
+
   //
   //   Chapters:
   //     HELPERS      Status codes and the prefix check.
   //     LIFECYCLE    begin and stop.
   //     ROUTING      Route registration and request handling.
   //     MIDDLEWARE   Middleware registration.
+  //
   ```
 - **Concept before code:** For algorithms, data structures or unfamiliar mechanisms a short explanation comes first, then the implementation.
   ```js
@@ -295,7 +299,7 @@ A book has exactly three levels: chapter (`=` frame), section (`-` frame) and pa
   ```
 
 ## Comments
-Comments look the same in every language, only the comment character changes. A language file may restrict the format (e.g. sections only), but never introduce its own banner style.
+Comments look the same in every language, only the comment character changes. A language file may restrict the format (e.g. one chapter per file), but never introduce its own banner style.
 
 | Comment character | Languages |
 | --- | --- |
@@ -342,7 +346,7 @@ Comments look the same in every language, only the comment character changes. A 
 
       if ($Source -EQ $Target) {
       ```
-    - Small files (a Bicep module, a Compose file) get by with sections alone.
+    - Sections only live inside a chapter. The one section-shaped block outside is the header of a YAML file (pipelines, Compose, Kubernetes) in the first line, its table of contents follows as its own block below the closing line.
   - **Both levels:**
     - Every line is 75 characters long, plus the comment character and one space.
     - No other banner styles, so no `/* #### */` boxes, `<# #### #>` blocks, `/*---- * Title *` blocks, `////` or `#####` lines.
@@ -355,10 +359,12 @@ Comments look the same in every language, only the comment character changes. A 
 ```js
 // NOTE:
 //  node ./day08.js
+
 //
 //  Chapters:
 //    HELPERS             Grid parsing and viewing lines.
 //    SOLVE TREE PUZZLE   Parses the input and solves both parts.
+//
 
 // ===========================================================================
 // ===============================   HELPERS   ===============================
@@ -738,12 +744,12 @@ Use this list for reviews, `/code-review` and `/simplify`. Go through every grou
   - [ ] **Deviations:** a spot that breaks a rule on purpose carries a comment saying why.
 - **[The story](#the-story)**
   - [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files.
-  - [ ] **Chapters:** a file with several phases or kinds of units has chapters, a small one gets by with sections.
+  - [ ] **Chapters:** every file with sections has at least one chapter, a file with several phases or kinds of units has one per phase or kind, only a tiny file with one unit has no banner.
   - [ ] **Plot order:** setup → validations → action → epilogue, helpers first or in their own file, never between two steps.
   - [ ] **Introductions:** every variable is declared in the chapter where it first acts, imports and module-wide constants stand as cast list below the header.
 - **[Reading flow](#reading-flow)**
   - [ ] **Header:** usage and prerequisites at the top of the file.
-  - [ ] **Table of contents:** every file with chapters lists them in the header, a Terraform module in `main.tf`.
+  - [ ] **Table of contents:** every file with chapters lists them in its own block below the header, a Terraform module in `main.tf`.
   - [ ] **Describe first:** algorithms and unfamiliar mechanisms get a short concept, non-trivial blocks a decision tree, and the code follows it 1:1.
   - [ ] **Flat main path:** guard clauses and early `return` instead of nesting.
   - [ ] **Together:** state, configuration and functions of a feature sit next to each other, not sorted by visibility or type.

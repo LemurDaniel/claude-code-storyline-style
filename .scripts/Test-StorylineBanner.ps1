@@ -4,10 +4,12 @@
 #   ./.scripts/Test-StorylineBanner.ps1                   Checks the whole repo.
 #   ./.scripts/Test-StorylineBanner.ps1 -Path ./plugins   Checks one folder.
 #   ./.scripts/Test-StorylineBanner.ps1 -Verbose          Also logs every checked file.
+
 #
 #   Chapters:
 #     SETTINGS        Banner format, structure patterns and the checked files.
 #     CHECK BANNERS   Collects the files, checks format and structure, reports.
+#
 
 <#
 .SYNOPSIS
@@ -23,9 +25,10 @@
 
     Source files (not Markdown, whose snippets are excerpts) are also checked
     for the structure rules from SKILL.md -> "The story" and "Comments":
+    - Every section sits inside a chapter, except a header in the first line.
     - Every chapter has a description right below the frame.
     - The numbered entries of a flow chapter match the sections of the chapter.
-    - A file with chapters lists them as 'Chapters:' in the header,
+    - A file with chapters lists them as 'Chapters:' in its own block below the header,
       and the list matches the chapters in order.
     - A Terraform module is one book, every .tf file one chapter. The header
       of main.tf lists every file of the module with its chapter title.
@@ -173,7 +176,12 @@ foreach ($file in $Files) {
     # What the next line is expected to be: a frame line, a description line, a section title or a TOC entry.
     $expecting  = $null
     $section    = $null
+    $isInToc    = $false
     $lineNumber = 0
+
+    # The two lines above the current one, for the empty lines around the table of contents.
+    $previousLine       = $null
+    $secondPreviousLine = $null
 
     foreach ($line in Get-Content -Path $file.FullName) {
         $lineNumber++
@@ -183,6 +191,37 @@ foreach ($file in $Files) {
         $trimmedLine  = $line.TrimStart()
         $commentMatch = [System.Text.RegularExpressions.Regex]::Match($trimmedLine, $commentPattern)
         $commentText  = $commentMatch.Success ? $commentMatch.Groups['text'].Value.Trim() : $null
+
+        # The table of contents below the header, one entry per line until the first other line.
+        # Its own block: an empty line and an empty comment line above, an empty comment line below.
+        if ($isInToc) {
+            $moduleTocMatch = [System.Text.RegularExpressions.Regex]::Match([System.String] $commentText, $MODULE_TOC_ENTRY_PATTERN)
+            $tocMatch       = [System.Text.RegularExpressions.Regex]::Match([System.String] $commentText, $TOC_ENTRY_PATTERN)
+
+            if ($commentMatch.Success -AND $file.Name -EQ $MODULE_TOC_FILE -AND $moduleTocMatch.Success) {
+                $ModuleToc.Add([PSCustomObject]@{
+                    File  = $moduleTocMatch.Groups['file'].Value
+                    Title = $moduleTocMatch.Groups['title'].Value
+                })
+            }
+            elseif ($commentMatch.Success -AND $tocMatch.Success) {
+                $Toc.Add($tocMatch.Groups['title'].Value)
+            }
+            else {
+                $isInToc = $false
+                if ($trimmedLine -NE $commentPrefix) {
+                    $Findings.Add("$location Table of contents must end with an empty comment line.")
+                }
+            }
+        }
+        if ($commentMatch.Success -AND $commentText -EQ $TOC_HEADER -AND $Chapters.Count -EQ 0) {
+            $isInToc = $true
+            if ($previousLine -NE $commentPrefix -OR $secondPreviousLine -NE '') {
+                $Findings.Add("$location Table of contents must stand in its own block below the header, after an empty line and an empty comment line.")
+            }
+        }
+        $secondPreviousLine = $previousLine
+        $previousLine       = $trimmedLine
 
         # The lines right after a chapter frame are its description, it ends at the first non-comment line.
         if ($expecting -EQ 'description') {
@@ -210,6 +249,11 @@ foreach ($file in $Files) {
             if ($commentMatch.Success -AND $Chapters.Count -GT 0) {
                 $Chapters[-1].Sections.Add($commentText)
             }
+
+            # Sections only live in chapters, the one exception is a header in the first line (YAML).
+            if ($Chapters.Count -EQ 0 -AND $lineNumber -GT 2 -AND $file.Extension -IN $STRUCTURE_EXTENSIONS) {
+                $Findings.Add("$location Section '$commentText' must sit inside a chapter.")
+            }
             continue
         }
 
@@ -229,29 +273,6 @@ foreach ($file in $Files) {
         if ($expecting -EQ 'section description' -AND -NOT ($isBannerLine -AND $commentText -EQ $SECTION_LINE)) {
             $Findings.Add("$location Section '$($section.Title)' must be closed by a line of '-' below its description.")
             $expecting = $null
-        }
-
-        # The table of contents in the header, one entry per line until the first other line.
-        if ($expecting -EQ 'toc entry') {
-            $moduleTocMatch = [System.Text.RegularExpressions.Regex]::Match([System.String] $commentText, $MODULE_TOC_ENTRY_PATTERN)
-            if ($commentMatch.Success -AND $file.Name -EQ $MODULE_TOC_FILE -AND $moduleTocMatch.Success) {
-                $ModuleToc.Add([PSCustomObject]@{
-                    File  = $moduleTocMatch.Groups['file'].Value
-                    Title = $moduleTocMatch.Groups['title'].Value
-                })
-                continue
-            }
-
-            $tocMatch = [System.Text.RegularExpressions.Regex]::Match([System.String] $commentText, $TOC_ENTRY_PATTERN)
-            if ($commentMatch.Success -AND $tocMatch.Success) {
-                $Toc.Add($tocMatch.Groups['title'].Value)
-                continue
-            }
-            $expecting = $null
-        }
-        if ($commentMatch.Success -AND $commentText -EQ $TOC_HEADER -AND $Chapters.Count -EQ 0) {
-            $expecting = 'toc entry'
-            continue
         }
 
         $bannerMatch = [System.Text.RegularExpressions.Regex]::Match($trimmedLine, $BANNER_PATTERN)

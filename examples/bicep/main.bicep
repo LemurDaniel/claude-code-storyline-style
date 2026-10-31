@@ -6,7 +6,22 @@ targetScope = 'resourceGroup'
 //
 //   az deployment group create -g rg-sample-dev -f main.bicep -p main.dev.bicepparam --what-if
 
+//
+//   Chapters:
+//     DEPLOY SAMPLE WORKLOAD   Parameters, the module calls and the outputs.
+//
+
 import { typeNaming } from 'modules/utility/lib.bicep'
+
+// ===========================================================================
+// =======================   DEPLOY SAMPLE WORKLOAD   ========================
+// ===========================================================================
+//
+//   1. Parameters               Naming context and tags passed to every module.
+//   2. Deployment - Container   Deploys the container registry.
+//   3. Deployment - Data        Deploys the storage account and the PostgreSQL server.
+//   4. Outputs                  Endpoints of the deployed resources.
+//
 
 // ---------------------------------------------------------------------------
 // Parameters

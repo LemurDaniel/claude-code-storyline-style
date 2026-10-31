@@ -38,7 +38,7 @@
   #   kubectl apply -f issuer.letsencrypt.yaml
   # ---------------------------------------------------------------------------
   ```
-- **Several resources in one file** are separated by `---` and one section banner each, the title says what the resource is for.
+- **Several resources in one file** are separated by `---` and one section banner each inside a chapter, the title says what the resource is for.
   ```yaml
   ---
   # ---------------------------------------------------------------------------

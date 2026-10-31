@@ -4,7 +4,22 @@ targetScope = 'resourceGroup'
 //   Deploys a storage account with private blob containers, called from main.bicep.
 //   Requires: the shared lib.bicep with typeNaming and generateName.
 
+//
+//   Chapters:
+//     DEPLOY STORAGE ACCOUNT   Parameters, the account and its outputs.
+//
+
 import { typeNaming, generateName } from '../utility/lib.bicep'
+
+// ===========================================================================
+// =======================   DEPLOY STORAGE ACCOUNT   ========================
+// ===========================================================================
+//
+//   1. Parameters - Naming, Location and Tags   Context passed from module to module.
+//   2. Parameters - Storage Account             Replication and the private blob containers.
+//   3. Deployment                               The storage account with its containers.
+//   4. Outputs                                  Reference and blob endpoint for dependent modules.
+//
 
 // ---------------------------------------------------------------------------
 // Parameters - Naming, Location and Tags

@@ -5,9 +5,11 @@
 //   server.use("/api", Http::auth(API_TOKEN));
 //   server.get("/api/status", handleStatus);
 //   server.begin(Http::MiniServer::DEFAULT_PORT);
+
 //
 //   Chapters:
 //     ROUTE HTTP REQUESTS   The MiniServer class with lifecycle, routing and middleware.
+//
 
 #pragma once
 

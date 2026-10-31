@@ -4,6 +4,11 @@
 #   Get-UtilsConfig
 #   Get-UtilsConfig -ConfigPath ./utils.config.json -Verbose
 
+#
+#   Chapters:
+#     READ UTILS CONFIG   Defaults, reading the file and merging both.
+#
+
 function Get-UtilsConfig {
 
     <#
@@ -38,6 +43,15 @@ function Get-UtilsConfig {
         [System.String]
         $ConfigPath = (Join-Path -Path $HOME -ChildPath '.utils/utils.config.json')
     )
+
+    # ===========================================================================
+    # ==========================   READ UTILS CONFIG   ==========================
+    # ===========================================================================
+    #
+    #   1. Defaults         The values every config falls back to.
+    #   2. Read config      Reads the config file, a missing file counts as empty.
+    #   3. Merge defaults   Fills every missing key with its default.
+    #
 
     # ---------------------------------------------------------------------------
     # Defaults
