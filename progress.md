@@ -25,13 +25,15 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Verify before done as "proofreading" in the glossary, one `Verify` line per language file. Example check `.scripts/Test-StorylineExample.ps1` in CI with `-IsStrict`. | Correctness has to be checked, not assumed. Until now only the banners were checked in CI. |
 | 2026-10-31 | PowerShell `Set-StrictMode -Version 1.0`, not `Latest`. | `Latest` throws on missing properties and breaks `$null -EQ $Config.Profiles` checks, 1.0 still catches misspelled variables. |
 | 2026-10-31 | Example files get one pass at the end of a change set, not after every rule edit. Snippets still change with their rule. | Owner request: adjusting the examples after every single change is wasted work. |
+| 2026-10-31 | Kubernetes: every app is a Helm chart with `values.<env>.yaml` holding only the differences, plain manifests only for cluster-wide resources. Kind first in file names, a fixed image tag that the template enforces. | Taken from the owner manifests (labels, anchors, grouped env and annotations), but full copies per environment and `:latest` tags were the two things to fix. |
 | 2026-10-31 | No core block in `~/.claude/identity.md`, the sync rule is removed from `CLAUDE.md`. | The section never existed, the junction to the skill is the only source of the rules. |
 | 2026-10-31 | TOC in every file with chapters, also with one. Terraform: `main.tf` lists the files of the module (`variables.tf   VARIABLES`), the other `.tf` files have none. | "A single chapter needs no list" left the reader guessing again. In Terraform the folder is the book, so its TOC sits where the book starts. |
 
 ## Open items
 - [ ] Add `examples` as a required status check for `main` (Settings → Branches), next to `banners`.
 - [ ] YAML pipelines are not validated in the example check yet (`actionlint` for GitHub Actions).
-- [ ] Reference files and examples for Kubernetes manifests / Helm and Dockerfile.
+- [ ] Reference file and examples for Dockerfile.
+- [ ] kubeconform did not run locally (download into the scratchpad was blocked), only in CI.
 - [ ] Rule for detecting the codebase's own conventions (`.editorconfig`, ESLint, `.clang-format`, `bicepconfig.json`, neighbouring files).
 - [ ] Evals with `claude plugin eval`: fixed prompts per language, checked against the rules and example files.
 - [ ] Run `claude plugin validate .` (the CLI was not on the PATH of the shell) and check `displayName` and the `$schema` URLs.

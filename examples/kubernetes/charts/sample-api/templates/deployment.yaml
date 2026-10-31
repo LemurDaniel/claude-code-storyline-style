@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ .Chart.Name }}
+  labels:
+    {{- include "sample-api.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "sample-api.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "sample-api.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "sample-api.image" . }}
+          imagePullPolicy: IfNotPresent   # the tag is fixed, so the cached image is the right one
+
+          # Resources
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          # Ports
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+
+          # Probes - readiness gates the traffic, liveness restarts a hung pod
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthPath }}
+              port: http
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthPath }}
+              port: http
+
+          # Environment
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.environment | quote }}
+
+            # Other services, one base address per entry in values.yaml -> dependencies
+            {{- range $name, $service := .Values.dependencies }}
+            - name: {{ $name }}__BaseAddress
+              value: http://{{ $service }}.{{ $.Release.Namespace }}.svc.cluster.local
+            {{- end }}

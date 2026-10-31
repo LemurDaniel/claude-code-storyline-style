@@ -1,5 +1,5 @@
 # NOTE:
-#   Requires: PowerShell 7. Optional: PSScriptAnalyzer, terraform, bicep, node, docker.
+#   Requires: PowerShell 7. Optional: PSScriptAnalyzer, terraform, bicep, node, docker, helm, kubeconform.
 #   A missing tool skips its check and is named in the report, -IsStrict fails instead.
 #   C++ is not compiled yet, the examples have no Request.h / Response.h.
 #
@@ -23,9 +23,11 @@
     - Bicep            bicep build and bicep build-params.
     - JavaScript       node --check.
     - Docker Compose   docker compose config.
+    - Helm             helm lint and helm template per values.<env>.yaml.
+    - Kubernetes       kubeconform on the rendered charts and every plain manifest.
 
-    Terraform runs in a copy of the folder, so no .terraform folder or lock file
-    is left in the repo. Throws when at least one check fails, so CI fails.
+    Terraform runs in a copy of the folder and Helm renders into the work folder,
+    so no .terraform folder, lock file or rendered manifest is left in the repo. Throws when at least one check fails, so CI fails.
 
 .EXAMPLE
     Check the examples before a commit:
@@ -77,9 +79,14 @@ $TOOLS = [ordered]@{
     'Bicep'          = 'bicep'
     'JavaScript'     = 'node'
     'Docker Compose' = 'docker'
+    'Helm'           = 'helm'
+    'Kubernetes'     = 'kubeconform'
 }
 
 $ANALYZER_SEVERITY = @('Warning', 'Error')
+
+# Custom resources (cert-manager, ingress controllers) have no built-in schema, they are skipped.
+$KUBECONFORM_ARGUMENTS = @('-strict', '-ignore-missing-schemas', '-summary')
 
 # ---------------------------------------------------------------------------
 # Files
@@ -90,6 +97,13 @@ $COMPOSE_FILE_NAMES = @('docker-compose.yaml', 'docker-compose.yml', 'compose.ya
 
 # A required compose variable: ${NAME:?message}, it gets a placeholder value for the check.
 $COMPOSE_REQUIRED_VARIABLE_PATTERN = '\$\{(?<name>[A-Za-z0-9_]+):\?'
+
+# The values of one environment next to Chart.yaml: values.dev.yaml, values.prod.yaml.
+$HELM_ENVIRONMENT_VALUES_PATTERN = '^values\..+\.ya?ml$'
+
+# A plain manifest has both keys at the top level, Chart.yaml only has apiVersion.
+$MANIFEST_API_VERSION_PATTERN = '(?m)^apiVersion:\s'
+$MANIFEST_KIND_PATTERN        = '(?m)^kind:\s'
 
 # ===========================================================================
 # ===========================   CHECK EXAMPLES   ============================
@@ -104,8 +118,10 @@ $COMPOSE_REQUIRED_VARIABLE_PATTERN = '\$\{(?<name>[A-Za-z0-9_]+):\?'
 #   5. Bicep            Builds every template and parameter file.
 #   6. JavaScript       Checks the syntax of every file.
 #   7. Docker Compose   Renders every compose file with placeholder variables.
-#   8. Cleanup          Removes the work folder.
-#   9. Report           Lists all findings and skipped checks, fails on a finding.
+#   8. Helm             Lints and renders every chart per values.<env>.yaml.
+#   9. Kubernetes       Validates the rendered charts and every plain manifest.
+#   10. Cleanup         Removes the work folder.
+#   11. Report          Lists all findings and skipped checks, fails on a finding.
 #
 #   Every native command is judged by its exit code, its output only goes into the finding.
 #
@@ -252,6 +268,47 @@ if ($IsInstalled['Docker Compose']) {
         | Set-Content -Path $envFile
 
         $Findings.Add((Invoke-ExampleCommand -Check 'docker compose config' -Target $file.FullName -Command { docker compose --env-file $envFile -f $file.FullName config -q }))
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Helm
+
+# Every chart is linted and rendered once per values.<env>.yaml, Kubernetes validates the output.
+$Charts = @($Files | Where-Object -Property Name -EQ 'Chart.yaml' | Select-Object -ExpandProperty DirectoryName)
+$RenderedFolder = Join-Path -Path $WorkFolder -ChildPath 'rendered'
+
+if ($IsInstalled['Helm']) {
+    foreach ($chart in $Charts) {
+        $chartName = Split-Path -Path $chart -Leaf
+
+        foreach ($values in Get-ChildItem -Path $chart -File | Where-Object -Property Name -Match $HELM_ENVIRONMENT_VALUES_PATTERN) {
+            $target = "$chart -f $($values.Name)"
+
+            # 'sample-api' + 'values.dev.yaml' => '<WorkFolder>/rendered/sample-api.dev'
+            $outputFolder = Join-Path -Path $RenderedFolder -ChildPath "$chartName$($values.BaseName.Substring('values'.Length))"
+
+            $Findings.Add((Invoke-ExampleCommand -Check 'helm lint' -Target $target -Command { helm lint $chart -f $values.FullName }))
+            $Findings.Add((Invoke-ExampleCommand -Check 'helm template' -Target $target -Command { helm template $chartName $chart -f $values.FullName --output-dir $outputFolder }))
+        }
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Kubernetes
+
+# Plain manifests live outside every chart, the templates of a chart are checked through their rendered output.
+$PlainManifests = $Files
+| Where-Object -Property Extension -IN '.yaml', '.yml'
+| Where-Object { $candidate = $_; $null -EQ ($Charts | Where-Object { $candidate.FullName.StartsWith($_ + [System.IO.Path]::DirectorySeparatorChar) }) }
+| Where-Object { $content = Get-Content -Path $_.FullName -Raw; $content -MATCH $MANIFEST_API_VERSION_PATTERN -AND $content -MATCH $MANIFEST_KIND_PATTERN }
+
+if ($IsInstalled['Kubernetes']) {
+    foreach ($manifest in $PlainManifests) {
+        $Findings.Add((Invoke-ExampleCommand -Check 'kubeconform' -Target $manifest.FullName -Command { kubeconform @KUBECONFORM_ARGUMENTS $manifest.FullName }))
+    }
+    if (Test-Path -Path $RenderedFolder) {
+        $Findings.Add((Invoke-ExampleCommand -Check 'kubeconform' -Target $RenderedFolder -Command { kubeconform @KUBECONFORM_ARGUMENTS $RenderedFolder }))
     }
 }
 

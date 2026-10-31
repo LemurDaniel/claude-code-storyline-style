@@ -35,6 +35,28 @@ jobs:
           az bicep install
           "$HOME/.azure/bin" >> $env:GITHUB_PATH
 
+      - uses: azure/setup-helm@v5
+
+      # Pinned version, the archive is checked against the published checksum before use.
+      - name: Install kubeconform
+        shell: pwsh
+        run: |
+          $Version = 'v0.8.0'
+          $Archive = 'kubeconform-linux-amd64.tar.gz'
+          $BaseUrl = "https://github.com/yannh/kubeconform/releases/download/$Version"
+
+          Invoke-WebRequest -Uri "$BaseUrl/$Archive" -OutFile $Archive
+          Invoke-WebRequest -Uri "$BaseUrl/CHECKSUMS" -OutFile CHECKSUMS
+
+          $expectedHash = (Select-String -Path CHECKSUMS -Pattern $Archive -SimpleMatch).Line.Split(' ')[0]
+          if ((Get-FileHash -Path $Archive -Algorithm SHA256).Hash -NE $expectedHash) {
+              throw [System.InvalidOperationException]::new("$Archive must match the checksum '$expectedHash' of $Version.")
+          }
+
+          $null = New-Item -ItemType Directory -Path "$HOME/bin" -Force
+          tar -xzf $Archive -C "$HOME/bin" kubeconform
+          "$HOME/bin" >> $env:GITHUB_PATH
+
       - name: Install PSScriptAnalyzer
         shell: pwsh
         run: Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force

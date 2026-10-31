@@ -70,6 +70,7 @@ validates every example file with the tools of its language.
 | `references/bicep.md` | Bicep |
 | `references/yaml-pipelines.md` | GitHub Actions and Azure DevOps pipelines |
 | `references/docker-compose.md` | Docker Compose |
+| `references/kubernetes.md` | Kubernetes manifests and Helm charts |
 | `references/javascript.md` | JavaScript / Node.js |
 | `references/cpp.md` | C++ |
 

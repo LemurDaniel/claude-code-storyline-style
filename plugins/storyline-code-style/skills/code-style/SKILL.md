@@ -1,6 +1,6 @@
 ---
 name: code-style
-description: Storyline code style for every language and codebase - file headers, chapter/section banners, guard clauses, naming, docs, error handling, logging, verification, file naming. Correctness first, then readability. Load BEFORE writing, editing or reviewing code or IaC in any language (PowerShell, Terraform, Bicep, YAML pipelines for GitHub Actions / Azure DevOps, Docker Compose, JavaScript / Node.js, C++), even for a small fix or a single new function, and before /code-review or /simplify. Triggers on "code style", "style guide", "banner", "comments", "naming", "review", "clean up", "refactor".
+description: Storyline code style for every language and codebase - file headers, chapter/section banners, guard clauses, naming, docs, error handling, logging, verification, file naming. Correctness first, then readability. Load BEFORE writing, editing or reviewing code or IaC in any language (PowerShell, Terraform, Bicep, YAML pipelines for GitHub Actions / Azure DevOps, Docker Compose, Kubernetes manifests / Helm, JavaScript / Node.js, C++), even for a small fix or a single new function, and before /code-review or /simplify. Triggers on "code style", "style guide", "banner", "comments", "naming", "review", "clean up", "refactor".
 ---
 
 # Code Style
@@ -42,6 +42,7 @@ Before writing or reviewing code in one of these languages, read the matching fi
 | Bicep | `references/bicep.md` |
 | YAML pipelines (GitHub Actions / Azure DevOps) | `references/yaml-pipelines.md` |
 | Docker Compose | `references/docker-compose.md` |
+| Kubernetes manifests / Helm | `references/kubernetes.md` |
 | C++ | `references/cpp.md` |
 | JavaScript / Node.js | `references/javascript.md` |
 
@@ -289,7 +290,7 @@ Comments look the same in every language, only the comment character changes. A 
 | Comment character | Languages |
 | --- | --- |
 | `//` | JavaScript / Node.js, C++, Bicep |
-| `#` | PowerShell, Terraform, YAML, Docker Compose |
+| `#` | PowerShell, Terraform, YAML, Docker Compose, Kubernetes / Helm |
 
 - **Two levels of banners:**
   - **Chapter:**

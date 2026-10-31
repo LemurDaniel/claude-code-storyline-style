@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.4.0 - 2026-10-31
+- Kubernetes manifests / Helm: new `references/kubernetes.md` and `examples/kubernetes/` (plain issuer manifest, Helm chart with values per environment). The example check runs helm lint, helm template and kubeconform.
 - YAML pipelines and Docker Compose may use chapters, a large file groups its jobs or services into chapters.
 - Table of contents in every file with chapters, also with only one. Terraform: the header of `main.tf` lists every `.tf` file of the module with its chapter, the banner check compares the list with the files.
 - "The story" in `SKILL.md`: two annotated examples below the glossary, a folder tree (library, shelf, shelf label, call number) and one book with every part named on the left.

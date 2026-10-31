@@ -14,7 +14,7 @@ The repo is the marketplace and the plugin at once. There is no build, only Mark
 | `plugins/storyline-code-style/skills/code-style/references/*.md` | One file per language, loaded on demand |
 | `examples/<language>/` | Complete example files, one simple and one more complex per language. Repo only, not shipped with the plugin |
 | `.scripts/Test-StorylineBanner.ps1` | Banner check (format, chapter descriptions, numbered steps vs. sections, table of contents), runs locally and in CI |
-| `.scripts/Test-StorylineExample.ps1` | Example check (PowerShell parser and PSScriptAnalyzer, terraform fmt/validate/test, bicep build, node --check, docker compose config), runs locally and in CI |
+| `.scripts/Test-StorylineExample.ps1` | Example check (PowerShell parser and PSScriptAnalyzer, terraform fmt/validate/test, bicep build, node --check, docker compose config, helm lint/template, kubeconform), runs locally and in CI |
 | `CHANGELOG.md` | One entry per release |
 | `.scripts/New-SocialPreview.ps1` | Renders `.github/social-preview.png` (1280x640), uploaded manually under Settings → Social preview |
 | `.scripts/New-PluginIcon.ps1` | Renders `plugins/storyline-code-style/.claude-plugin/icon.png` (1024x1024) for the plugin directory listing |

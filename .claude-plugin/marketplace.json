@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "storyline-code-style",
-      "description": "Code style skill for PowerShell, Terraform, Bicep, YAML pipelines (GitHub Actions / Azure DevOps), Docker Compose, JavaScript / Node.js and C++. General rules plus one reference file per language, loaded only when needed.",
+      "description": "Code style skill for PowerShell, Terraform, Bicep, YAML pipelines (GitHub Actions / Azure DevOps), Docker Compose, Kubernetes / Helm, JavaScript / Node.js and C++. General rules plus one reference file per language, loaded only when needed.",
       "author": {
         "name": "LemurDaniel"
       },
