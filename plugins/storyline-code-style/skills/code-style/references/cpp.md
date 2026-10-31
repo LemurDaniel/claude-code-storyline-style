@@ -1,10 +1,10 @@
-# Code Style: C++ (Embedded / ESP32)
+# Code Style: C++
 - 4 spaces, Allman braces, everything in its own namespace. If the project has a license header, it goes in every file.
   ```cpp
   // SPDX-License-Identifier: MIT
   // Copyright (c) <YEAR> <AUTHOR>
 
-  namespace EspWeb
+  namespace Http
   {
       void Router::handle(Request &request)
       {
@@ -68,14 +68,14 @@
   ```
 - Includes grouped: framework, stdlib, libraries, own.
   ```cpp
-  #include <Arduino.h>
-  #include <WiFi.h>
+  #include <QCoreApplication>
+  #include <QTcpServer>
 
   #include <functional>
   #include <string>
   #include <vector>
 
-  #include <ArduinoJson.h>
+  #include <nlohmann/json.hpp>
 
   #include "MiniServer.h"
   #include "Router.h"
@@ -89,22 +89,14 @@
 
   void startWorkers();
   ```
-- Express-style API (`get/post/use/del`), factories for middleware (`cors()`, `auth()`).
+- Lambdas follow Allman as well.
   ```cpp
-  server.use(EspWeb::cors());
-  server.use("/api", EspWeb::auth(API_TOKEN));
-
-  server.get("/api/status", [](Request &req, Response &res) {
-      res.json({ {"uptime", millis()} });
+  std::sort(routes.begin(), routes.end(), [](const Route &left, const Route &right)
+  {
+      return left.path.size() > right.path.size();
   });
   ```
-- Singletons via `X::instance()`. Logs via `Serial.printf` with a component prefix.
+- Logs with a component prefix, through the project's logger or `printf`.
   ```cpp
-  MiniServer &MiniServer::instance()
-  {
-      static MiniServer server;
-      return server;
-  }
-
-  Serial.printf("[MiniServer] Listening on port %u with %u workers\n", port, workerCount);
+  std::printf("[MiniServer] Listening on port %u with %u workers\n", port, workerCount);
   ```

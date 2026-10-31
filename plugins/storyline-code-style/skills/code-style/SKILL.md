@@ -335,7 +335,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   # The caller only has to name the profile, everything else has a default and completes via TAB.
   Sync-UtilsCloudFile -ProfileName keepass
   ```
-- Verbs first, domain as prefix or namespace (`Get-UtilsConfig`, `EspWeb::Router`).
+- Verbs first, domain as prefix or namespace (`Get-UtilsConfig`, `Http::Router`).
 - Booleans carry an `is`/`has` prefix and the real bool type.
   ```js
   const isActive = true          // not: const active = 'yes'

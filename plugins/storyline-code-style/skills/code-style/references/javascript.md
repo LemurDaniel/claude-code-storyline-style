@@ -1,5 +1,5 @@
 # Code Style: JavaScript / Node.js
-- 4 spaces, unless `.editorconfig` says otherwise. No semicolons. ESM (`import`/`export`, `"type": "module"` in `package.json`), unless the project already uses CommonJS. Relative imports with file extension (`./output.js`). ESLint (flat config) with `@stylistic` is the benchmark.
+- 4 spaces, unless `.editorconfig` says otherwise. No semicolons. ESM (`import`/`export`, `"type": "module"` in `package.json`), unless the project already uses CommonJS. Relative imports with file extension (`./logger.js`). ESLint (flat config) with `@stylistic` is the benchmark.
   ```js
   // eslint.config.js
   import stylistic from '@stylistic/eslint-plugin'
@@ -31,20 +31,20 @@
       _index.js
       view.repositories.list.js
     data/
-      devops.js
+      database.js
     utils/
-      output.js
+      logger.js
   ```
-- Imports sit at the top in groups: first Node and framework (`fs`, `vscode`), then own modules, classes last.
+- Imports sit at the top in groups: first Node and framework (`fs`, `express`), then own modules, classes last.
   ```js
   import fs from 'node:fs'
   import path from 'node:path'
-  import vscode from 'vscode'
+  import express from 'express'
 
-  import output from '../utils/output.js'
+  import logger from '../utils/logger.js'
   import config from '../utils/config.js'
 
-  import DevOps from '../data/devops.js'
+  import Database from '../data/database.js'
   ```
 - One collection file `_index.js` per folder bundles all modules of the folder. The underscore always sorts it to the top in the explorer, and with ESM Node does not resolve an `index.js` automatically anyway:
   ```js
@@ -58,36 +58,38 @@
   ```
 - **Same structure for units of the same kind.** Every command follows the same skeleton:
   ```js
-  const commandName = 'operation.start'
-  async function command(context) {
+  const COMMAND_NAME = 'repository.download'
+  async function command(options) {
 
-      output.appendLine(`Invoked command '${commandName}' with '${context?.constructor?.name}'`)
-      if (null == context) return
+      logger.debug(`Invoked command '${COMMAND_NAME}' with '${JSON.stringify(options)}'`)
+      if (null == options) return
 
       try {
           ...
       } catch (exception) {
-          vscode.window.showErrorMessage(exception.message)
+          logger.error(exception.stack)
+          console.error(exception.message)
+          process.exitCode = 1
       }
 
   }
 
-  export default vscode.commands.registerCommand(`devopsscripts.${commandName}`, command)
+  export default { name: COMMAND_NAME, run: command }
   ```
 - Singletons: the default is the instance as the module's default export. Only for lazy init (expensive constructor, needs config or login) a static getter with a private field.
   ```js
   // Default: the module itself is the singleton.
-  class Output { ... }
+  class Logger { ... }
 
-  export default new Output()
+  export default new Logger()
   ```
   ```js
   // Lazy: created on first access.
-  class DevOps {
+  class ApiClient {
       static #instance = null
 
       static get instance() {
-          return DevOps.#instance ??= new DevOps()
+          return ApiClient.#instance ??= new ApiClient()
       }
   }
   ```
@@ -116,13 +118,13 @@
       return this.#loading
   }
   ```
-- One options object instead of many positional parameters: `api.get({ scope, domain, api, query })`.
+- One options object instead of many positional parameters: `api.get({ path, query, isCached })`.
   ```js
-  async get({ scope, domain = 'dev.azure.com', api, query = {} }) { ... }
+  async get({ path, query = {}, isCached = true }) { ... }
 
-  await api.get({ scope: project, api: 'git/repositories' })
+  await api.get({ path: 'repositories', query: { owner } })
   ```
-  Not like this: `api.get(project, null, 'git/repositories', {}, true)`
+  Not like this: `api.get('repositories', null, { owner }, true)`
 - Consistently `?.` and `??` instead of `&&` chains. `null == x` deliberately checks `null` and `undefined` at once, otherwise `===`.
   ```js
   const branch = repository?.defaultBranch ?? 'main'
@@ -135,7 +137,7 @@
   try {
       await pipeline.run()
   } catch (exception) {
-      output.appendLine(exception.stack)
+      logger.error(exception.stack)
       throw new Error(`Pipeline '${pipeline.name}' failed to start: ${exception.message}`, { cause: exception })
   }
   ```

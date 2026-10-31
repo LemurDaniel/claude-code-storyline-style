@@ -16,7 +16,7 @@ data is transformed in named stages, and logs leave a narrative trail at every d
 | `references/yaml-pipelines.md` | GitHub Actions and Azure DevOps pipelines |
 | `references/docker-compose.md` | Docker Compose |
 | `references/javascript.md` | JavaScript / Node.js |
-| `references/cpp.md` | C++ (embedded / ESP32) |
+| `references/cpp.md` | C++ |
 
 Only the skill description sits in context up front. Claude loads `SKILL.md` before writing or reviewing code,
 and reads a language file only when it works in that language.

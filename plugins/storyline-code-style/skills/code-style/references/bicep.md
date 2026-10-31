@@ -17,24 +17,13 @@
     }
   }
   ```
-- Registry modules live under `modules/<category>/<module>/` (`resources`, `patterns`, `utility`) with:
-  - `module.bicep` as entry point
-  - `version.json` with version, description and `deployment_tests`
-  - `example/` with `module.bicep` and `module.bicepparam` for CI test deployments
+- Modules live under `modules/<category>/<module>/` with `module.bicep` as entry point and an `example/` that deploys the module with test values:
   ```
   modules/resources/containerRegistry/
     module.bicep
-    version.json
     example/
       module.bicep
       module.bicepparam
-  ```
-  ```json
-  {
-    "version": "1.2.0",
-    "description": "Container Registry with networking and retention defaults.",
-    "deployment_tests": ["example/module.bicepparam"]
-  }
   ```
 - Sections are separated by a `// ----` banner per `SKILL.md` → "Comments", in a fixed order: parameters (naming, location, tags) → parameters (resource) → validations → deployment → outputs. A module with one resource gets by without chapters.
   ```bicep
@@ -154,8 +143,4 @@
 
   // NOTE: The deploying identity needs 'User Access Administrator' to assign AcrPull.
   param pullPrincipalIds = ['<PRINCIPAL_ID>']
-  ```
-- Deployment scripts in PowerShell (`.scripts/Invoke-*Deployment.ps1`). Versioning and CI publish run via `version.json`.
-  ```powershell
-  ./.scripts/Invoke-BicepDeployment.ps1 -Module resources/containerRegistry -Environment dev -WhatIf
   ```

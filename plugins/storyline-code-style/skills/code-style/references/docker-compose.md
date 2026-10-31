@@ -1,7 +1,7 @@
 # Code Style: Docker Compose
 - 2 spaces. One folder per service with exactly one `docker-compose.yaml` (extension `.yaml`, not `.yml`). The folder name is the project name.
   ```
-  Docker Compose/
+  compose/
     tmpl.docker-compose.yaml
     filebrowser/
       docker-compose.yaml
@@ -29,27 +29,26 @@
   7. Startup: `depends_on`, `healthcheck`
   8. Operations: `labels`, `logging`, `deploy`
   ```yaml
-  express:
-    container_name: express
+  api:
+    container_name: api
     restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
-    image: express:latest
+    image: api:latest
     pull_policy: build
 
     expose:
       - 8080
 
-    user: "0:0"   # root inside the container, needed for nsenter on the host
-    privileged: true
-    pid: "host"
+    user: "1000:1000"   # matches the owner of ./data on the host
 
     environment:
       ...
 
     volumes:
-      - ./scripts:/scripts:ro
+      - ./config:/app/config:ro
+      - ./data:/app/data
   ```
 - **`expose` instead of `ports`** when the service sits behind the reverse proxy. The proxy joins the `<service>_default` networks as `external: true`. `ports` only for things that must be reachable directly from the LAN, with a comment on what for.
   ```yaml
@@ -79,8 +78,8 @@
   ```
 - **Never secrets in plain text:** They come from the `.env` next to the file, required values with `${VAR:?message}` so startup aborts with a clear message. How to generate the value goes in a comment next to it:
   ```yaml
-  # Generate: openssl rand -hex 32  (min. 16 chars, otherwise /mcp stays disabled)
-  MCP_TOKEN: ${MCP_TOKEN:?Set MCP_TOKEN in .env}
+  # Generate: openssl rand -hex 32
+  API_TOKEN: ${API_TOKEN:?Set API_TOKEN in .env}
   ```
 - Quote bools and values containing `:` as strings (`"true"`, `"0:0"`, `"9090:9090"`).
   ```yaml
@@ -88,26 +87,27 @@
   ports:
     - "9090:9090"
   ```
-- **Volumes:** config from the repo relative (`./nginx/nginx.conf`), payload data absolute on the pool (`/NASPOOL/...`, `/NVME/...`). What the container only reads gets `:ro`. One comment per mount or group on what lives there. Data folders of the containers (`./data`, `./config`) are in `.gitignore`.
+- **Volumes:** config from the repo relative (`./nginx/nginx.conf`), payload data absolute on the host storage (`/srv/...`, `/mnt/...`). What the container only reads gets `:ro`. One comment per mount or group on what lives there. Data folders of the containers (`./data`, `./config`) are in `.gitignore`.
   ```yaml
   volumes:
     # Config from the repo
     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
 
-    # Media library on the pool, read only for the player
-    - /NASPOOL/media/movies:/media/movies:ro
+    # Media library on the host, read only for the player
+    - /srv/media/movies:/media/movies:ro
 
-    # Transcoding cache on the fast NVMe
-    - /NVME/jellyfin/cache:/cache
+    # Transcoding cache on fast storage
+    - /mnt/fast/jellyfin/cache:/cache
   ```
 - **Justify elevated privileges:** `privileged`, `pid: host`, `network_mode: host` and `user: "0:0"` always get a comment with the why.
   ```yaml
   network_mode: host   # DLNA discovery needs multicast on the host network
+  user: "0:0"          # the backup tool must read files of every container
   ```
-- **Document host prerequisites at the block:** Firewall rules, `daemon.json` entries or files that must exist before the first start stand as a commented-out command right where they are needed:
+- **Document host prerequisites at the block:** Firewall rules, kernel settings, `daemon.json` entries or files that must exist before the first start stand as a commented-out command right where they are needed:
   ```yaml
-  # Firewall: allow Prometheus to scrape Node Exporter metrics
-  # sudo ufw allow from <BRIDGE_NETWORK_CIDR> to any port 9100 proto tcp comment "Node Exporter Host Metrics"
+  # Host: Elasticsearch needs a higher mmap count than the default
+  # sudo sysctl -w vm.max_map_count=262144
   ```
 - **Leave optional features commented out** instead of deleting them (e.g. HTTPS port, GPU devices, proxy auth), with an `(Optional)` note above.
   ```yaml
