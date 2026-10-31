@@ -9,4 +9,4 @@ name: sample-api
 description: Sample web API with service, deployment and an optional ingress.
 type: application
 version: 0.1.0        # version of the chart itself
-appVersion: "1.4.1"   # informational, the deployed tag comes from values.<env>.yaml
+appVersion: "1.4.1"   # informational, the deployed tag comes from the values of the environment

@@ -25,7 +25,7 @@
     - Bicep            bicep build and bicep build-params.
     - JavaScript       node --check.
     - Docker Compose   docker compose config.
-    - Helm             helm lint and helm template per values.<env>.yaml.
+    - Helm             helm lint and helm template per values.<chart>.<env>.yaml.
     - Kubernetes       kubeconform on the rendered charts and every plain manifest.
 
     Terraform runs in a copy of the folder and Helm renders into the work folder,
@@ -104,8 +104,9 @@ $COMPOSE_FILE_NAMES = @('docker-compose.yaml', 'docker-compose.yml', 'compose.ya
 # A required compose variable: ${NAME:?message}, it gets a placeholder value for the check.
 $COMPOSE_REQUIRED_VARIABLE_PATTERN = '\$\{(?<name>[A-Za-z0-9_]+):\?'
 
-# The values of one environment next to Chart.yaml: values.dev.yaml, values.prod.yaml.
-$HELM_ENVIRONMENT_VALUES_PATTERN = '^values\..+\.ya?ml$'
+# The values of one chart in one environment, outside the chart: env/values.sample-api.dev.yaml.
+# {0} is the escaped chart name, the group env names the environment.
+$HELM_ENVIRONMENT_VALUES_PATTERN = '^values\.{0}\.(?<env>[^.]+)\.ya?ml$'
 
 # A plain manifest has both keys at the top level, Chart.yaml only has apiVersion.
 $MANIFEST_API_VERSION_PATTERN = '(?m)^apiVersion:\s'
@@ -124,7 +125,7 @@ $MANIFEST_KIND_PATTERN        = '(?m)^kind:\s'
 #   5. Bicep            Builds every template and parameter file.
 #   6. JavaScript       Checks the syntax of every file.
 #   7. Docker Compose   Renders every compose file with placeholder variables.
-#   8. Helm             Lints and renders every chart per values.<env>.yaml.
+#   8. Helm             Lints and renders every chart per values.<chart>.<env>.yaml.
 #   9. Kubernetes       Validates the rendered charts and every plain manifest.
 #   10. Cleanup         Removes the work folder.
 #   11. Report          Lists all findings and skipped checks, fails on a finding.
@@ -293,22 +294,24 @@ if ($IsInstalled['Docker Compose']) {
 
 # ---------------------------------------------------------------------------
 # Helm
-#   Lints and renders every chart per values.<env>.yaml.
+#   Lints and renders every chart per values.<chart>.<env>.yaml.
 # ---------------------------------------------------------------------------
 
-# Every chart is linted and rendered once per values.<env>.yaml, Kubernetes validates the output.
+# Every chart is linted and rendered once per values.<chart>.<env>.yaml, Kubernetes validates the output.
 $Charts = @($Files | Where-Object -Property Name -EQ 'Chart.yaml' | Select-Object -ExpandProperty DirectoryName)
 $RenderedFolder = Join-Path -Path $WorkFolder -ChildPath 'rendered'
 
 if ($IsInstalled['Helm']) {
     foreach ($chart in $Charts) {
         $chartName = Split-Path -Path $chart -Leaf
+        $valuesPattern = $HELM_ENVIRONMENT_VALUES_PATTERN -f [System.Text.RegularExpressions.Regex]::Escape($chartName)
 
-        foreach ($values in Get-ChildItem -Path $chart -File | Where-Object -Property Name -Match $HELM_ENVIRONMENT_VALUES_PATTERN) {
+        foreach ($values in $Files | Where-Object -Property Name -Match $valuesPattern) {
             $target = "$chart -f $($values.Name)"
 
-            # 'sample-api' + 'values.dev.yaml' => '<WorkFolder>/rendered/sample-api.dev'
-            $outputFolder = Join-Path -Path $RenderedFolder -ChildPath "$chartName$($values.BaseName.Substring('values'.Length))"
+            # 'values.sample-api.dev.yaml' => '<WorkFolder>/rendered/sample-api.dev'
+            $environment = [System.Text.RegularExpressions.Regex]::Match($values.Name, $valuesPattern).Groups['env'].Value
+            $outputFolder = Join-Path -Path $RenderedFolder -ChildPath "$chartName.$environment"
 
             $Findings.Add((Invoke-ExampleCommand -Check 'helm lint' -Target $target -Command { helm lint $chart -f $values.FullName }))
             $Findings.Add((Invoke-ExampleCommand -Check 'helm template' -Target $target -Command { helm template $chartName $chart -f $values.FullName --output-dir $outputFolder }))

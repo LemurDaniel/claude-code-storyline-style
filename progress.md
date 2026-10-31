@@ -41,18 +41,19 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | YAML: no empty line after the closing section line, the key follows directly. Everywhere else an empty line. `examples` is a required check for `main` next to `banners`. | Owner decision: in YAML the frame sticks to the job, service or value it describes. |
 | 2026-10-31 | PowerShell: in a file with chapters, `CLEAN` is its own epilogue chapter (`RESTORE CONTEXT` in `Move-KeyVaultSecret.ps1`). | The outline parser found the section `Restore context` outside every chapter. The banner check does not see code blocks, so only the rule in `powershell.md` prevents it. |
 | 2026-10-31 | Docker Compose: no reverse proxy rule (`expose` vs. `ports`, `external` networks), only "every published port gets a comment". Volumes: no host layout (relative config, absolute payload, `.gitignore`), only comment per mount and `:ro`. No `depends_on` / healthcheck / service name rule. | Owner decision: the proxy layout is one specific architecture, not a coding style. Style rules describe how code reads, not how a system is built. |
+| 2026-10-31 | Kubernetes: values per environment outside the chart in `env/values.<chart>.<env>.yaml`, the chart keeps only `values.yaml` and names no environment. Plain manifests on their own shelf `cluster/`, the root only holds shelves. The tree in `kubernetes.md` starts without a `k8s/` wrapper. | Owner decision: same as `env/<env>.tfvars` next to the Terraform code. Inside the chart `helm package` shipped every environment and a config change forced a new chart version. |
+| 2026-10-31 | YAML pipelines: the Bicep WhatIf artifact snippet is removed, only "WhatIf or plan as an artifact, name carries the stage" stays. | Owner decision: tool-specific pipeline setup is not a coding style, same line as the Docker Compose decision. |
 
 ## Open items
-- [ ] **Before merging 0.4.0:** owner review of the language files `yaml-pipelines.md` and `kubernetes.md` (`terraform.md`, `javascript.md`, `docker-compose.md` and `cpp.md` are done).
+- [x] **Before merging 0.4.0:** owner review of all six language files (`yaml-pipelines.md`, `terraform.md`, `kubernetes.md`, `javascript.md`, `docker-compose.md`, `cpp.md`), done 2026-10-31.
 - [ ] YAML pipelines are not validated in the example check yet (`actionlint` for GitHub Actions).
 - [ ] Reference file and examples for Dockerfile.
 - [ ] kubeconform did not run locally (download into the scratchpad was blocked), only in CI.
 - [ ] Rule for detecting the codebase's own conventions (`.editorconfig`, ESLint, `.clang-format`, `bicepconfig.json`, neighbouring files).
 - [ ] Evals with `claude plugin eval`: fixed prompts per language, checked against the rules and example files.
 - [ ] Run `claude plugin validate .` (the CLI was not on the PATH of the shell) and check `displayName` and the `$schema` URLs.
-- [ ] `"skills": ["./skills/"]` in `plugin.json` is the default path, probably removable.
 - [ ] Azure DevOps example files (only GitHub Actions so far).
 - [ ] C++ examples are not compiled yet (no compiler and no `Request.h` / `Response.h`).
 
 ## Next step
-Review the six language files listed under open items, then merge the 0.4.0 PR (`feature/priorities`, merging is the release). Then watch in a real session whether Claude reports `Verified` / `Not verified` at the end of a task.
+Mark PR #7 ready for review and merge it (`feature/priorities`, merging is the release 0.4.0). Then watch in a real session whether Claude reports `Verified` / `Not verified` at the end of a task.

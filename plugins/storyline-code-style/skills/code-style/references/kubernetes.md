@@ -1,33 +1,35 @@
 # Code Style: Kubernetes Manifests / Helm
-- 2 spaces. Every app is a Helm chart under `charts/<app>/`. Plain manifests only for cluster-wide resources that are applied once (issuers, namespaces, storage classes).
+- 2 spaces. Every app is a Helm chart under `charts/<app>/`. Plain manifests only for cluster-wide resources that are applied once (issuers, namespaces, storage classes), on their own shelf `cluster/`. The root holds only shelves: `cluster/`, `env/`, `charts/`.
   ```
-  k8s/
-    README.md
+  README.md
+  cluster/
     issuer.letsencrypt.yaml
-    charts/
-      sample-api/
-        Chart.yaml
-        README.md
-        values.yaml
-        values.dev.yaml
-        values.prod.yaml
-        templates/
-          _helpers.tpl
-          deployment.yaml
-          service.yaml
-          ingress.yaml
+  env/
+    README.md
+    values.sample-api.dev.yaml
+    values.sample-api.prod.yaml
+  charts/
+    sample-api/
+      Chart.yaml
+      README.md
+      values.yaml
+      templates/
+        _helpers.tpl
+        deployment.yaml
+        service.yaml
+        ingress.yaml
   ```
-- **File names with the kind first** per `SKILL.md` → "Structure": plain manifests as `<kind>.<topic>.yaml` (`issuer.letsencrypt.yaml`, `namespace.sample.yaml`). In a chart one app owns all templates, so the kind alone is the name (`deployment.yaml`, `service.yaml`). Values per environment as `values.<env>.yaml`.
-- **One chart, values per environment:** `values.yaml` holds the defaults for every environment, `values.<env>.yaml` only the differences. The templates are the same for all environments, see `SKILL.md` → "Configuration separate from code".
+- **File names with the kind first** per `SKILL.md` → "Structure": plain manifests as `<kind>.<topic>.yaml` (`issuer.letsencrypt.yaml`, `namespace.sample.yaml`). In a chart one app owns all templates, so the kind alone is the name (`deployment.yaml`, `service.yaml`). Values per environment as `values.<chart>.<env>.yaml`.
+- **One chart, values per environment outside the chart:** `values.yaml` in the chart holds the defaults for every environment, `env/values.<chart>.<env>.yaml` next to `charts/` only the differences. The templates are the same for all environments, see `SKILL.md` → "Configuration separate from code". The chart never names an environment or a path outside itself, so `helm package` ships no environment and a config change needs no new chart version.
   ```yaml
-  # values.prod.yaml
+  # env/values.sample-api.prod.yaml
   image:
     tag: "1.4.1"
 
   replicas: 3
   environment: Production
   ```
-  Not like this: a full copy of every manifest in `prod/` and `test/`, every change has to be made twice.
+  Not like this: a full copy of every manifest in `prod/` and `test/`, every change has to be made twice. Nor `values.prod.yaml` inside the chart, it ships with every package of the chart.
 - **Header as a section banner** at the top of every plain manifest, `Chart.yaml` and values file, like in YAML pipelines: what it holds, prerequisites, the install command. Templates have no header, the chart `README.md` lists them.
   ```yaml
   # ---------------------------------------------------------------------------
@@ -35,7 +37,7 @@
   #   Two cluster-wide ACME issuers for cert-manager.
   #   Requires: cert-manager and the nginx ingress controller in the cluster.
   #
-  #   kubectl apply -f issuer.letsencrypt.yaml
+  #   kubectl apply -f cluster/issuer.letsencrypt.yaml
   # ---------------------------------------------------------------------------
   ```
 - **Several resources in one file** are separated by `---` and one section banner each inside a chapter, the title says what the resource is for.
@@ -65,7 +67,7 @@
   ```
 - **A fixed image tag, never `latest`:** the tag is set per environment and the template fails the render without one. With a fixed tag `imagePullPolicy: IfNotPresent` is enough.
   ```yaml
-  {{- $tag := required "image.tag must be a fixed version, set it in values.<env>.yaml." .Values.image.tag -}}
+  {{- $tag := required "image.tag must be a fixed version, set it in the values of the environment." .Values.image.tag -}}
   {{- if eq $tag "latest" -}}
   {{- fail "image.tag must be a fixed version, got latest." -}}
   {{- end -}}
@@ -105,12 +107,22 @@
     # Uploads - large bodies and long requests for file imports
     nginx.ingress.kubernetes.io/proxy-body-size: "100m"
   ```
-- **Templates:** `include` with `nindent` instead of `template`, `{{-` to trim whitespace, `required` with a message that states the expectation for every value without a sensible default.
+- **`include` with `nindent`, never `template`:** `include` returns a string that can be piped, `nindent` starts a new line and indents the block to where it belongs.
+  ```yaml
+  labels:
+    {{- include "sample-api.labels" . | nindent 4 }}
+  ```
+  Not like this: `{{ template "sample-api.labels" . }}`, its output cannot be piped or indented, so the YAML breaks as soon as the block sits deeper.
+- **`{{-` and `-}}` trim the whitespace** before and after a tag, so `if`, `range` and `define` leave no empty lines or broken indents in the rendered output.
+  ```yaml
+  {{- if .Values.ingress.isEnabled }}
+  ```
+- **`required` for every value without a sensible default** (host, image tag), the message states when and why it is needed. Without it Helm renders an empty value that only fails in the cluster. A value with a sensible default goes into `values.yaml` instead.
   ```yaml
   - host: {{ required "ingress.host must be set when ingress.isEnabled is true." .Values.ingress.host }}
   ```
-- **Verify** per `SKILL.md` → "Errors, logging, tests": `helm lint` and `helm template` per `values.<env>.yaml`, the rendered output and every plain manifest through `kubeconform`.
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `helm lint` and `helm template` per `env/values.<chart>.<env>.yaml`, the rendered output and every plain manifest through `kubeconform`.
   ```
-  helm lint charts/sample-api -f charts/sample-api/values.dev.yaml
-  helm template sample-api charts/sample-api -f charts/sample-api/values.dev.yaml | kubeconform -strict -ignore-missing-schemas
+  helm lint charts/sample-api -f env/values.sample-api.dev.yaml
+  helm template sample-api charts/sample-api -f env/values.sample-api.dev.yaml | kubeconform -strict -ignore-missing-schemas
   ```

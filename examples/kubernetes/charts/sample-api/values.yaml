@@ -1,8 +1,8 @@
 # ---------------------------------------------------------------------------
 # Default Values
-#   Defaults for every environment, values.<env>.yaml only holds the differences.
+#   Defaults for every environment, the values of an environment only hold the differences.
 #
-#   helm upgrade --install sample-api ./charts/sample-api --namespace sample-dev --create-namespace -f ./charts/sample-api/values.dev.yaml
+#   helm upgrade --install sample-api ./charts/sample-api --namespace sample-dev --create-namespace -f ./env/values.sample-api.dev.yaml
 # ---------------------------------------------------------------------------
 
 #
@@ -35,7 +35,7 @@ application: sample-platform
 image:
   # (Required) Registry and repository, without the tag.
   repository: registry.example.com/sample-api
-  # (Required) Fixed version, never latest. Set in values.<env>.yaml.
+  # (Required) Fixed version, never latest. Set per environment.
   tag: ""
 
 # ---------------------------------------------------------------------------
@@ -85,5 +85,5 @@ ingress:
   isEnabled: false
   # (Required when enabled) The public host name.
   host: ""
-  # (Optional) ClusterIssuer from issuer.letsencrypt.yaml. Defaults to staging.
+  # (Optional) ClusterIssuer of the cluster. Defaults to staging.
   clusterIssuer: letsencrypt-staging

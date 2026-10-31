@@ -5,7 +5,7 @@
 #   Cluster-wide, so they live outside the charts and are applied once.
 #   Requires: cert-manager and the nginx ingress controller in the cluster.
 #
-#   kubectl apply -f issuer.letsencrypt.yaml
+#   kubectl apply -f cluster/issuer.letsencrypt.yaml
 # ---------------------------------------------------------------------------
 
 #

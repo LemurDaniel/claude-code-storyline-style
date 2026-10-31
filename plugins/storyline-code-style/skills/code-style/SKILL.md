@@ -547,7 +547,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
     storage_account          = { sku = "Standard_LRS" }
   }
   ```
-- **Configuration separate from code:** Environment-dependent values live in config files per environment (`env/<env>.tfvars`, `*.bicepparam`). The code is the same for all environments.
+- **Configuration separate from code:** Environment-dependent values live in config files per environment (`env/<env>.tfvars`, `*.bicepparam`, `env/values.<chart>.<env>.yaml`). The code is the same for all environments.
   ```
   env/
     dev.tfvars

@@ -17,7 +17,7 @@ microservice: {{ .Chart.Name }}
   image: {{ include "sample-api.image" . }}
 */}}
 {{- define "sample-api.image" -}}
-{{- $tag := required "image.tag must be a fixed version, set it in values.<env>.yaml." .Values.image.tag -}}
+{{- $tag := required "image.tag must be a fixed version, set it in the values of the environment." .Values.image.tag -}}
 {{- if eq $tag "latest" -}}
 {{- fail "image.tag must be a fixed version, got latest." -}}
 {{- end -}}

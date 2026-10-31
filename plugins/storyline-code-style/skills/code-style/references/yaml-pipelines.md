@@ -91,7 +91,7 @@
         New-AzResourceGroupDeployment @Deployment -ResourceGroupName $env:RESOURCE_GROUP -Verbose
   ```
 - **Never template expressions directly in scripts:** neither `${{ }}` in `run:` (GitHub Actions) nor in `inline:`/`script:` (Azure DevOps). Values reach the script via `env:` and are read as `$env:NAME`, otherwise script injection is possible (see above and the `config` job under GitHub Actions).
-- The results of WhatIf or plan are published as an artifact so the approver can read them.
+- The results of WhatIf or plan are published as an artifact so the approver can read them. The artifact name carries the stage, so the approver opens the right one.
 - Placeholders instead of real names in templates (`<PROJECT>/<REPO_NAME>`, `rg-sample-dev`).
 - **Verify** per `SKILL.md` → "Errors, logging, tests": `actionlint` for GitHub Actions where installed, inline scripts with the checks of their language. Azure DevOps has no local validator, a run with only the preview stage is the check.
   ```
@@ -315,12 +315,4 @@
     - ${{ each subModule in parameters.checkoutSubModules }}:
         - checkout: ${{ subModule.alias }}
           path: s/$(Build.Repository.Name)/${{ subModule.path }}
-  ```
-- Write the WhatIf output via `Start-Transcript` into `$(Build.ArtifactStagingDirectory)` and publish it with the stage name:
-  ```yaml
-  - task: PublishPipelineArtifact@1
-    displayName: Bicep WhatIf Artifact
-    inputs:
-      targetPath: $(Build.ArtifactStagingDirectory)/bicep_whatif.txt
-      artifact: bicep_whatif_${{ parameters.stage }}
   ```

@@ -11,9 +11,10 @@
 - PowerShell, JavaScript and C++: the banner bullets that only repeated SKILL.md → "Comments" are removed.
 - Bicep: chapters and sections exactly as in SKILL.md, no Bicep-specific banner rule, an empty line after every section title.
 - Bicep: one module is one file `module.<name>.bicep` in a category folder with a `README.md`, `main.bicep` is the entry point and `main.<env>.bicepparam` the test deployment. No more folder and `example/` per module.
-- Kubernetes manifests / Helm: new `references/kubernetes.md` and `examples/kubernetes/` (plain issuer manifest, Helm chart with values per environment). The example check runs helm lint, helm template and kubeconform.
+- Kubernetes manifests / Helm: new `references/kubernetes.md` and `examples/kubernetes/` (plain issuer manifest, Helm chart with values per environment). The values per environment live outside the chart in `env/values.<chart>.<env>.yaml`, the chart only holds the defaults. Plain manifests live on their own shelf `cluster/`. The example check runs helm lint, helm template and kubeconform.
 - Docker Compose: the reverse proxy rule (`expose` instead of `ports`, proxy on `external` networks) is removed, it described one setup, not a style. What stays: every published port gets a comment on what for. The volume rule loses the host layout (relative config, absolute payload paths, data folders in `.gitignore`) and keeps the comment per mount and `:ro`. The `depends_on` / healthcheck / service name rule is removed.
 - YAML pipelines and Docker Compose may use chapters, a large file groups its jobs or services into chapters.
+- YAML pipelines: the Bicep-specific WhatIf artifact rule (`Start-Transcript`, `bicep_whatif_<stage>`) is removed. The general rule stays: WhatIf or plan is published as an artifact, its name carries the stage.
 - Table of contents in every file with chapters, also with only one. Terraform: the header of `main.tf` lists every `.tf` file of the module with its chapter, the banner check compares the list with the files.
 - "The story" in `SKILL.md`: two annotated examples below the glossary, a folder tree (library, shelf, shelf label, call number) and one book with every part named on the left.
 - Review checklist grouped by the sections of the rules, one item per rule, so a review walks through every section in order.

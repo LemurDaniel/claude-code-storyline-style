@@ -1,8 +1,8 @@
 # ---------------------------------------------------------------------------
 # Prod Values
-#   Only the differences to values.yaml.
+#   Only the differences to charts/sample-api/values.yaml.
 #
-#   helm upgrade --install sample-api ./charts/sample-api --namespace sample-prod --create-namespace -f ./charts/sample-api/values.prod.yaml
+#   helm upgrade --install sample-api ./charts/sample-api --namespace sample-prod --create-namespace -f ./env/values.sample-api.prod.yaml
 # ---------------------------------------------------------------------------
 
 image:
