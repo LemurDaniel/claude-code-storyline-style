@@ -2,7 +2,7 @@
 # Release
 #
 #   Creates a GitHub release when a tag 'v<version>' is pushed:
-#     git tag v0.1.0 && git push origin v0.1.0
+#     git tag v0.2.0 && git push origin v0.2.0
 #
 #   The tag must match the version in plugin.json and have an entry in
 #   CHANGELOG.md, the entry becomes the release notes. The banner check
