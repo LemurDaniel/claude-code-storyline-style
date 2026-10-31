@@ -1,5 +1,6 @@
 # NOTE:
-#   Requires: PowerShell 7 on Windows (System.Drawing, fonts Segoe UI and Cascadia Mono).
+#   Requires: PowerShell 7 on Windows (System.Drawing, fonts Segoe UI and Cascadia Mono)
+#   and .github/assets/twemoji-robot.png.
 #
 #   ./.scripts/New-SocialPreview.ps1 -OutputPath ./.github/social-preview.png
 #
@@ -44,7 +45,6 @@ $FONT_SUBTITLE = [System.Drawing.Font]::new('Segoe UI', 25, [System.Drawing.Font
 $FONT_CAPTION  = [System.Drawing.Font]::new('Segoe UI', 17, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
 $FONT_SMALL    = [System.Drawing.Font]::new('Segoe UI', 14, [System.Drawing.FontStyle]::Italic, [System.Drawing.GraphicsUnit]::Pixel)
 $FONT_NOTICE   = [System.Drawing.Font]::new('Segoe UI', 20, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
-$FONT_EMOJI    = [System.Drawing.Font]::new('Segoe UI Emoji', 26, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
 $FONT_CODE     = [System.Drawing.Font]::new('Cascadia Mono', 15, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
 $LINE_HEIGHT   = 22
 
@@ -79,7 +79,9 @@ $BOOK_LINES = @(
 
 $LANGUAGES = 'PowerShell  ·  Terraform  ·  Bicep  ·  GitHub Actions  ·  Azure DevOps  ·  Docker Compose  ·  JavaScript  ·  C++'
 $AI_NOTICE = 'AI generated artwork'
-$AI_ICON   = [System.Char]::ConvertFromUtf32(0x1F916)   # robot face
+# Twemoji 'robot' (CC BY 4.0, https://github.com/jdecked/twemoji), GDI+ cannot render color emoji fonts.
+$AI_ICON_PATH = Join-Path -Path $PSScriptRoot -ChildPath '../.github/assets/twemoji-robot.png'
+$AI_ICON_SIZE = 36
 
 # ---------------------------------------------------------------------------
 # Draw
@@ -99,9 +101,10 @@ $borderPen  = [System.Drawing.Pen]::new($COLOR_BORDER, 2)
 
 # AI notice with a robot icon in the top right corner.
 $noticeSize = $graphics.MeasureString($AI_NOTICE, $FONT_NOTICE)
-$iconSize   = $graphics.MeasureString($AI_ICON, $FONT_EMOJI)
 $noticeX    = $WIDTH - $MARGIN - $noticeSize.Width
-$graphics.DrawString($AI_ICON, $FONT_EMOJI, $mutedBrush, $noticeX - $iconSize.Width - 4, 44)
+$icon = [System.Drawing.Image]::FromFile($AI_ICON_PATH)
+$graphics.DrawImage($icon, [System.Drawing.Rectangle]::new([int]($noticeX - $AI_ICON_SIZE - 10), 44, $AI_ICON_SIZE, $AI_ICON_SIZE))
+$icon.Dispose()
 $graphics.DrawString($AI_NOTICE, $FONT_NOTICE, $mutedBrush, $noticeX, 50)
 
 # Title and tagline.

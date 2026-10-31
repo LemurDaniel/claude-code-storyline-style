@@ -92,4 +92,4 @@ open an issue, it is a human call in the end.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). The robot emoji in the social preview is from [Twemoji](https://github.com/jdecked/twemoji), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
