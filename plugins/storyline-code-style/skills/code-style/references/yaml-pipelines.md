@@ -4,14 +4,15 @@
 - 2 spaces. One thin entry point per pipeline calls shared `tmpl.*` templates. The logic lives only in the templates.
 - A header block before `jobs:` or `stages:` lists the auth setup, required secrets and required variables with their meaning:
   ```yaml
-  # =============================================================================
+  # ---------------------------------------------------------------------------
   # Azure Authentication via Workload Identity Federation (OIDC)
-  # ==> no client secrets or certificates needed.
   #
-  # Required GitHub Secrets:
-  #   AZURE_CLIENT_ID   — Client ID of the App Registration or Managed Identity
-  #   AZURE_TENANT_ID   — Azure AD Tenant ID
-  # =============================================================================
+  #   No client secrets or certificates needed.
+  #
+  #   Required GitHub Secrets:
+  #     AZURE_CLIENT_ID   Client ID of the App Registration or Managed Identity
+  #     AZURE_TENANT_ID   Azure AD Tenant ID
+  #
   ```
 - **Dangerous steps only behind an explicit switch:** First WhatIf or plan, then approval, then deploy. `apply` or deploy never runs without a preview first.
 - **Allowed values sit at the parameter**, either as `values`/`options` or as a comment next to it:
@@ -63,23 +64,34 @@
   ```
 - **Inline scripts in `pwsh`** and following the PowerShell style. That means splatting, `-NOT`/`-EQ`, no backtick line breaks and validation with a clear message. Once an inline script grows beyond about 30 lines, it moves to `.scripts/*.ps1`.
   ```yaml
-  inline: |
-    $Deployment = @{
-        Name                  = '${{ parameters.deploymentName }}'
-        TemplateFile          = '${{ parameters.templateFile }}'
-        TemplateParameterFile = '${{ parameters.parametersFile }}'
-    }
+  - task: AzurePowerShell@5
+    displayName: Deploy Bicep
+    env:
+      DEPLOYMENT_NAME: ${{ parameters.deploymentName }}
+      TEMPLATE_FILE: ${{ parameters.templateFile }}
+      PARAMETERS_FILE: ${{ parameters.parametersFile }}
+      RESOURCE_GROUP: ${{ parameters.resourceGroup }}
+      IS_WHAT_IF_ONLY: ${{ parameters.whatIfOnly }}
+    inputs:
+      ...
+      inline: |
+        $Deployment = @{
+            Name                  = $env:DEPLOYMENT_NAME
+            TemplateFile          = $env:TEMPLATE_FILE
+            TemplateParameterFile = $env:PARAMETERS_FILE
+        }
 
-    if ([System.String]::IsNullOrEmpty('${{ parameters.resourceGroup }}')) {
-        throw [System.ArgumentException]::new("Scope 'resourceGroup' requires the parameter 'resourceGroup'.")
-    }
+        if ([System.String]::IsNullOrEmpty($env:RESOURCE_GROUP)) {
+            throw [System.ArgumentException]::new("Scope 'resourceGroup' requires the parameter 'resourceGroup'.")
+        }
 
-    if ([System.Boolean]::Parse('${{ parameters.WhatIf }}')) {
-        $Deployment.Add('WhatIf', $true)
-    }
+        if ([System.Boolean]::Parse($env:IS_WHAT_IF_ONLY)) {
+            $Deployment.Add('WhatIf', $true)
+        }
 
-    New-AzResourceGroupDeployment @Deployment -ResourceGroupName '${{ parameters.resourceGroup }}' -Verbose
+        New-AzResourceGroupDeployment @Deployment -ResourceGroupName $env:RESOURCE_GROUP -Verbose
   ```
+- **Never template expressions directly in scripts:** neither `${{ }}` in `run:` (GitHub Actions) nor in `inline:`/`script:` (Azure DevOps). Values reach the script via `env:` and are read as `$env:NAME`, otherwise script injection is possible (see above and the `config` job under GitHub Actions).
 - The results of WhatIf or plan are published as an artifact so the approver can read them.
 - Placeholders instead of real names in templates (`<PROJECT>/<REPO_NAME>`, `rg-sample-dev`).
 
@@ -159,8 +171,6 @@
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
   ```
-
-- **Never `${{ }}` directly in `run:`.** Inputs and context values reach the script via `env:`, otherwise script injection is possible (see the `config` job above).
 - Pin third-party actions to the commit SHA, with the version as a comment next to it. Actions from GitHub (`actions/*`) and Microsoft (`azure/*`) may use the major tag.
   ```yaml
   - uses: actions/checkout@v4

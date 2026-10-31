@@ -78,17 +78,15 @@
     }
   }
   ```
-- Resource blocks are split into sections inside:
+- Resource blocks are split into groups inside, with a group comment per `SKILL.md` → "Comments":
   ```hcl
   resource "azurerm_container_registry" "main" {
-    #
-    # general resource attributes
+    # General resource attributes
     name                = ...
     resource_group_name = var.resource_group_reference.name
     tags                = merge(var.resource_group_reference.tags, var.container_registry.tags)
 
-    #
-    # resource specific attributes
+    # Resource specific attributes
     sku = var.container_registry.sku
   }
   ```

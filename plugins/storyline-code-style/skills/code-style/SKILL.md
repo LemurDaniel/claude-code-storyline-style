@@ -133,6 +133,8 @@ Comments look the same in every language, only the comment character changes. A 
   - A chapter without sections is fine. Small files (a Bicep module, a Compose file) get by with sections alone.
   - No other banner styles, so no `/* #### */` boxes, `<# #### #>` blocks, `/*---- * Title *` blocks, `////` or `#####` lines.
   - YAML pipelines and Docker Compose only use the section level.
+- **Group comments inside a unit:** Inside a class, resource block or parameter list there are no banners. A single comment line in normal case above the group structures it (`# General resource attributes`, `// Get Index`).
+- **Block comment syntax** (`/* */`, `/** */`, `<# #>`) is only for doc comments and multi-line explanations above a block, never for banners.
 - **Chapter description:** Right below the frame it says what happens in the chapter. Empty comment lines above and below set it apart.
   - In **flow chapters** the steps are numbered. The section name is on the left, a one-line explanation on the right, columns aligned. Continuation lines indent to the explanation column.
   - In **collection chapters** (helpers, settings) there is one entry per function or section, without numbers.
@@ -201,8 +203,11 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
 - **File names as a dotted hierarchy** `<kind>.<topic>[.<variant>].<ext>`, so they group themselves in the explorer.
   The kind comes first even when the folder already names it (`routes/routes.status.js`). That keeps the file name
   unique, also in an editor tab or a search. Plural when a file bundles several units (`routes.`,
-  `tools.`), singular for one unit per file (`command.`, `main.`), consistent within a folder. Exceptions are entry points (`_index.js`, `main.tf`, `Utils.psm1`)
-  and languages with their own naming convention (PowerShell `Verb-Noun.ps1`, C++ class names).
+  `tools.`), singular for one unit per file (`command.`, `main.`), consistent within a folder. Exceptions:
+  - entry points (`_index.js`, `main.tf`, `module.bicep`, `Utils.psm1`)
+  - files whose name a tool expects (`docker-compose.yaml`, `package.json`, `.clang-format`)
+  - languages with their own naming convention (PowerShell `Verb-Noun.ps1`, C++ class names)
+  - exceptions named in a language file (e.g. `utils/` and `data/` in JavaScript)
   ```
   main.vnet.tf             locals.generate.tf       locals.pattern.tf
   deploy.infra.dev.yaml    deploy.infra.prod.yaml   tmpl.bicep.infra.deploy.yaml

@@ -121,7 +121,7 @@
       ...
   }
   ```
-- `SupportsShouldProcess` for mutating operations. Reset changed context in `CLEAN`.
+- `SupportsShouldProcess` for mutating operations. Reset changed context in `CLEAN` (PowerShell 7.3+, also runs on errors and Ctrl+C). Below 7.3 use `try`/`finally` instead.
   ```powershell
   [CmdletBinding(SupportsShouldProcess = $true)]
   param (...)
