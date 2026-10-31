@@ -85,8 +85,8 @@ There are exactly three levels inside a book: chapter, section, group comment. N
   // NOTE:
   //  node .\day09-part1.js [INPUT|TEST]
   //
-  //    'node .\day09-part1.js INPUT'   to process today's input from 'day09-input.txt'.
-  //    'node .\day09-part1.js TEST'    to process today's test input from 'day09-input-test.txt'.
+  //    'node .\day09-part1.js INPUT'   to process the input from 'day09-input.txt'.
+  //    'node .\day09-part1.js TEST'    to process the test input from 'day09-input-test.txt'.
   ```
   ```powershell
   # NOTE:
@@ -149,13 +149,13 @@ There are exactly three levels inside a book: chapter, section, group comment. N
   if (!user) return
   if (!user.isActive) return
 
-  sendMail(user)
+  grantAccess(user)
   ```
   Not like this:
   ```js
   if (user) {
       if (user.isActive) {
-          sendMail(user)
+          grantAccess(user)
       }
   }
   ```
@@ -214,7 +214,7 @@ function getViewingLine(grid, x, y, direction) { ... }
 // ==========================   SOLVE TREE PUZZLE   ==========================
 // ===========================================================================
 //
-//   1. Parse input   Reads today's input file into a grid.
+//   1. Parse input   Reads the input file into a grid.
 //   2. Part 1        Counts the trees visible from outside the grid.
 //   3. Part 2        Finds the highest scenic score of a single tree.
 //                    Ties are resolved by the first tree found.
@@ -293,7 +293,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   ```js
   // Instead of building the same URL in three places:
   function getApiUrl({ organization, project, api }) {
-      return `https://dev.azure.com/${organization}/${project}/_apis/${api}?api-version=${API_VERSION}`
+      return `https://api.example.com/${organization}/${project}/${api}?api-version=${API_VERSION}`
   }
   ```
 - **Explicit over magic:** Imports and registrations are written out, types are unambiguous, magic numbers are named constants.

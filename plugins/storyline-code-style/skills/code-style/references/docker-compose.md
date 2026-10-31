@@ -76,10 +76,10 @@
     # Base URL when routed via the reverse proxy
     FB_BASEURL: /filebrowser
   ```
-- **Never secrets in plain text:** They come from the `.env` next to the file, required values with `${VAR:?message}` so startup aborts with a clear message. How to generate the value goes in a comment next to it:
+- **Never secrets in plain text:** They come from the `.env` next to the file and are never written into the compose file. Required values use `${VAR:?message}` so startup aborts with a clear message, and a comment next to a generated value says how to generate it (e.g. `openssl rand -hex 32`):
   ```yaml
-  # Generate: openssl rand -hex 32
-  API_TOKEN: ${API_TOKEN:?Set API_TOKEN in .env}
+  # Value from .env, startup aborts with the message when it is missing
+  ADMIN_USER: ${ADMIN_USER:?Set ADMIN_USER in .env}
   ```
 - Quote bools and values containing `:` as strings (`"true"`, `"0:0"`, `"9090:9090"`).
   ```yaml

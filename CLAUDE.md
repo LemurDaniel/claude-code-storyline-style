@@ -16,6 +16,7 @@ The repo is the marketplace and the plugin at once. There is no build, only Mark
 | `.scripts/Test-StorylineBanner.ps1` | Banner check (format, chapter descriptions, numbered steps vs. sections, table of contents), runs locally and in CI |
 | `CHANGELOG.md` | One entry per release |
 | `.scripts/New-SocialPreview.ps1` | Renders `.github/social-preview.png` (1280x640), uploaded manually under Settings → Social preview |
+| `.scripts/New-PluginIcon.ps1` | Renders `plugins/storyline-code-style/.claude-plugin/icon.png` (1024x1024) for the plugin directory listing |
 | `.github/workflows/check.banners.yaml` | Runs the banner check on every push and PR |
 | `.github/workflows/release.yaml` | On a tag `v<version>`: checks version and CHANGELOG, publishes the GitHub release |
 | `progress.md` | Goal, decisions, open items, next step |
@@ -49,3 +50,6 @@ Every edit here is live in all local sessions right away, so a broken rule break
 ## Workflow
 - `main` is protected: changes only via PR, the `banners` check must pass, linear history, no force push. Work on a branch (`feature/<topic>`, `fix/<topic>`), then `gh pr create`.
 - Commit messages: short imperative title, bullet list per change below.
+
+## Plugin directory submission
+The directory lint flags credential-looking names (`TOKEN`, `PASSWORD`, `SECRET`) next to remote hosts, words like `sendMail`, real vendor hosts (`dev.azure.com`) and unbalanced apostrophes in code blocks (`today's` made it read to the end of the file). Snippets use `api.example.com`, neutral variable names and no apostrophes inside code blocks. `${{ secrets.* }}` in the pipeline reference is expected and gets confirmed by a reviewer.
