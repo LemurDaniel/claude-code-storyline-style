@@ -175,3 +175,20 @@
       }
   }
   ```
+- **Strict from the first line:** every script and every `.psm1` sets `Set-StrictMode -Version 1.0` and `$ErrorActionPreference = 'Stop'` right after `param` (in `BEGIN` when the script uses blocks). Function files inherit both from the `.psm1`. Version 1.0 catches misspelled variables, `Latest` would also throw on missing properties and break checks like `$null -EQ $Config.Profiles`. `Stop` does not cover native commands, check `$LASTEXITCODE` after them.
+  ```powershell
+  param (...)
+
+  Set-StrictMode -Version 1.0
+  $ErrorActionPreference = 'Stop'
+
+  terraform init -input=false
+  if ($LASTEXITCODE -NE 0) {
+      throw [System.InvalidOperationException]::new("terraform init must succeed, got exit code $LASTEXITCODE.")
+  }
+  ```
+- **Verify** per `SKILL.md` → "Errors, logging, tests": parse every changed file, run `Invoke-ScriptAnalyzer -Severity Warning, Error` and the Pester tests of the module.
+  ```powershell
+  Invoke-ScriptAnalyzer -Path ./Utils -Recurse -Severity Warning, Error
+  Invoke-Pester -Path ./Utils/tests
+  ```

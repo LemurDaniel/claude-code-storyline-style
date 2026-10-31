@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 - 2026-10-31
+- Priorities in `SKILL.md`: correctness is the boundary, readability the goal, everything else comes after. Rules serve readability, a deliberate deviation gets a comment saying why. Reviews report correctness first.
+- Verify before done (proofreading): run the parser, linter, formatter check and tests of the language, name every check that could not run. Every language file has a `Verify` line.
+- PowerShell: `Set-StrictMode -Version 1.0` and `$ErrorActionPreference = 'Stop'` in every script and `.psm1`, `$LASTEXITCODE` after native commands.
+- JavaScript: every promise is awaited or returned.
+- Example check `.scripts/Test-StorylineExample.ps1` and workflow `check.examples.yaml`: PowerShell parser and PSScriptAnalyzer, terraform fmt/validate/test, bicep build, node --check, docker compose config on every push and PR.
+
 ## 0.3.0 - 2026-10-31
 - Table of contents in the header from two chapters on instead of three. A file with chapters always lists them, so the reader never has to guess whether a list is missing or just not required. Banner check and example files updated.
 - Show the shape change: a non-obvious parse or reshape gets one comment with a sample input and its result (`azurerm_disk::os => disk`).

@@ -144,3 +144,7 @@
       prometheus:
         condition: service_healthy   # waits for the healthcheck, not just the container start
   ```
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `docker compose config -q` renders the file, with every required variable set in `.env` or as a placeholder.
+  ```
+  docker compose --env-file .env.example config -q
+  ```

@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------------------
+# Check Examples
+#
+#   Runs .scripts/Test-StorylineExample.ps1 on every push and pull request.
+#   Installs every tool first, -IsStrict fails when one is still missing.
+#   No secrets or Azure access needed, the job only reads the repo.
+#
+
+name: Check Examples
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # Examples - validates every example file with the tools of its language
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The wrapper rewrites the output of terraform, the script reads the exit code directly.
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e   # v4.0.1
+        with:
+          terraform_wrapper: false
+
+      - name: Install Bicep CLI
+        shell: pwsh
+        run: |
+          az bicep install
+          "$HOME/.azure/bin" >> $env:GITHUB_PATH
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force
+
+      # node and docker compose come with the runner image.
+      - name: Test examples
+        shell: pwsh
+        run: ./.scripts/Test-StorylineExample.ps1 -IsStrict

@@ -21,8 +21,15 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | TOC from two chapters on, not three. | With the old threshold a two-chapter file looked like it had forgotten the list, the reader could not tell rule from omission. |
 | 2026-10-31 | From the owner's Terraform naming module: sample input => output comments above reshapes, test files open with a chapter listing their cases. Folded into 0.3.0 (PR #6). Not adopted: error messages with the actual value in tests, deterministic fixtures. | Both patterns were already in the owner's code but missing from the rules. 0.3.0 was not released yet. |
 | 2026-10-31 | Banner check also verifies structure: description per chapter, numbered steps vs. sections, TOC vs. chapters. Markdown is exempt, snippets are excerpts. | Rules a script can check do not drift. |
+| 2026-10-31 | Priorities: correctness is the boundary, readability the goal, everything else after. Rules serve readability, a deliberate deviation gets a comment. | The owner put readability first and flawless code second. Correctness was moved to a boundary, because readable but wrong code is still a bug. |
+| 2026-10-31 | Verify before done as "proofreading" in the glossary, one `Verify` line per language file. Example check `.scripts/Test-StorylineExample.ps1` in CI with `-IsStrict`. | Correctness has to be checked, not assumed. Until now only the banners were checked in CI. |
+| 2026-10-31 | PowerShell `Set-StrictMode -Version 1.0`, not `Latest`. | `Latest` throws on missing properties and breaks `$null -EQ $Config.Profiles` checks, 1.0 still catches misspelled variables. |
+| 2026-10-31 | Example files get one pass at the end of a change set, not after every rule edit. Snippets still change with their rule. | Owner request: adjusting the examples after every single change is wasted work. |
 
 ## Open items
+- [ ] Add `examples` as a required status check for `main` (Settings → Branches), next to `banners`.
+- [ ] YAML pipelines are not validated in the example check yet (`actionlint` for GitHub Actions).
+- [ ] `~/.claude/identity.md` has no Code Style section, the core block to keep in sync does not exist there.
 - [ ] Reference files and examples for Kubernetes manifests / Helm and Dockerfile.
 - [ ] Rule for detecting the codebase's own conventions (`.editorconfig`, ESLint, `.clang-format`, `bicepconfig.json`, neighbouring files).
 - [ ] Evals with `claude plugin eval`: fixed prompts per language, checked against the rules and example files.
@@ -32,4 +39,4 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 - [ ] C++ examples are not compiled yet (no compiler and no `Request.h` / `Response.h`).
 
 ## Next step
-Merge the 0.3.0 PR (TOC from two chapters on), resubmit to the plugin directory and run `claude plugin validate .`. Afterwards watch how Claude applies the chapter order and TOC rules in a real session.
+Open and merge the 0.4.0 PR (`feature/priorities`), make `examples` a required check. Then watch in a real session whether Claude reports `Verified` / `Not verified` at the end of a task.

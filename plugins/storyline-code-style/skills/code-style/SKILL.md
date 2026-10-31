@@ -1,6 +1,6 @@
 ---
 name: code-style
-description: Storyline code style for every language and codebase - file headers, chapter/section banners, guard clauses, naming, docs, error handling, logging, file naming. Load BEFORE writing, editing or reviewing code or IaC in any language (PowerShell, Terraform, Bicep, YAML pipelines for GitHub Actions / Azure DevOps, Docker Compose, JavaScript / Node.js, C++), even for a small fix or a single new function, and before /code-review or /simplify. Triggers on "code style", "style guide", "banner", "comments", "naming", "review", "clean up", "refactor".
+description: Storyline code style for every language and codebase - file headers, chapter/section banners, guard clauses, naming, docs, error handling, logging, verification, file naming. Correctness first, then readability. Load BEFORE writing, editing or reviewing code or IaC in any language (PowerShell, Terraform, Bicep, YAML pipelines for GitHub Actions / Azure DevOps, Docker Compose, JavaScript / Node.js, C++), even for a small fix or a single new function, and before /code-review or /simplify. Triggers on "code style", "style guide", "banner", "comments", "naming", "review", "clean up", "refactor".
 ---
 
 # Code Style
@@ -16,6 +16,21 @@ When a codebase has its own conventions, they win. The rules here only fill the 
   - the whole file
   - the whole module or folder
 - When unsure whether a task counts as refactoring, ask instead of assuming.
+
+## Priorities
+1. **Correctness is the boundary.** The code does exactly what it claims, verified, not assumed. No rule and no gain in readability justifies dropping an edge case.
+2. **Readability is the goal.** Among correct solutions, the one a new reader follows top to bottom without jumping wins.
+3. **Everything else** (brevity, cleverness, micro-performance) only after 1 and 2.
+
+- **Readable never means wrong.** A shorter version that drops an edge case is not more readable, it is a bug.
+  ```js
+  const timeout = options.timeout ?? DEFAULT_TIMEOUT_MS
+  ```
+  Not like this: `const timeout = options.timeout || DEFAULT_TIMEOUT_MS` (a timeout of `0` silently becomes the default).
+- **The rules serve readability.** When a rule makes one specific spot harder to read, readability wins. One comment says why the spot deviates.
+  ```powershell
+  # Nested on purpose: every check needs the open connection, guard clauses would close it early.
+  ```
 
 ## Language-specific rules
 Before writing or reviewing code in one of these languages, read the matching file from `references/` next to this file with the Read tool (once per session is enough):
@@ -52,6 +67,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | Section | Section | One line of `-`, title below |
 | Paragraph | Group comment | One comment line inside a unit, no banner |
 | Epilogue | Cleanup | Context reset, outputs, exports: always the last chapter or section |
+| Proofreading | Verification | Parser, linter and tests before the code counts as done, see [Errors, logging, tests](#errors-logging-tests) |
 
 There are exactly three levels inside a book: chapter, section, group comment. No fourth banner level, sub-chapters are sections.
 
@@ -518,6 +534,11 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   }
   ```
   Not like this: `{ Get-UtilsResourceName -Type vnet } | Should -Not -Throw`
+- **Verify before done (proofreading):** After writing or changing code, run every installed check of the language: parser or compiler, linter, formatter check, existing tests. The `Verify` line of each language file names them. Fix every finding before calling the task done, and name every check that could not run.
+  ```
+  Verified:     terraform fmt -check, terraform validate, terraform test (3 passed)
+  Not verified: bicep build (Bicep CLI not installed)
+  ```
 - **A test file says what it covers:** It opens with a chapter whose title names the tested behavior, the description is a collection with one entry per test case (see [Comments](#comments)). Whoever opens the file sees the cases without reading the asserts.
   ```hcl
   # ===========================================================================
@@ -547,8 +568,11 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
 - License or project headers only go where the codebase already does it.
 
 # Review checklist
-Use this list for reviews, `/code-review` and `/simplify`. Report each finding with the rule it breaks and a concrete fix. Respect [Scope](#scope): flag untouched code only in a refactoring or when asked.
+Use this list for reviews, `/code-review` and `/simplify`. Report each finding with the rule it breaks and a concrete fix, ordered by [Priorities](#priorities): correctness first, then readability, then the rest. Respect [Scope](#scope): flag untouched code only in a refactoring or when asked.
 
+- [ ] **Correct:** the code does what it claims, edge cases (empty, `null`, `0`, missing file) are handled, nothing is assumed untested. → [Priorities](#priorities)
+- [ ] **Readable:** a new reader follows the file top to bottom without jumping. Where not, that is the first finding after correctness. → [Priorities](#priorities)
+- [ ] **Verified:** parser, linter and tests of the language ran, every check that could not run is named. → [Errors, logging, tests](#errors-logging-tests)
 - [ ] **Header:** usage and prerequisites at the top of the file, a table of contents from two chapters on. → [Reading flow](#reading-flow)
 - [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files. → [The story](#the-story)
 - [ ] **Chapters:** a file with several phases or kinds of units has chapters, in plot order: setup → validations → action → epilogue. → [The story](#the-story)

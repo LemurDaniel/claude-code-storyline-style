@@ -187,3 +187,15 @@
       })
   })
   ```
+- **Every promise is awaited or returned.** A floating promise loses its error and runs out of the order the code reads in.
+  ```js
+  await logger.flush()
+  return api.get({ path: 'repositories' })
+  ```
+  Not like this: `logger.flush()` without `await` inside an `async` function.
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `node --check` per changed file, ESLint where the project has a config, the tests with `npm test`.
+  ```
+  node --check src/commands/command.repository.download.js
+  npx eslint src
+  npm test
+  ```

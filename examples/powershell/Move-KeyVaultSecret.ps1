@@ -89,6 +89,10 @@ param (
 
 BEGIN {
 
+    # BEGIN, PROCESS and CLEAN share the script scope, so both settings hold for all blocks.
+    Set-StrictMode -Version 1.0
+    $ErrorActionPreference = 'Stop'
+
     # ===========================================================================
     # ======================   LOAD AND VALIDATE SECRETS   ======================
     # ===========================================================================

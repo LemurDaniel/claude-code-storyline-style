@@ -33,6 +33,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every part has i
 | Section | Section banner | One line of `-`, title below |
 | Paragraph | Group comment | One comment line inside a unit, no banner |
 | Epilogue | Cleanup | Context reset, outputs, exports: always last |
+| Proofreading | Verification | Parser, linter and tests before the code counts as done |
 
 Chapters follow the plot: setup → validations → the action → epilogue. Variables are introduced in the chapter
 where they first act, and comments that point elsewhere name the chapter they mean.
@@ -51,15 +52,19 @@ where they first act, and comments that point elsewhere name the chapter they me
 # Context
 ```
 
+Correctness is the boundary, readability the goal: among correct solutions the one a new reader follows top to bottom
+wins, and code only counts as done after the parser, linter and tests of its language ran.
+
 The banner check in [`.scripts/Test-StorylineBanner.ps1`](.scripts/Test-StorylineBanner.ps1) runs in CI and verifies the
 banner format, that every chapter has a description, that the numbered steps match the sections and that the table of
-contents matches the chapters.
+contents matches the chapters. The example check in [`.scripts/Test-StorylineExample.ps1`](.scripts/Test-StorylineExample.ps1)
+validates every example file with the tools of its language.
 
 ## What's inside
 
 | File | Content |
 | --- | --- |
-| `SKILL.md` | Scope, general rules for every language (reading flow, comments and banners, structure, naming, docs, errors, logging, tests) and a review checklist |
+| `SKILL.md` | Scope, priorities, general rules for every language (reading flow, comments and banners, structure, naming, docs, errors, logging, tests) and a review checklist |
 | `references/powershell.md` | PowerShell 7 |
 | `references/terraform.md` | Terraform |
 | `references/bicep.md` | Bicep |

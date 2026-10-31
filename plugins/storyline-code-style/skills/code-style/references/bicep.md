@@ -144,3 +144,7 @@
   // NOTE: The deploying identity needs 'User Access Administrator' to assign AcrPull.
   param pullPrincipalIds = ['<PRINCIPAL_ID>']
   ```
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `bicep build` per template and `bicep build-params` per `.bicepparam`, no linter warning left.
+  ```
+  bicep build modules/resources/containerRegistry/module.bicep --stdout
+  ```

@@ -14,10 +14,12 @@ The repo is the marketplace and the plugin at once. There is no build, only Mark
 | `plugins/storyline-code-style/skills/code-style/references/*.md` | One file per language, loaded on demand |
 | `examples/<language>/` | Complete example files, one simple and one more complex per language. Repo only, not shipped with the plugin |
 | `.scripts/Test-StorylineBanner.ps1` | Banner check (format, chapter descriptions, numbered steps vs. sections, table of contents), runs locally and in CI |
+| `.scripts/Test-StorylineExample.ps1` | Example check (PowerShell parser and PSScriptAnalyzer, terraform fmt/validate/test, bicep build, node --check, docker compose config), runs locally and in CI |
 | `CHANGELOG.md` | One entry per release |
 | `.scripts/New-SocialPreview.ps1` | Renders `.github/social-preview.png` (1280x640), uploaded manually under Settings → Social preview |
 | `.scripts/New-PluginIcon.ps1` | Renders `plugins/storyline-code-style/.claude-plugin/icon.png` (1024x1024) for the plugin directory listing |
 | `.github/workflows/check.banners.yaml` | Runs the banner check on every push and PR |
+| `.github/workflows/check.examples.yaml` | Installs every tool and runs the example check with `-IsStrict` on every push and PR |
 | `.github/workflows/release.yaml` | On every push to `main`: reads the version from `plugin.json`, creates tag and GitHub release when the tag is missing |
 | `progress.md` | Goal, decisions, open items, next step |
 | `README.md` | The story, contents and installation |
@@ -27,7 +29,7 @@ The repo is the marketplace and the plugin at once. There is no build, only Mark
 Every edit here is live in all local sessions right away, so a broken rule breaks the style everywhere.
 
 ## Editing the rules
-- **Rules and examples must agree.** Every snippet and every example file follows every rule, including banners, `null` on the left, logging and error handling. A new or changed rule gets checked against all snippets and example files.
+- **Rules and examples must agree.** Every snippet and every example file follows every rule, including banners, `null` on the left, logging and error handling. A new or changed rule gets checked against all snippets and example files. Snippets change together with their rule, the example files get one pass at the end of a change set, not after every single rule edit.
 - **The book metaphor is the frame.** New rules get their place in the glossary under SKILL.md → "The story" (blurb, table of contents, chapter, chapter intro, section, paragraph, epilogue). Three levels only: chapter, section, group comment.
 - **SKILL.md owns the general rules.** Language files only add language specifics or restrict the format, they never introduce their own banner style. They link back with `SKILL.md` → "<Section>".
 - **Neutral examples only.** No private project names, host paths, internal domains or real IDs. Use placeholders (`<SUBSCRIPTION_ID>`, `rg-sample-dev`) or well-known public tools.
@@ -36,7 +38,10 @@ Every edit here is live in all local sessions right away, so a broken rule break
   ```powershell
   ./.scripts/Test-StorylineBanner.ps1
   ```
-- **Example files must be valid**, check them with the language's tools where installed: PowerShell parser, `node --check`, `terraform fmt -check` and `terraform validate`, `bicep build`, `docker compose config`.
+- **Example files must be valid**, check them with the tools of their language. The script skips a missing tool and names it, CI runs it with `-IsStrict`:
+  ```powershell
+  ./.scripts/Test-StorylineExample.ps1
+  ```
 - **Keep the core block in sync:** A change to a core rule goes into `~/.claude/identity.md` (Code Style section).
 - **New language:** add `references/<language>.md`, `examples/<language>/`, a row in the SKILL.md table, the README table, the skill `description` and the keywords in `plugin.json`.
 

@@ -19,6 +19,9 @@ param (
     $OutputPath
 )
 
+Set-StrictMode -Version 1.0
+$ErrorActionPreference = 'Stop'
+
 Add-Type -AssemblyName System.Drawing
 
 # ---------------------------------------------------------------------------

@@ -213,3 +213,8 @@
     subscription_id = "<SUBSCRIPTION_ID>"
   }
   ```
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `terraform fmt -check -recursive`, `terraform validate` after `terraform init -backend=false`, `terraform test` when the module has `tests/`.
+  ```
+  terraform -chdir=modules/container-registry init -backend=false
+  terraform -chdir=modules/container-registry validate
+  ```

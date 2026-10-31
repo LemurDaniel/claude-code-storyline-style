@@ -94,6 +94,10 @@
 - **Never template expressions directly in scripts:** neither `${{ }}` in `run:` (GitHub Actions) nor in `inline:`/`script:` (Azure DevOps). Values reach the script via `env:` and are read as `$env:NAME`, otherwise script injection is possible (see above and the `config` job under GitHub Actions).
 - The results of WhatIf or plan are published as an artifact so the approver can read them.
 - Placeholders instead of real names in templates (`<PROJECT>/<REPO_NAME>`, `rg-sample-dev`).
+- **Verify** per `SKILL.md` → "Errors, logging, tests": `actionlint` for GitHub Actions where installed, inline scripts with the checks of their language. Azure DevOps has no local validator, a run with only the preview stage is the check.
+  ```
+  actionlint .github/workflows/deploy.infra.dev.yaml
+  ```
 
 ## GitHub Actions
 - One file per environment (`deploy.infra.<env>.yaml`) that calls a shared reusable workflow `tmpl.*`.

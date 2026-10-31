@@ -109,3 +109,8 @@
   ```cpp
   std::printf("[MiniServer] Listening on port %u with %u workers\n", port, workerCount);
   ```
+- **Verify** per `SKILL.md` → "Errors, logging, tests": build with the project build system and its warning flags, then run the tests.
+  ```
+  cmake --build build --config Release
+  ctest --test-dir build --output-on-failure
+  ```
