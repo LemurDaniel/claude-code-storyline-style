@@ -296,6 +296,10 @@ Comments look the same in every language, only the comment character changes. A 
     - Three lines of `=`. The title sits in UPPERCASE centered in the middle line, with 3 spaces on each side.
     - The title describes the content, short and as an activity (`RENDER PINNED REPOS AS CARDS`, `SOLVE TREE PUZZLE`). Not generic like `MAIN` or `CODE`. Collection chapters may be called `HELPERS` or `SETTINGS`.
     - A chapter without sections is fine.
+    - **Description:** Every chapter has one. Right below the frame it says what happens in the chapter. Empty comment lines above and below set it apart.
+      - In **flow chapters** the steps are numbered. The section name is on the left, exactly as in the section banner, a one-line explanation on the right, columns aligned. Continuation lines indent to the explanation column. The banner check compares the numbered names with the sections of the chapter.
+      - In **collection chapters** (helpers, settings) there is one entry per function or section, without numbers.
+      - Something that applies to all steps (e.g. "files are only written on change") goes into its own paragraph below.
   - **Section:**
     - One line of `-` inside a chapter, the title below it in normal case.
     - Small files (a Bicep module, a Compose file) get by with sections alone.
@@ -304,10 +308,6 @@ Comments look the same in every language, only the comment character changes. A 
     - No other banner styles, so no `/* #### */` boxes, `<# #### #>` blocks, `/*---- * Title *` blocks, `////` or `#####` lines.
 - **Group comments inside a unit:** Inside a class, resource block or parameter list there are no banners. A single comment line in normal case above the group structures it (`# General resource attributes`, `// Get Index`).
 - **Block comment syntax** (`/* */`, `/** */`, `<# #>`) is only for doc comments and multi-line explanations above a block, never for banners.
-- **Chapter description:** Every chapter has one. Right below the frame it says what happens in the chapter. Empty comment lines above and below set it apart.
-  - In **flow chapters** the steps are numbered. The section name is on the left, exactly as in the section banner, a one-line explanation on the right, columns aligned. Continuation lines indent to the explanation column. The banner check compares the numbered names with the sections of the chapter.
-  - In **collection chapters** (helpers, settings) there is one entry per function or section, without numbers.
-  - Something that applies to all steps (e.g. "files are only written on change") goes into its own paragraph below.
 - **Block comments:** A short comment per block says *what* it does. The *why* only appears where it is not obvious.
 - **Cross-references name the chapter:** When a block depends on or undoes something from another chapter, the comment says which one, with the chapter title as written in its banner (`# Restores the context switched in LOAD AND VALIDATE FILES.`). Across files the file name comes first (`// see MiniServer.h, group Routing`).
 
