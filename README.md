@@ -7,10 +7,15 @@ data is transformed in named stages, and logs leave a narrative trail at every d
 
 ## The story
 
-A file is a book. Every part of the book has its place in the code:
+A codebase is a library, a folder is a shelf, a file is a book. Every part has its place in the code:
 
-| Book | Code | Form |
+| Library | Code | Form |
 | --- | --- | --- |
+| Library | Codebase | README at the entrance |
+| Shelf | Folder, cut by domain | Every shelf with more than one book has a label |
+| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `module.bicep`, else `README.md` |
+| Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf |
+| Book | File | Header, chapters, epilogue (a Terraform module: the folder is the book, each file a chapter) |
 | Blurb | File header | Usage and prerequisites |
 | Table of contents | Chapter list in the header | Only in files with three or more chapters |
 | Chapter | Chapter banner | Three lines of `=`, title in UPPERCASE centered |
