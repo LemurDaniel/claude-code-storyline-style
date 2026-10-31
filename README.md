@@ -59,7 +59,8 @@ wins, and code only counts as done after the parser, linter and tests of its lan
 
 The banner check in [`.scripts/Test-StorylineBanner.ps1`](.scripts/Test-StorylineBanner.ps1) runs in CI and verifies the
 banner format, that every chapter and section has a description, that the numbered steps match the sections and that the table of
-contents matches the chapters. The example check in [`.scripts/Test-StorylineExample.ps1`](.scripts/Test-StorylineExample.ps1)
+contents matches the chapters. The shelf check in [`.scripts/Test-StorylineShelf.ps1`](.scripts/Test-StorylineShelf.ps1)
+verifies that every folder with several source files has a label and none grows flat. The example check in [`.scripts/Test-StorylineExample.ps1`](.scripts/Test-StorylineExample.ps1)
 validates every example file with the tools of its language.
 
 ## What's inside

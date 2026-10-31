@@ -34,6 +34,7 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Every file with sections has at least one chapter, only tiny files with one unit have no banner. Workflows with one job lost their job section. | Many PowerShell functions had sections but no chapter, so no intro and no table of contents. "Sections only inside a chapter" is one rule without exceptions, Terraform and `.tfvars` already worked that way. |
 | 2026-10-31 | The table of contents is its own comment block below the header, not its last lines. | Owner request: blurb (usage) and table of contents read as two things, the empty line separates them. |
 | 2026-10-31 | C++: the groups of a class that fills a whole header chapter are sections. | The chapter description listed them like sections, but the class only had one-line group comments, so they did not stand out. |
+| 2026-10-31 | Rule "Shelve as the code grows" (more than five source files or several roles → shelves), a Scope note and the shelf check `Test-StorylineShelf.ps1` in the `banners` job. | The label rule existed, but nothing said when a flat folder has to be split, so a growing folder slipped through. A script checks what a rule only asks for. |
 
 ## Open items
 - [ ] **Before merging 0.4.0:** owner review of the language files `yaml-pipelines.md`, `terraform.md`, `kubernetes.md`, `javascript.md`, `docker-compose.md`, `cpp.md`.

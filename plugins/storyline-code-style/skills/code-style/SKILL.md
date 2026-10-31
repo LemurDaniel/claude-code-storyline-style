@@ -9,7 +9,7 @@ Applies to every language and every codebase. Write code so it reads top to bott
 When a codebase has its own conventions, they win. The rules here only fill the gaps.
 
 ## Scope
-- **New and changed code** always follows these rules.
+- **New and changed code** always follows these rules. A new file counts as a change to its folder: it goes on the right shelf, and a folder it overfills gets shelves (see [The story](#the-story) → "Shelve as the code grows").
 - **A bug fix or feature stays focused:** untouched code around it is not restyled on the side.
 - **Refactoring, clean-up and review** put existing code in scope. Before restructuring beyond the requested part (adding chapters, renaming, splitting or moving files), ask the user how far to go:
   - only the touched function or block
@@ -175,6 +175,20 @@ A book has exactly three levels: chapter (`=` frame), section (`-` frame) and pa
   | --- | --- |
   | `Get-UtilsConfig.ps1` | One function with one chapter: defaults, read, merge. |
   | `Move-StorageBlob.ps1` | A script with chapters, WhatIf and a CLEAN block. |
+  ```
+- **Shelve as the code grows:** Before adding a file, check its shelf. A folder with more than five source files besides its label, or with several roles lying flat side by side (entry point, views, commands, data access, helpers), gets shelves by role or domain, each with its label, before the next file goes in. A proof of concept is no exception, it is the code that grows fastest. The exception is a folder the language loads as one unit (a Terraform module).
+  ```
+  Not like this:                   Like this:
+  extension.js                     src/
+  parser.banners.js                  extension.js
+  cache.banners.js                   views/
+  decorations.banners.js               _index.js
+  codelens.banners.js                  view.decorations.js
+  statusbar.banners.js                 view.codelens.js
+  commands.banners.js                  view.statusbar.js
+                                     commands/commands.banners.js
+                                     data/banners.js
+                                     utils/banners.parse.js
   ```
 
 - **Every file with sections has chapters:** sections only live inside a chapter, so a file with a single phase gets one chapter around its sections (a Bicep module, `Get-UtilsConfig.ps1`). More chapters as soon as it tells more than one phase (load, validate, write) or holds more than one kind of unit (helpers plus a main flow). Only a tiny file with one unit gets no banner at all (a `.bicepparam`, a values override, a workflow with one job), its header says what it does.
@@ -744,6 +758,7 @@ Use this list for reviews, `/code-review` and `/simplify`. Go through every grou
   - [ ] **Deviations:** a spot that breaks a rule on purpose carries a comment saying why.
 - **[The story](#the-story)**
   - [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files.
+  - [ ] **Shelves:** no flat folder with more than five source files or several roles side by side, every new file stands on its shelf.
   - [ ] **Chapters:** every file with sections has at least one chapter, a file with several phases or kinds of units has one per phase or kind, only a tiny file with one unit has no banner.
   - [ ] **Plot order:** setup → validations → action → epilogue, helpers first or in their own file, never between two steps.
   - [ ] **Introductions:** every variable is declared in the chapter where it first acts, imports and module-wide constants stand as cast list below the header.

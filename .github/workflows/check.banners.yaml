@@ -1,6 +1,7 @@
 # ---------------------------------------------------------------------------
 # Check Banners
-#   Runs .scripts/Test-StorylineBanner.ps1 on every push and pull request.
+#   Runs .scripts/Test-StorylineBanner.ps1 and .scripts/Test-StorylineShelf.ps1
+#   on every push and pull request.
 #   No secrets or Azure access needed, the job only reads the repo.
 # ---------------------------------------------------------------------------
 
@@ -23,3 +24,7 @@ jobs:
       - name: Test banners
         shell: pwsh
         run: ./.scripts/Test-StorylineBanner.ps1
+
+      - name: Test shelves
+        shell: pwsh
+        run: ./.scripts/Test-StorylineShelf.ps1

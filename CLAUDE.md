@@ -14,11 +14,12 @@ The repo is the marketplace and the plugin at once. There is no build, only Mark
 | `plugins/storyline-code-style/skills/code-style/references/*.md` | One file per language, loaded on demand |
 | `examples/<language>/` | Complete example files, one simple and one more complex per language. Repo only, not shipped with the plugin |
 | `.scripts/Test-StorylineBanner.ps1` | Banner check (format, chapter and section descriptions, numbered steps vs. sections, table of contents), runs locally and in CI |
+| `.scripts/Test-StorylineShelf.ps1` | Shelf check (label in every folder with several source files, at most five flat source files), runs locally and in CI |
 | `.scripts/Test-StorylineExample.ps1` | Example check (PowerShell parser and PSScriptAnalyzer, terraform fmt/validate/test, bicep build, node --check, docker compose config, helm lint/template, kubeconform), runs locally and in CI |
 | `CHANGELOG.md` | One entry per release |
 | `.scripts/New-SocialPreview.ps1` | Renders `.github/social-preview.png` (1280x640), uploaded manually under Settings → Social preview |
 | `.scripts/New-PluginIcon.ps1` | Renders `plugins/storyline-code-style/.claude-plugin/icon.png` (1024x1024) for the plugin directory listing |
-| `.github/workflows/check.banners.yaml` | Runs the banner check on every push and PR |
+| `.github/workflows/check.banners.yaml` | Runs the banner and the shelf check on every push and PR |
 | `.github/workflows/check.examples.yaml` | Installs every tool and runs the example check with `-IsStrict` on every push and PR |
 | `.github/workflows/release.yaml` | On every push to `main`: reads the version from `plugin.json`, creates tag and GitHub release when the tag is missing |
 | `progress.md` | Goal, decisions, open items, next step |
@@ -37,6 +38,10 @@ Every edit here is live in all local sessions right away, so a broken rule break
 - **Banners:** 75 characters of `=` or `-` plus the comment character and one space, chapter titles centered. Check after every edit:
   ```powershell
   ./.scripts/Test-StorylineBanner.ps1
+  ```
+- **Shelves:** a new file goes on its shelf, a folder with several source files has a label. Check after adding or moving files:
+  ```powershell
+  ./.scripts/Test-StorylineShelf.ps1
   ```
 - **Example files must be valid**, check them with the tools of their language. The script skips a missing tool and names it, CI runs it with `-IsStrict`:
   ```powershell
