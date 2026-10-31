@@ -54,9 +54,9 @@
       Skips the sync when the last run is still inside the interval.
 
   .EXAMPLE
-      Sync the KeePass database with the default interval:
+      Sync the notes database with the default interval:
 
-      PS> Sync-UtilsCloudFile -ProfileName keepass
+      PS> Sync-UtilsCloudFile -ProfileName notes
   #>
   ```
 - Parameters in a multi-line layout, full .NET types, `ArgumentCompleter` where possible:
@@ -109,13 +109,13 @@
   ```powershell
   Write-Verbose "[Sync-UtilsCloudFile] Cloud copy is newer ($cloudDate > $localDate) -> downloading."
   ```
-- Named loops (`:MOVE_SECRETS`) for `continue`/`break` out of inner loops.
+- Named loops (`:MOVE_BLOBS`) for `continue`/`break` out of inner loops.
   ```powershell
-  :MOVE_SECRETS foreach ($secret in $secrets) {
+  :MOVE_BLOBS foreach ($blob in $blobs) {
       foreach ($pattern in $ExcludePatterns) {
-          if ($secret.Name -LIKE $pattern) {
-              Write-Verbose "[Move-KeyVaultSecret] '$($secret.Name)' matches '$pattern' -> skipping."
-              continue MOVE_SECRETS
+          if ($blob.Name -LIKE $pattern) {
+              Write-Verbose "[Move-StorageBlob] '$($blob.Name)' matches '$pattern' -> skipping."
+              continue MOVE_BLOBS
           }
       }
       ...
@@ -131,7 +131,7 @@
       $null = Set-AzContext -Subscription $SubscriptionId
   }
   PROCESS {
-      if ($PSCmdlet.ShouldProcess($secret.Name, "Move to '$Target'")) {
+      if ($PSCmdlet.ShouldProcess($blob.Name, "Move to '$Target'")) {
           ...
       }
   }

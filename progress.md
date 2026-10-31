@@ -30,4 +30,4 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 - [ ] C++ examples are not compiled yet (no compiler and no `Request.h` / `Response.h`).
 
 ## Next step
-Merge PR 4, the workflow then tags and releases v0.2.1 (v0.2.0 was never tagged, its changes ship with 0.2.1). Run `claude plugin validate .`. Afterwards watch how Claude applies the chapter order and TOC rules in a real session.
+v0.2.1 is released automatically. Merge the 0.2.2 PR, resubmit to the plugin directory and run `claude plugin validate .`. Afterwards watch how Claude applies the chapter order and TOC rules in a real session.
