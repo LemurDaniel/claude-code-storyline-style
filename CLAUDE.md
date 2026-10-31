@@ -42,7 +42,6 @@ Every edit here is live in all local sessions right away, so a broken rule break
   ```powershell
   ./.scripts/Test-StorylineExample.ps1
   ```
-- **Keep the core block in sync:** A change to a core rule goes into `~/.claude/identity.md` (Code Style section).
 - **New language:** add `references/<language>.md`, `examples/<language>/`, a row in the SKILL.md table, the README table, the skill `description` and the keywords in `plugin.json`.
 
 ## Context reviews

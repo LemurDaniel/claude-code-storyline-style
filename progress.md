@@ -25,11 +25,11 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Verify before done as "proofreading" in the glossary, one `Verify` line per language file. Example check `.scripts/Test-StorylineExample.ps1` in CI with `-IsStrict`. | Correctness has to be checked, not assumed. Until now only the banners were checked in CI. |
 | 2026-10-31 | PowerShell `Set-StrictMode -Version 1.0`, not `Latest`. | `Latest` throws on missing properties and breaks `$null -EQ $Config.Profiles` checks, 1.0 still catches misspelled variables. |
 | 2026-10-31 | Example files get one pass at the end of a change set, not after every rule edit. Snippets still change with their rule. | Owner request: adjusting the examples after every single change is wasted work. |
+| 2026-10-31 | No core block in `~/.claude/identity.md`, the sync rule is removed from `CLAUDE.md`. | The section never existed, the junction to the skill is the only source of the rules. |
 
 ## Open items
 - [ ] Add `examples` as a required status check for `main` (Settings → Branches), next to `banners`.
 - [ ] YAML pipelines are not validated in the example check yet (`actionlint` for GitHub Actions).
-- [ ] `~/.claude/identity.md` has no Code Style section, the core block to keep in sync does not exist there.
 - [ ] Reference files and examples for Kubernetes manifests / Helm and Dockerfile.
 - [ ] Rule for detecting the codebase's own conventions (`.editorconfig`, ESLint, `.clang-format`, `bicepconfig.json`, neighbouring files).
 - [ ] Evals with `claude plugin eval`: fixed prompts per language, checked against the rules and example files.
