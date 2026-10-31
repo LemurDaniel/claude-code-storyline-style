@@ -1,22 +1,22 @@
 # ---------------------------------------------------------------------------
 # Release
 #
-#   Creates a GitHub release when a tag 'v<version>' is pushed:
-#     git tag v0.2.0 && git push origin v0.2.0
+#   Runs on every push to main. Reads the version from plugin.json and, when
+#   no tag 'v<version>' exists yet, creates the tag and the GitHub release.
+#   The CHANGELOG.md entry of that version becomes the release notes.
+#   A push without a version bump does nothing.
 #
-#   The tag must match the version in plugin.json and have an entry in
-#   CHANGELOG.md, the entry becomes the release notes. The banner check
-#   runs first, a broken banner blocks the release.
+#   The banner check runs first, a broken banner blocks the release.
 #
-#   No secrets needed, GITHUB_TOKEN with 'contents: write' creates the release.
+#   No secrets needed, GITHUB_TOKEN with 'contents: write' creates tag and release.
 #
 
 name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -24,26 +24,32 @@ permissions:
 jobs:
 
   # ---------------------------------------------------------------------------
-  # Release - checks tag, version and changelog, then publishes the release
+  # Release - tags the version from plugin.json and publishes the release
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the tag list is needed to see whether the version is released
 
       - name: Test banners
         shell: pwsh
         run: ./.scripts/Test-StorylineBanner.ps1
 
-      - name: Check version and changelog
+      - name: Read version and changelog
+        id: version
         shell: pwsh
-        env:
-          TAG_NAME: ${{ github.ref_name }}
         run: |
-          $Version  = $env:TAG_NAME.TrimStart('v')
           $Manifest = Get-Content -Path ./plugins/storyline-code-style/.claude-plugin/plugin.json -Raw | ConvertFrom-Json
+          $Version  = $Manifest.version
+          $TagName  = "v$Version"
 
-          if ($Manifest.version -NE $Version) {
-              throw [System.InvalidOperationException]::new("Tag '$env:TAG_NAME' must match plugin.json version '$($Manifest.version)'.")
+          # An existing tag means the version is released already, the job ends without a change.
+          $hasTag = $null -NE (git tag --list $TagName)
+          if ($hasTag) {
+              Write-Host "[Release] Tag '$TagName' exists, nothing to release."
+              "is_released=true" >> $env:GITHUB_OUTPUT
+              return
           }
 
           # The release notes are the changelog section of this version, up to the next '## ' heading.
@@ -51,16 +57,20 @@ jobs:
           $Section   = [System.Text.RegularExpressions.Regex]::Match($Changelog, "(?ms)^## $([regex]::Escape($Version))\b[^\n]*\n(?<notes>.*?)(?=^## |\z)")
 
           if (-NOT $Section.Success) {
-              throw [System.InvalidOperationException]::new("CHANGELOG.md must contain a section '## $Version' for tag '$env:TAG_NAME'.")
+              throw [System.InvalidOperationException]::new("CHANGELOG.md must contain a section '## $Version' before version $Version can be released.")
           }
 
           Set-Content -Path ./release-notes.md -Value $Section.Groups['notes'].Value.Trim()
-          Write-Host "[Release] Version $Version matches, release notes extracted."
+          "is_released=false" >> $env:GITHUB_OUTPUT
+          "tag_name=$TagName" >> $env:GITHUB_OUTPUT
+          Write-Host "[Release] Version $Version is new, release notes extracted."
 
-      - name: Create release
+      - name: Create tag and release
+        if: ${{ steps.version.outputs.is_released == 'false' }}
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG_NAME: ${{ github.ref_name }}
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
         run: |
-          gh release create $env:TAG_NAME --title $env:TAG_NAME --notes-file ./release-notes.md --verify-tag
+          # gh creates the tag on the pushed commit together with the release.
+          gh release create $env:TAG_NAME --target $env:GITHUB_SHA --title $env:TAG_NAME --notes-file ./release-notes.md
