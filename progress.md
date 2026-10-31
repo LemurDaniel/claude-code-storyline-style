@@ -40,9 +40,10 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Rule "Shelve as the code grows" (more than five source files or several roles → shelves), a Scope note and the shelf check `Test-StorylineShelf.ps1` in the `banners` job. | The label rule existed, but nothing said when a flat folder has to be split, so a growing folder slipped through. A script checks what a rule only asks for. |
 | 2026-10-31 | YAML: no empty line after the closing section line, the key follows directly. Everywhere else an empty line. `examples` is a required check for `main` next to `banners`. | Owner decision: in YAML the frame sticks to the job, service or value it describes. |
 | 2026-10-31 | PowerShell: in a file with chapters, `CLEAN` is its own epilogue chapter (`RESTORE CONTEXT` in `Move-KeyVaultSecret.ps1`). | The outline parser found the section `Restore context` outside every chapter. The banner check does not see code blocks, so only the rule in `powershell.md` prevents it. |
+| 2026-10-31 | Docker Compose: no reverse proxy rule (`expose` vs. `ports`, `external` networks), only "every published port gets a comment". Volumes: no host layout (relative config, absolute payload, `.gitignore`), only comment per mount and `:ro`. No `depends_on` / healthcheck / service name rule. | Owner decision: the proxy layout is one specific architecture, not a coding style. Style rules describe how code reads, not how a system is built. |
 
 ## Open items
-- [ ] **Before merging 0.4.0:** owner review of the language files `yaml-pipelines.md`, `terraform.md`, `kubernetes.md`, `javascript.md`, `docker-compose.md`, `cpp.md`.
+- [ ] **Before merging 0.4.0:** owner review of the language files `yaml-pipelines.md` and `kubernetes.md` (`terraform.md`, `javascript.md`, `docker-compose.md` and `cpp.md` are done).
 - [ ] YAML pipelines are not validated in the example check yet (`actionlint` for GitHub Actions).
 - [ ] Reference file and examples for Dockerfile.
 - [ ] kubeconform did not run locally (download into the scratchpad was blocked), only in CI.

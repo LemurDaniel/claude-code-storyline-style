@@ -174,12 +174,24 @@
       })
   })
   ```
-- **Every promise is awaited or returned.** A floating promise loses its error and runs out of the order the code reads in.
+- **Every promise is awaited or returned.** Calling an `async` function without `await` starts it and moves on to the next line right away. Its result arrives later, out of reading order, and when it fails the error escapes the surrounding `try`/`catch` as an unhandled rejection.
   ```js
-  await logger.flush()
-  return api.get({ path: 'repositories' })
+  async function saveReport({ report }) {
+      await fs.promises.writeFile('report.json', JSON.stringify(report))   // finished before the next line
+      logger.info('Report saved')
+
+      return api.post({ path: 'reports', body: report })                   // the caller awaits it
+  }
   ```
-  Not like this: `logger.flush()` without `await` inside an `async` function.
+  Not like this:
+  ```js
+  async function saveReport({ report }) {
+      fs.promises.writeFile('report.json', JSON.stringify(report))   // still writing, the log already says saved
+      logger.info('Report saved')
+
+      api.post({ path: 'reports', body: report })                    // the caller gets undefined, a failure goes unseen
+  }
+  ```
 - **Verify** per `SKILL.md` → "Errors, logging, tests": `node --check` per changed file, ESLint where the project has a config, the tests with `npm test`.
   ```
   node --check src/commands/command.repository.download.js
