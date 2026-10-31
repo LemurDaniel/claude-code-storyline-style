@@ -175,8 +175,15 @@
     environment   = var.environment
   }
   ```
-- Tests as `tests/*.tftest.hcl` with `command = plan` and `assert` on concrete values:
+- Tests as `tests/<topic>.tftest.hcl` with `command = plan` and `assert` on concrete values. Each file is one chapter, its description lists the `run` blocks by name (`SKILL.md` → "Errors, logging, tests"). `mock_provider` keeps the plan free of credentials.
   ```hcl
+  # ===========================================================================
+  # ===========================   GENERATE NAMES   ============================
+  # ===========================================================================
+  #
+  #   generates_vnet_name   Builds the name from type, location and environment.
+  #
+
   run "generates_vnet_name" {
     command = plan
 

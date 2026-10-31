@@ -19,6 +19,7 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Versions stay below 1.0 while the rules are moving: the initial state is 0.1.0, this round is 0.2.0. `release.yaml` tags `v<version>` from `plugin.json` on every push to `main` and publishes the release. | No tag existed yet, so the numbering was free to restart. A manual tag step was forgotten twice. |
 | 2026-10-31 | The library frame: codebase = library, folder = shelf, file = book (Terraform: folder = book). Every folder with more than one file has a shelf label, an entry point or a `README.md`. | Whoever opens a folder sees what is on the shelf without opening a file. |
 | 2026-10-31 | TOC from two chapters on, not three. | With the old threshold a two-chapter file looked like it had forgotten the list, the reader could not tell rule from omission. |
+| 2026-10-31 | From the owner's Terraform naming module: sample input => output comments above reshapes, test files open with a chapter listing their cases. Folded into 0.3.0 (PR #6). Not adopted: error messages with the actual value in tests, deterministic fixtures. | Both patterns were already in the owner's code but missing from the rules. 0.3.0 was not released yet. |
 | 2026-10-31 | Banner check also verifies structure: description per chapter, numbered steps vs. sections, TOC vs. chapters. Markdown is exempt, snippets are excerpts. | Rules a script can check do not drift. |
 
 ## Open items

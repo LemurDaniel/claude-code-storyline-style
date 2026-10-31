@@ -2,6 +2,8 @@
 
 ## 0.3.0 - 2026-10-31
 - Table of contents in the header from two chapters on instead of three. A file with chapters always lists them, so the reader never has to guess whether a list is missing or just not required. Banner check and example files updated.
+- Show the shape change: a non-obvious parse or reshape gets one comment with a sample input and its result (`azurerm_disk::os => disk`).
+- A test file says what it covers: it opens with a chapter that lists its test cases. Terraform example module gets `tests/registry.tftest.hcl` with `mock_provider`.
 
 ## 0.2.2 - 2026-10-31
 - Plugin directory lint: Key Vault, keepass and keyFile snippets replaced by storage account and notes examples, the healthcheck example uses promtool instead of wget.
