@@ -1,0 +1,28 @@
+# ---------------------------------------------------------------------------
+# Deploy Infrastructure (dev)
+#
+#   Thin entry point, the logic lives in tmpl.terraform.infra.deploy.yaml.
+#   Starts manually, 'apply' only runs when the input is checked.
+#
+
+name: Deploy Infrastructure (dev)
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Run 'terraform apply' after the plan
+        type: boolean
+        default: false
+
+permissions:
+  id-token: write   # OIDC token, passed on to the reusable workflow
+  contents: read
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/tmpl.terraform.infra.deploy.yaml
+    with:
+      environment: dev
+      apply: ${{ inputs.apply }}
+    secrets: inherit

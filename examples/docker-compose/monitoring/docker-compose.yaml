@@ -1,0 +1,99 @@
+# ---------------------------------------------------------------------------
+# Monitoring
+#
+#   Prometheus scrapes the host via Node Exporter, Grafana shows the dashboards.
+#   Only Grafana sits behind the reverse proxy, the rest stays internal.
+#   Requires: a .env next to this file with GF_ADMIN_PASSWORD.
+#
+#   docker compose up -d
+#
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Node Exporter Service
+  node-exporter:
+    container_name: node-exporter
+    restart: unless-stopped
+    image: prom/node-exporter:v1.8.1
+
+    expose:
+      - 9100
+
+    pid: "host"   # process metrics of the host, not only of the container
+
+    command:
+      - --path.rootfs=/host
+
+    volumes:
+      # Host root file system, read only for the disk and file system metrics
+      - /:/host:ro,rslave
+
+  # ---------------------------------------------------------------------------
+  # Prometheus Service
+  prometheus:
+    container_name: prometheus
+    restart: unless-stopped
+    image: prom/prometheus:v2.53.0
+
+    expose:
+      - 9090
+
+    # (Optional) Reach the Prometheus UI directly from the LAN for debugging
+    # ports:
+    #   - "9090:9090"
+
+    command:
+      - --config.file=/etc/prometheus/prometheus.yaml
+      - --storage.tsdb.retention.time=30d
+
+    volumes:
+      # Scrape config from the repo
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+
+      # Time series database on the host storage
+      - /srv/monitoring/prometheus:/prometheus
+
+    depends_on:
+      - node-exporter
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      interval: 30s
+
+  # ---------------------------------------------------------------------------
+  # Grafana Service
+  grafana:
+    container_name: grafana
+    restart: unless-stopped
+    build:
+      context: ./grafana
+      dockerfile: Dockerfile
+      args:
+        GRAFANA_TAG: 11.1.0
+    image: grafana-monitoring:latest
+    pull_policy: build
+
+    expose:
+      - 3000
+
+    environment:
+      TZ: Europe/Berlin
+      PROMETHEUS_URL: http://prometheus:9090   # not: http://172.18.0.3:9090
+
+      # Base URL when routed via the reverse proxy
+      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s/grafana/"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+
+      # Generate: openssl rand -base64 24
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:?Set GF_ADMIN_PASSWORD in .env}
+
+    volumes:
+      # Dashboards and data sources from the repo
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+
+      # Grafana database and plugins, in .gitignore
+      - ./grafana/data:/var/lib/grafana
+
+    depends_on:
+      prometheus:
+        condition: service_healthy   # waits for the healthcheck, not just the container start

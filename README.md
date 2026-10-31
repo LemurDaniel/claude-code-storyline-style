@@ -18,6 +18,9 @@ data is transformed in named stages, and logs leave a narrative trail at every d
 | `references/javascript.md` | JavaScript / Node.js |
 | `references/cpp.md` | C++ |
 
+The repo also holds [`examples/`](examples/) with complete example files per language, one simple and one more complex.
+They show how all rules work together in one file and are not part of the installed plugin.
+
 Only the skill description sits in context up front. Claude loads `SKILL.md` before writing or reviewing code,
 and reads a language file only when it works in that language.
 

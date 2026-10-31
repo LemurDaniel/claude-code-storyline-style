@@ -1,0 +1,128 @@
+# ---------------------------------------------------------------------------
+# Terraform Infrastructure Deployment (reusable workflow)
+#
+#   Azure Authentication via Workload Identity Federation (OIDC).
+#   No client secrets or certificates needed.
+#
+#   Required GitHub Secrets:
+#     AZURE_CLIENT_ID         Client ID of the App Registration or Managed Identity
+#     AZURE_TENANT_ID         Azure AD Tenant ID
+#
+#   Required GitHub Variables:
+#     AZURE_SUBSCRIPTION_ID   Subscription to deploy into
+#     TF_STATE_STORAGE        Storage account that holds the Terraform state
+#
+#   Required GitHub Environments:
+#     dev, tst, prd           Required reviewers approve the plan before apply
+#
+
+name: Terraform Infrastructure Deployment
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Target environment, selects env/<environment>.tfvars
+        type: string
+        required: true
+        # dev | tst | prd
+      apply:
+        description: Run 'terraform apply' after the plan
+        type: boolean
+        default: false
+
+permissions:
+  id-token: write   # OIDC token for azure/login and the azurerm backend
+  contents: read
+
+env:
+  ARM_USE_OIDC: "true"
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # Config - computes shared values once for all following jobs
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      state_key: ${{ steps.config.outputs.state_key }}
+      var_file: ${{ steps.config.outputs.var_file }}
+    steps:
+      - id: config
+        shell: pwsh
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          $ALLOWED_ENVIRONMENTS = @('dev', 'tst', 'prd')
+
+          if ($env:ENVIRONMENT -NOTIN $ALLOWED_ENVIRONMENTS) {
+              throw [System.ArgumentException]::new("environment must be one of: $($ALLOWED_ENVIRONMENTS -join ', '), got '$($env:ENVIRONMENT)'.")
+          }
+
+          "state_key=infra-$($env:ENVIRONMENT).tfstate" >> $env:GITHUB_OUTPUT
+          "var_file=env/$($env:ENVIRONMENT).tfvars" >> $env:GITHUB_OUTPUT
+
+  # ---------------------------------------------------------------------------
+  # Plan - publishes the plan as an artifact, so the approver can read it
+  plan:
+    needs: config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@<COMMIT_SHA>   # v3.1.2
+
+      - name: Terraform Init
+        shell: pwsh
+        env:
+          STATE_STORAGE: ${{ vars.TF_STATE_STORAGE }}
+          STATE_KEY: ${{ needs.config.outputs.state_key }}
+        run: |
+          terraform init -backend-config="storage_account_name=$($env:STATE_STORAGE)" -backend-config="key=$($env:STATE_KEY)"
+
+      - name: Terraform Plan
+        shell: pwsh
+        env:
+          VAR_FILE: ${{ needs.config.outputs.var_file }}
+        run: |
+          # Fails the step on the first native command with a non-zero exit code.
+          $PSNativeCommandUseErrorActionPreference = $true
+
+          terraform plan -var-file="$($env:VAR_FILE)" -out=tfplan
+          terraform show -no-color tfplan > tfplan.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ inputs.environment }}
+          path: |
+            tfplan
+            tfplan.txt
+
+  # ---------------------------------------------------------------------------
+  # Apply - only with the apply input and after the approval on the environment
+  apply:
+    needs: [config, plan]
+    if: ${{ inputs.apply == true }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}   # required reviewers approve here
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@<COMMIT_SHA>   # v3.1.2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: tfplan-${{ inputs.environment }}
+
+      # Same init as in the plan job, every job starts on an empty runner.
+      - name: Terraform Init
+        shell: pwsh
+        env:
+          STATE_STORAGE: ${{ vars.TF_STATE_STORAGE }}
+          STATE_KEY: ${{ needs.config.outputs.state_key }}
+        run: |
+          terraform init -backend-config="storage_account_name=$($env:STATE_STORAGE)" -backend-config="key=$($env:STATE_KEY)"
+
+      - name: Terraform Apply
+        run: terraform apply tfplan   # a saved plan applies without prompt
