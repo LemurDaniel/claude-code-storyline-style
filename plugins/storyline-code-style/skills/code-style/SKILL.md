@@ -326,10 +326,11 @@ Comments look the same in every language, only the comment character changes. A 
   - **Both levels:**
     - Every line is 75 characters long, plus the comment character and one space.
     - No other banner styles, so no `/* #### */` boxes, `<# #### #>` blocks, `/*---- * Title *` blocks, `////` or `#####` lines.
-- **Group comments inside a unit:** Inside a class, resource block or parameter list there are no banners. A single comment line in normal case above the group structures it (`# General resource attributes`, `// Get Index`).
-- **Block comment syntax** (`/* */`, `/** */`, `<# #>`) is only for doc comments and multi-line explanations above a block, never for banners.
-- **Block comments:** A short comment per block says *what* it does. The *why* only appears where it is not obvious.
-- **Cross-references name the chapter:** When a block depends on or undoes something from another chapter, the comment says which one, with the chapter title as written in its banner (`# Restores the context switched in LOAD AND VALIDATE FILES.`). Across files the file name comes first (`// see MiniServer.h, group Routing`).
+- **Comments in the code:**
+  - **Group comments inside a unit:** Inside a class, resource block or parameter list there are no banners. A single comment line in normal case above the group structures it (`# General resource attributes`, `// Get Index`).
+  - **Block comments:** A short comment per block says *what* it does. The *why* only appears where it is not obvious.
+  - **Block comment syntax** (`/* */`, `/** */`, `<# #>`) is only for doc comments and multi-line explanations above a block, never for banners.
+  - **Cross-references name the chapter:** When a block depends on or undoes something from another chapter, the comment says which one, with the chapter title as written in its banner (`# Restores the context switched in LOAD AND VALIDATE FILES.`). Across files the file name comes first (`// see MiniServer.h, group Routing`).
 
 ```js
 // NOTE:
