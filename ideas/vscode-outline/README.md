@@ -54,7 +54,8 @@ cd ideas/vscode-outline
 npm test   # node --test test/unit/banners.parse.test.js
 ```
 
-## Open
-- [ ] Try it in VS Code: colors in dark and light themes, CodeLens noise, library tree following the cursor, speed in a large workspace.
-- [ ] Package as `.vsix` (`npx @vscode/vsce package`) and decide: folder in this repo, own repo or Marketplace.
-- [ ] Settings to switch single views off (CodeLens, status bar).
+## Status
+Tried in VS Code on 2026-10-31, stays a proof of concept for now. Ideas if it ever grows up:
+- Package as `.vsix` (`npx @vscode/vsce package`) and decide: folder in this repo, own repo or Marketplace.
+- Settings to switch single views off (CodeLens, status bar).
+- Check the speed of the library tree in a large workspace.
