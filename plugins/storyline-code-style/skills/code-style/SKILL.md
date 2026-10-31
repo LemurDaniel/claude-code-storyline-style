@@ -297,8 +297,28 @@ Comments look the same in every language, only the comment character changes. A 
     - The title describes the content, short and as an activity (`RENDER PINNED REPOS AS CARDS`, `SOLVE TREE PUZZLE`). Not generic like `MAIN` or `CODE`. Collection chapters may be called `HELPERS` or `SETTINGS`.
     - A chapter without sections is fine.
     - **Description:** Every chapter has one. Right below the frame it says what happens in the chapter. Empty comment lines above and below set it apart.
-      - In **flow chapters** the steps are numbered. The section name is on the left, exactly as in the section banner, a one-line explanation on the right, columns aligned. Continuation lines indent to the explanation column. The banner check compares the numbered names with the sections of the chapter.
-      - In **collection chapters** (helpers, settings) there is one entry per function or section, without numbers.
+      - A **flow chapter** runs top to bottom, its sections are steps in a fixed order. So the steps are numbered. The section name is on the left, exactly as in the section banner, a one-line explanation on the right, columns aligned. Continuation lines indent to the explanation column. The banner check compares the numbered names with the sections of the chapter.
+        ```powershell
+        # ===========================================================================
+        # =======================   LOAD AND VALIDATE BLOBS   =======================
+        # ===========================================================================
+        #
+        #   1. Validations   Fails early on equal storage accounts.
+        #   2. Blobs         Loads all blobs of the source container,
+        #                    only after the validations passed.
+        #
+        ```
+      - A **collection chapter** holds units that stand on their own (helpers, settings, variables, outputs). Nothing runs in order, each unit acts only when it is called. So there is one entry per function or section, without numbers.
+        ```js
+        // ===========================================================================
+        // ===============================   HELPERS   ===============================
+        // ===========================================================================
+        //
+        //   parseGrid        Turns the raw input into a grid of tree heights.
+        //   getViewingLine   Collects the trees from one tree to the edge.
+        //
+        ```
+        Rule of thumb: "what happens first?" is answered by a flow chapter, "what is in here?" by a collection chapter.
       - Something that applies to all steps (e.g. "files are only written on change") goes into its own paragraph below.
   - **Section:**
     - One line of `-` inside a chapter, the title below it in normal case.
