@@ -81,6 +81,13 @@ Updates:
 /plugin marketplace update storyline-code-style
 ```
 
+## AI notice
+
+This repository is written together with [Claude Code](https://claude.com/claude-code). The rules, the reference files,
+the example files and the banner check were drafted by Claude and reviewed, decided and tested by the maintainer.
+Decisions and their reasons are logged in [`progress.md`](progress.md). If a rule or an example looks wrong,
+open an issue, it is a human call in the end.
+
 ## License
 
 [MIT](LICENSE)
