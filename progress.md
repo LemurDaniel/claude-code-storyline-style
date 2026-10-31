@@ -30,4 +30,4 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 - [ ] C++ examples are not compiled yet (no compiler and no `Request.h` / `Response.h`).
 
 ## Next step
-Run `claude plugin validate .`, commit, then `git tag v0.2.0` and push the tag for the release. Afterwards watch how Claude applies the chapter order and TOC rules in a real session.
+Run `claude plugin validate .`, commit, then tag `v0.2.0` on the merge of PR 2 and `v0.2.1` after the lint fix PR, each tag publishes a release. Afterwards watch how Claude applies the chapter order and TOC rules in a real session.
