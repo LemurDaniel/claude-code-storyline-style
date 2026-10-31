@@ -154,7 +154,7 @@ Epilogue           # -----------------------------------------------------------
 
 Proofreading happens after the book is written, outside the file: `Verified: parser, Invoke-ScriptAnalyzer, Pester (12 passed)`.
 
-There are exactly three levels inside a book: chapter, section, group comment. No fourth banner level, sub-chapters are sections.
+A book has exactly three levels: chapter (`=` frame), section (`-` line) and paragraph (one group comment inside a unit). There is no fourth level: what feels like a sub-chapter becomes a section, what feels like a sub-section becomes a paragraph.
 
 - **The book is the file**, except where the language loads a folder as one unit (a Terraform module). Then the folder is the book and every file one chapter, see `references/terraform.md`.
 - **Every shelf has a label:** A folder with more than one file has an entry point where the language has one (`_index.js`, `Utils.psm1`, `main.tf`, `module.bicep`, the thin pipeline that calls the templates, the header of a `.cpp`). Where it has none, a short `README.md` in the folder lists the files with one line each. Whoever opens the folder knows what stands on the shelf without opening a book.
