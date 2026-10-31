@@ -76,27 +76,6 @@ Updates:
 /plugin marketplace update storyline-code-style
 ```
 
-## Recommended: core rules in your CLAUDE.md
-
-Whether a skill gets loaded is up to the model, and a quick one-line fix may skip it.
-Copy this block into your `~/.claude/CLAUDE.md` so the most important rules always apply and the skill gets loaded reliably:
-
-```markdown
-# Code Style
-**Before writing, changing or reviewing code, load the `storyline-code-style:code-style` skill**, even for small fixes. It holds the full rules and the per-language files.
-The rules below always apply, even without the skill:
-- The codebase's own conventions win, these rules only fill the gaps.
-- New and changed code follows the rules. Untouched code is only restyled in a refactoring, and before going beyond the requested part, ask how far to go.
-- Code reads top to bottom: file header with usage and prerequisites, flat main path with guard clauses and early `return`.
-- Chapter banner: three lines of `=`, title in UPPERCASE centered. Section: one line of `-`, title below. Lines are 75 characters long. No other banner styles.
-- Chapters in plot order: setup → validations → action → epilogue. Every chapter has a description, a file with three or more chapters lists them in the header.
-- Comments and identifiers in English. Constants in `UPPER_SNAKE`, booleans with `is`/`has`, no magic numbers.
-- `null` goes on the left in comparisons (`$null -EQ $x`).
-- Never swallow errors silently. Error messages state the expectation. Validations are grouped in a `Validations` section.
-- Docs: `[Required]`/`[Optional]` in PowerShell, `(Required)`/`(Optional)` elsewhere, always first. No empty doc skeletons.
-- Verbose/debug log with a `[Component]` prefix at every decision point. Mutating operations support WhatIf or dry-run.
-```
-
 ## License
 
 [MIT](LICENSE)

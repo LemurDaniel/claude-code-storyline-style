@@ -18,7 +18,7 @@ The repo is the marketplace and the plugin at once. There is no build, only Mark
 | `.github/workflows/check.banners.yaml` | Runs the banner check on every push and PR |
 | `.github/workflows/release.yaml` | On a tag `v<version>`: checks version and CHANGELOG, publishes the GitHub release |
 | `progress.md` | Goal, decisions, open items, next step |
-| `README.md` | Installation and the core block for a user's `CLAUDE.md` |
+| `README.md` | The story, contents and installation |
 
 ## Local setup
 `~/.claude/skills/code-style` is a junction to `plugins/storyline-code-style/skills/code-style`.
@@ -35,7 +35,7 @@ Every edit here is live in all local sessions right away, so a broken rule break
   ./.scripts/Test-StorylineBanner.ps1
   ```
 - **Example files must be valid**, check them with the language's tools where installed: PowerShell parser, `node --check`, `terraform fmt -check` and `terraform validate`, `bicep build`, `docker compose config`.
-- **Keep the core block in sync:** A change to a core rule goes into the README block and into `~/.claude/identity.md` (Code Style section).
+- **Keep the core block in sync:** A change to a core rule goes into `~/.claude/identity.md` (Code Style section).
 - **New language:** add `references/<language>.md`, `examples/<language>/`, a row in the SKILL.md table, the README table, the skill `description` and the keywords in `plugin.json`.
 
 ## Context reviews
@@ -43,5 +43,8 @@ Every edit here is live in all local sessions right away, so a broken rule break
 
 ## Releases
 - Bump `version` in `plugin.json` (SemVer): a new or changed rule is minor, a wording or example fix is patch. Add the entry `## <version> - <date>` to `CHANGELOG.md`.
-- Release: commit, then `git tag v<version>` and push the tag. The workflow fails when tag, `plugin.json` and CHANGELOG disagree.
+- Release: after the PR is merged, `git tag v<version>` on `main` and push the tag. The workflow fails when tag, `plugin.json` and CHANGELOG disagree.
+
+## Workflow
+- `main` is protected: changes only via PR, the `banners` check must pass, linear history, no force push. Work on a branch (`feature/<topic>`, `fix/<topic>`), then `gh pr create`.
 - Commit messages: short imperative title, bullet list per change below.
