@@ -292,13 +292,17 @@ Comments look the same in every language, only the comment character changes. A 
 | `#` | PowerShell, Terraform, YAML, Docker Compose |
 
 - **Two levels of banners:**
-  - **Chapter:** three lines of `=`. The title sits in UPPERCASE centered in the middle line, with 3 spaces on each side.
-  - **Chapter titles describe the content**, short and as an activity (`RENDER PINNED REPOS AS CARDS`, `SOLVE TREE PUZZLE`). Not generic like `MAIN` or `CODE`. Collection chapters may be called `HELPERS` or `SETTINGS`.
-  - **Section** inside a chapter: one line of `-`, the title below it in normal case.
-  - Every line is 75 characters long, plus the comment character and one space.
-  - A chapter without sections is fine. Small files (a Bicep module, a Compose file) get by with sections alone.
-  - No other banner styles, so no `/* #### */` boxes, `<# #### #>` blocks, `/*---- * Title *` blocks, `////` or `#####` lines.
-  - YAML pipelines and Docker Compose only use the section level.
+  - **Chapter:**
+    - Three lines of `=`. The title sits in UPPERCASE centered in the middle line, with 3 spaces on each side.
+    - The title describes the content, short and as an activity (`RENDER PINNED REPOS AS CARDS`, `SOLVE TREE PUZZLE`). Not generic like `MAIN` or `CODE`. Collection chapters may be called `HELPERS` or `SETTINGS`.
+    - A chapter without sections is fine.
+  - **Section:**
+    - One line of `-` inside a chapter, the title below it in normal case.
+    - Small files (a Bicep module, a Compose file) get by with sections alone.
+    - YAML pipelines and Docker Compose only use the section level.
+  - **Both levels:**
+    - Every line is 75 characters long, plus the comment character and one space.
+    - No other banner styles, so no `/* #### */` boxes, `<# #### #>` blocks, `/*---- * Title *` blocks, `////` or `#####` lines.
 - **Group comments inside a unit:** Inside a class, resource block or parameter list there are no banners. A single comment line in normal case above the group structures it (`# General resource attributes`, `// Get Index`).
 - **Block comment syntax** (`/* */`, `/** */`, `<# #>`) is only for doc comments and multi-line explanations above a block, never for banners.
 - **Chapter description:** Every chapter has one. Right below the frame it says what happens in the chapter. Empty comment lines above and below set it apart.
