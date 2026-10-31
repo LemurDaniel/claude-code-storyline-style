@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.4.0 - 2026-10-31
+- "The story" in `SKILL.md`: two annotated examples below the glossary, a folder tree (library, shelf, shelf label, call number) and one book with every part named on the left.
 - Priorities in `SKILL.md`: correctness is the boundary, readability the goal, everything else comes after. Rules serve readability, a deliberate deviation gets a comment saying why. Reviews report correctness first.
 - Verify before done (proofreading): run the parser, linter, formatter check and tests of the language, name every check that could not run. Every language file has a `Verify` line.
 - PowerShell: `Set-StrictMode -Version 1.0` and `$ErrorActionPreference = 'Stop'` in every script and `.psm1`, `$LASTEXITCODE` after native commands.

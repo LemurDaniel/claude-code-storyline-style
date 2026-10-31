@@ -69,6 +69,91 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | Epilogue | Cleanup | Context reset, outputs, exports: always the last chapter or section |
 | Proofreading | Verification | Parser, linter and tests before the code counts as done, see [Errors, logging, tests](#errors-logging-tests) |
 
+The library, its shelves and the call numbers:
+```
+platform/                            Library: README.md at the entrance
+  README.md
+  scripts/                           Shelf: one domain
+    Utils.psm1                       Shelf label: entry point, dot-sources every book
+    Config/Get-UtilsConfig.ps1       Book, call number in Verb-Noun (PowerShell convention)
+  pipelines/                         Shelf
+    README.md                        Shelf label: no entry point, so a README lists the files
+    deploy.infra.dev.yaml            Book, call number <kind>.<topic>.<variant>
+    tmpl.terraform.infra.deploy.yaml
+```
+
+One book from blurb to epilogue, the part names on the left:
+```
+Blurb              # NOTE:
+                   #   Requires: Az.Storage and a logged in context (Connect-AzAccount).
+                   #
+                   #   ./Move-StorageBlob.ps1 -Source st-old -Target st-new -WhatIf
+                   #
+Table of contents  #   Chapters:
+                   #     LOAD AND VALIDATE BLOBS   Validations and the blobs of the source.
+                   #     MOVE BLOBS                Copies every blob and reports the count.
+
+                   param (...)
+
+                   Set-StrictMode -Version 1.0
+                   $ErrorActionPreference = 'Stop'
+
+Cast list          $CONTAINER_NAME = 'backups'
+
+Chapter            # ===========================================================================
+                   # =======================   LOAD AND VALIDATE BLOBS   =======================
+                   # ===========================================================================
+Chapter intro      #
+                   #   1. Validations   Fails early on equal storage accounts.
+                   #   2. Blobs         Loads all blobs of the source container.
+                   #
+
+Section            # ---------------------------------------------------------------------------
+                   # Validations
+
+                   if ($Source -EQ $Target) {
+                       throw [System.ArgumentException]::new('Source and Target must be different storage accounts.')
+                   }
+
+                   # ---------------------------------------------------------------------------
+                   # Blobs
+                   ...
+
+                   # ===========================================================================
+                   # =============================   MOVE BLOBS   ==============================
+                   # ===========================================================================
+                   #
+                   #   1. Copy     Copies every blob into the target container.
+                   #   2. Report   Returns the number of copied blobs.
+                   #
+
+                   # ---------------------------------------------------------------------------
+                   # Copy
+
+                   $CopiedCount = 0     # reported in Report
+
+                   foreach ($blob in $Blobs) {
+                       $CopyConfig = @{
+Paragraph                  # Source
+                           SrcContainer  = $CONTAINER_NAME
+                           SrcBlob       = $blob.Name
+                           Context       = $sourceContext
+                           # Target
+                           DestContainer = $CONTAINER_NAME
+                           DestContext   = $targetContext
+                       }
+                       $null = Start-AzStorageBlobCopy @CopyConfig
+                       $CopiedCount++
+                   }
+
+Epilogue           # ---------------------------------------------------------------------------
+                   # Report
+
+                   return [PSCustomObject]@{ Copied = $CopiedCount }
+```
+
+Proofreading happens after the book is written, outside the file: `Verified: parser, Invoke-ScriptAnalyzer, Pester (12 passed)`.
+
 There are exactly three levels inside a book: chapter, section, group comment. No fourth banner level, sub-chapters are sections.
 
 - **The book is the file**, except where the language loads a folder as one unit (a Terraform module). Then the folder is the book and every file one chapter, see `references/terraform.md`.
