@@ -13,28 +13,6 @@
   . $PSScriptRoot/Config/Get-UtilsConfig.ps1
   . $PSScriptRoot/CloudSync/Sync-UtilsCloudFile.ps1
   ```
-- **Chapters and sections as `#` banners**, per `SKILL.md` → "Comments", with a chapter description. Chapters get the `=` frame with a centered title, sections the `# ----` line as in YAML pipelines. No `<# #### #>` blocks and no `#####` lines.
-  ```powershell
-  # ===========================================================================
-  # ======================   LOAD AND VALIDATE CONFIG   =======================
-  # ===========================================================================
-  #
-  #   1. Config        Loads the owner from the config file.
-  #   2. Validations   Fails early on a missing owner.
-  #
-
-  # ---------------------------------------------------------------------------
-  # Config
-
-  $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
-
-  # ---------------------------------------------------------------------------
-  # Validations
-
-  if ([System.String]::IsNullOrEmpty($Config.owner)) {
-      throw [System.ArgumentException]::new("Config '$ConfigPath' must contain an 'owner'.")
-  }
-  ```
 - Verb-Noun with a module prefix (`Get-UtilsConfig`, `Invoke-AzureRest`), aliases for frequent commands (`[Alias('tf')]`).
   ```powershell
   function Invoke-TerraformCommand {

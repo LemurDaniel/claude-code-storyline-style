@@ -148,19 +148,6 @@
       .map(repository => repository.size)
       .reduce((sum, size) => sum + size, 0)
   ```
-- **Chapters and sections as `//` banners** per `SKILL.md` → "Comments", with a chapter description. No `/* #### */` boxes. Inside a class there are no banners, group comments structure it there (see next point).
-  ```js
-  // ===========================================================================
-  // ==========================   SOLVE TREE PUZZLE   ==========================
-  // ===========================================================================
-  //
-  //   1. Parse input   Reads the input file into a grid.
-  //   2. Part 1        Counts the trees visible from outside the grid.
-  //
-
-  // ---------------------------------------------------------------------------
-  // Parse input
-  ```
 - Small methods of the same kind sit under a group comment (`// Get Index`, `// Has Node by Index`).
   ```js
   // Get Index

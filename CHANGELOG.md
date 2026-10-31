@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.4.0 - 2026-10-31
+- PowerShell, JavaScript and C++: the banner bullets that only repeated SKILL.md → "Comments" are removed.
 - Bicep: chapters and sections exactly as in SKILL.md, no Bicep-specific banner rule, an empty line after every section title.
 - Bicep: one module is one file `module.<name>.bicep` in a category folder with a `README.md`, `main.bicep` is the entry point and `main.<env>.bicepparam` the test deployment. No more folder and `example/` per module.
 - Kubernetes manifests / Helm: new `references/kubernetes.md` and `examples/kubernetes/` (plain issuer manifest, Helm chart with values per environment). The example check runs helm lint, helm template and kubeconform.

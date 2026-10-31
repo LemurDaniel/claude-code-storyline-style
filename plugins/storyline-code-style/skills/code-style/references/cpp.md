@@ -62,19 +62,6 @@
       std::vector<Middleware> _middlewares;
   };
   ```
-- `.cpp` files structure chapters and sections as `//` banners per `SKILL.md` → "Comments". No `/*---- * Title *` blocks.
-  ```cpp
-  // ===========================================================================
-  // =============================   MIDDLEWARE   ==============================
-  // ===========================================================================
-  //
-  //   use      Registers a handler for all paths below a prefix.
-  //   handle   Runs the matching handlers in registration order.
-  //
-
-  // ---------------------------------------------------------------------------
-  // Handle Middleware
-  ```
 - Includes grouped: framework, stdlib, libraries, own.
   ```cpp
   #include <QCoreApplication>
