@@ -132,7 +132,7 @@
   prometheus:
     ...
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      test: ["CMD", "promtool", "check", "healthy"]
       interval: 30s
 
   grafana:

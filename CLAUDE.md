@@ -52,4 +52,4 @@ Every edit here is live in all local sessions right away, so a broken rule break
 - Commit messages: short imperative title, bullet list per change below.
 
 ## Plugin directory submission
-The directory lint flags credential-looking names (`TOKEN`, `PASSWORD`, `SECRET`) next to remote hosts, words like `sendMail`, real vendor hosts (`dev.azure.com`) and unbalanced apostrophes in code blocks (`today's` made it read to the end of the file). Snippets use `api.example.com`, neutral variable names and no apostrophes inside code blocks. `${{ secrets.* }}` in the pipeline reference is expected and gets confirmed by a reviewer.
+The directory lint flags credential-looking names (`TOKEN`, `PASSWORD`, `SECRET`, `keyFile`, Key Vault), every `$env:` reference, network commands in snippets (`wget`, `sendMail`), real vendor hosts (`dev.azure.com`) and unbalanced apostrophes in code blocks (`today's` made it read to the end of the file). Snippets use `api.example.com`, neutral variable names and no apostrophes inside code blocks. `${{ secrets.* }}` in the pipeline reference is expected and gets confirmed by a reviewer.

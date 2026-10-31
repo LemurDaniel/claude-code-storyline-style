@@ -62,7 +62,7 @@ There are exactly three levels inside a book: chapter, section, group comment. N
   | File | Content |
   | --- | --- |
   | `Get-UtilsConfig.ps1` | One function with sections only: defaults, read, merge. |
-  | `Move-KeyVaultSecret.ps1` | A script with chapters, WhatIf and a CLEAN block. |
+  | `Move-StorageBlob.ps1` | A script with chapters, WhatIf and a CLEAN block. |
   ```
 
 - **When a file gets chapters:** as soon as it tells more than one phase (load, validate, write) or holds more than one kind of unit (helpers plus a main flow). A file with a single phase or a single unit gets by with sections (a Bicep module, `Get-UtilsConfig.ps1`), a tiny file with none (a `.bicepparam`).
@@ -90,9 +90,9 @@ There are exactly three levels inside a book: chapter, section, group comment. N
   ```
   ```powershell
   # NOTE:
-  #   Requires: Az.Accounts, Az.KeyVault and a logged in context (Connect-AzAccount).
+  #   Requires: Az.Accounts, Az.Storage and a logged in context (Connect-AzAccount).
   #
-  #   ./Move-KeyVaultSecret.ps1 -Source kv-old -Target kv-new -WhatIf
+  #   ./Move-StorageBlob.ps1 -Source st-old -Target st-new -WhatIf
   ```
 - **Table of contents in the header:** A file with three or more chapters lists them at the end of the header, in file order, with the exact chapter title on the left and one line on the right. The banner check compares the list with the chapters.
   ```cpp
@@ -196,7 +196,7 @@ Comments look the same in every language, only the comment character changes. A 
   - In **collection chapters** (helpers, settings) there is one entry per function or section, without numbers.
   - Something that applies to all steps (e.g. "files are only written on change") goes into its own paragraph below.
 - **Block comments:** A short comment per block says *what* it does. The *why* only appears where it is not obvious.
-- **Cross-references name the chapter:** When a block depends on or undoes something from another chapter, the comment says which one, with the chapter title as written in its banner (`# Restores the context switched in LOAD AND VALIDATE SECRETS.`). Across files the file name comes first (`// see MiniServer.h, group Routing`).
+- **Cross-references name the chapter:** When a block depends on or undoes something from another chapter, the comment says which one, with the chapter title as written in its banner (`# Restores the context switched in LOAD AND VALIDATE FILES.`). Across files the file name comes first (`// see MiniServer.h, group Routing`).
 
 ```js
 // ===========================================================================
@@ -322,8 +322,8 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
       Force     = $true
   }
 
-  Set-AzStorageBlobContent @UploadConfig -File $keepassFile -Blob 'keepass.kdbx'
-  Set-AzStorageBlobContent @UploadConfig -File $keyFile     -Blob 'keepass.key'
+  Set-AzStorageBlobContent @UploadConfig -File $databaseFile -Blob 'notes.db'
+  Set-AzStorageBlobContent @UploadConfig -File $configFile   -Blob 'notes.config.json'
   ```
 - **Pass a context object:** A parent module hands down a reference (name, location, tags, naming) as one object instead of five single values.
   ```hcl
@@ -390,7 +390,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
 - **Build for the caller:** short, telling entry points, sensible defaults and autocompletion where the language supports it.
   ```powershell
   # The caller only has to name the profile, everything else has a default and completes via TAB.
-  Sync-UtilsCloudFile -ProfileName keepass
+  Sync-UtilsCloudFile -ProfileName notes
   ```
 - Verbs first, domain as prefix or namespace (`Get-UtilsConfig`, `Http::Router`).
 - Booleans carry an `is`/`has` prefix and the real bool type.
@@ -472,10 +472,10 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   # Validations
 
   if ($Source -EQ $Target) {
-      throw [System.ArgumentException]::new('Source and Target must be different Key Vaults.')
+      throw [System.ArgumentException]::new('Source and Target must be different storage accounts.')
   }
-  if ($null -EQ (Get-AzKeyVault -VaultName $Target)) {
-      throw [System.ArgumentException]::new("Target Key Vault '$Target' must exist before moving secrets.")
+  if ($null -EQ (Get-AzStorageAccount | Where-Object -Property StorageAccountName -EQ -Value $Target)) {
+      throw [System.ArgumentException]::new("Target storage account '$Target' must exist before moving blobs.")
   }
   ```
 - The condition must check exactly what the error message claims.
