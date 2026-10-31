@@ -237,8 +237,8 @@ const visibleTrees = countVisibleTrees(grid)
 # ======================   LOAD AND VALIDATE CONFIG   =======================
 # ===========================================================================
 #
-#   1. Config        Loads the owner and resolves the GitHub token.
-#   2. Validations   Fails early on a missing owner or token.
+#   1. Config        Loads the owner and resolves the region.
+#   2. Validations   Fails early on a missing owner or region.
 #
 
 # ---------------------------------------------------------------------------
@@ -291,9 +291,9 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   ```
 - **No duplicated logic:** Repeated blocks move into a helper.
   ```js
-  // Instead of building the same URL in three places:
-  function getApiUrl({ organization, project, api }) {
-      return `https://api.example.com/${organization}/${project}/${api}?api-version=${API_VERSION}`
+  // Instead of building the same backup path in three places:
+  function getBackupPath({ profile, date }) {
+      return path.join(BACKUP_ROOT, profile, `${date.toISOString().slice(0, 10)}.zip`)
   }
   ```
 - **Explicit over magic:** Imports and registrations are written out, types are unambiguous, magic numbers are named constants.
@@ -492,8 +492,8 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   ```
 - Mutating operations support dry-run or WhatIf where possible. Changed context is reset at the end.
   ```powershell
-  if ($PSCmdlet.ShouldProcess($secret.Name, "Move to '$Target'")) {
-      $null = Set-AzKeyVaultSecret -VaultName $Target -Name $secret.Name -SecretValue $secret.SecretValue
+  if ($PSCmdlet.ShouldProcess($file.Name, "Upload to '$Container'")) {
+      $null = Set-AzStorageBlobContent @UploadConfig -File $file.FullName -Blob $file.Name
   }
   ```
 - **Tests check concrete expected values**, not just "runs through".

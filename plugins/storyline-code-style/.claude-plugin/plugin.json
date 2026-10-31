@@ -3,7 +3,7 @@
   "name": "storyline-code-style",
   "displayName": "Storyline Code Style",
   "description": "Code style skill for PowerShell, Terraform, Bicep, YAML pipelines (GitHub Actions / Azure DevOps), Docker Compose, JavaScript / Node.js and C++. General rules plus one reference file per language, loaded only when needed.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "LemurDaniel"
   },

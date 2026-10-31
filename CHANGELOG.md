@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1 - 2026-10-31
+- Plugin directory lint: SKILL.md snippets no longer resolve a token, build a remote URL or copy a secret value. Neutral examples (region, backup path, blob upload) instead.
+
 ## 0.2.0 - 2026-10-31
 - "The story" in `SKILL.md`: glossary from library, shelf and book to code, every folder with more than one file has a shelf label (entry point or `README.md`), when a file gets chapters, chapter order (setup → validations → action → epilogue), variables introduced in the chapter where they first act.
 - Table of contents in the header for files with three or more chapters, a description for every chapter, cross-references name the chapter.
