@@ -18,6 +18,17 @@
 
 namespace Http
 {
+    // ===========================================================================
+    // =========================   ROUTE HTTP REQUESTS   =========================
+    // ===========================================================================
+    //
+    //   Lifecycle    begin and stop, the running flag and the port.
+    //   Routing      get, post and handle, routes match method and exact path.
+    //   Middleware   use, middlewares match a path prefix and may answer early.
+    //
+    //   The implementation follows the same groups, see MiniServer.cpp.
+    //
+
     using RequestHandler = std::function<void(Request &, Response &)>;
 
     /**

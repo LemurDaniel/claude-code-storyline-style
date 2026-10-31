@@ -5,6 +5,41 @@ A code style skill for [Claude Code](https://claude.com/claude-code): every file
 File headers say how to call the file, chapter and section banners structure it, guard clauses keep the main path flat,
 data is transformed in named stages, and logs leave a narrative trail at every decision point.
 
+## The story
+
+A file is a book. Every part of the book has its place in the code:
+
+| Book | Code | Form |
+| --- | --- | --- |
+| Blurb | File header | Usage and prerequisites |
+| Table of contents | Chapter list in the header | Only in files with three or more chapters |
+| Chapter | Chapter banner | Three lines of `=`, title in UPPERCASE centered |
+| Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
+| Section | Section banner | One line of `-`, title below |
+| Paragraph | Group comment | One comment line inside a unit, no banner |
+| Epilogue | Cleanup | Context reset, outputs, exports: always last |
+
+Chapters follow the plot: setup → validations → the action → epilogue. Variables are introduced in the chapter
+where they first act, and comments that point elsewhere name the chapter they mean.
+
+```powershell
+# ===========================================================================
+# ======================   LOAD AND VALIDATE SECRETS   ======================
+# ===========================================================================
+#
+#   1. Context       Switches to the given subscription, keeps the previous one.
+#   2. Validations   Fails early on equal or missing Key Vaults.
+#   3. Secrets       Loads all enabled secrets of the source.
+#
+
+# ---------------------------------------------------------------------------
+# Context
+```
+
+The banner check in [`.scripts/Test-StorylineBanner.ps1`](.scripts/Test-StorylineBanner.ps1) runs in CI and verifies the
+banner format, that every chapter has a description, that the numbered steps match the sections and that the table of
+contents matches the chapters.
+
 ## What's inside
 
 | File | Content |
@@ -54,6 +89,7 @@ The rules below always apply, even without the skill:
 - New and changed code follows the rules. Untouched code is only restyled in a refactoring, and before going beyond the requested part, ask how far to go.
 - Code reads top to bottom: file header with usage and prerequisites, flat main path with guard clauses and early `return`.
 - Chapter banner: three lines of `=`, title in UPPERCASE centered. Section: one line of `-`, title below. Lines are 75 characters long. No other banner styles.
+- Chapters in plot order: setup → validations → action → epilogue. Every chapter has a description, a file with three or more chapters lists them in the header.
 - Comments and identifiers in English. Constants in `UPPER_SNAKE`, booleans with `is`/`has`, no magic numbers.
 - `null` goes on the left in comparisons (`$null -EQ $x`).
 - Never swallow errors silently. Error messages state the expectation. Validations are grouped in a `Validations` section.

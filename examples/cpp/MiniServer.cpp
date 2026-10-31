@@ -1,6 +1,12 @@
 // NOTE:
 //   Implementation of MiniServer.h. The socket transport is out of scope here,
 //   it parses each request and calls MiniServer::handle once per request.
+//
+//   Chapters:
+//     HELPERS      Status codes and the prefix check.
+//     LIFECYCLE    begin and stop.
+//     ROUTING      Route registration and request handling.
+//     MIDDLEWARE   Middleware registration.
 
 #include <algorithm>
 #include <cstdio>

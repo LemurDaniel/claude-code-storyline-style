@@ -1,3 +1,12 @@
+# ===========================================================================
+# ===============================   OUTPUTS   ===============================
+# ===========================================================================
+#
+#   reference        Context object for dependent modules.
+#   login_server     Address for 'docker login'.
+#   admin_password   Only set when admin_enabled is true, marked sensitive.
+#
+
 output "reference" {
   description = "Reference for dependent modules (id, name, location, tags, naming)."
   value = {

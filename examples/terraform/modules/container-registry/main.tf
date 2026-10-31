@@ -1,3 +1,12 @@
+# ===========================================================================
+# ======================   DEPLOY CONTAINER REGISTRY   ======================
+# ===========================================================================
+#
+#   One registry with the name and SKU resolved in RESOLVE REGISTRY SETTINGS
+#   (locals.registry.tf). Restricted access denies everything except the IP
+#   rules, the preconditions fail the plan on an invalid combination.
+#
+
 resource "azurerm_container_registry" "main" {
   # General resource attributes
   name                = local.name_final

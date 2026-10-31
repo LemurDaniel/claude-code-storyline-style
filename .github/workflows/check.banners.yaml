@@ -17,12 +17,12 @@ permissions:
 jobs:
 
   # ---------------------------------------------------------------------------
-  # Banners - checks length and centering of all banner lines
+  # Banners - checks format and structure of all chapters and sections
   banners:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Test banner format
+      - name: Test banners
         shell: pwsh
         run: ./.scripts/Test-StorylineBanner.ps1

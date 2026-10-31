@@ -13,6 +13,19 @@
   main.search.tf.disabled
   ```
 - Modules live under `modules/<domain>/<module>/`.
+- **The module is the book, every `.tf` file is one chapter.** Each file starts with a chapter banner and description (`SKILL.md` → "Comments"): a flow chapter with numbered sections for `locals.*.tf` and `main.*.tf` with several phases, a collection chapter for `variables.tf` and `outputs.tf`. The description of `main.*.tf` names the locals it uses by their chapter (`resolved in RESOLVE REGISTRY SETTINGS (locals.registry.tf)`).
+  ```hcl
+  # ===========================================================================
+  # ======================   RESOLVE REGISTRY SETTINGS   ======================
+  # ===========================================================================
+  #
+  #   1. Name   Takes the configured name or generates one from the naming context.
+  #   2. SKU    Raises the SKU to Premium for private access, derives retention.
+  #
+
+  # ---------------------------------------------------------------------------
+  # Name
+  ```
 - Config per environment as `env/<env>.tfvars`, with a chapter banner and description at the top (`SKILL.md` → "Comments") and one comment per block. Run with `terraform plan -var-file=env/dev.tfvars`.
   ```hcl
   # ===========================================================================

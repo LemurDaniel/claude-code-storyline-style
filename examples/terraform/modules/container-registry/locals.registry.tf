@@ -1,3 +1,14 @@
+# ===========================================================================
+# ======================   RESOLVE REGISTRY SETTINGS   ======================
+# ===========================================================================
+#
+#   1. Name   Takes the configured name or generates one from the naming context.
+#   2. SKU    Raises the SKU to Premium for private access, derives retention.
+#
+
+# ---------------------------------------------------------------------------
+# Name
+
 /*
   Order of precedence for the registry name:
   - Name from the configuration
@@ -15,6 +26,9 @@ locals {
     local.name_generated,
   ]...)
 }
+
+# ---------------------------------------------------------------------------
+# SKU
 
 /*
   Derives the SKU dependent settings, Premium unlocks private access and retention.

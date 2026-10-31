@@ -34,8 +34,17 @@
    * @return 0 on success, non-zero on failure.
    */
   ```
-- Headers grouped by feature. `public:` and `private:` may alternate.
+- Headers grouped by feature. `public:` and `private:` may alternate. A header with one class gets one chapter around the class, its description lists the groups and so serves as the table of contents of the class. The `.cpp` uses the same group names as chapter titles.
   ```cpp
+  // ===========================================================================
+  // =========================   ROUTE HTTP REQUESTS   =========================
+  // ===========================================================================
+  //
+  //   Lifecycle    begin and stop, the running flag and the port.
+  //   Routing      get, post and handle, routes match method and exact path.
+  //   Middleware   use, middlewares match a path prefix and may answer early.
+  //
+
   class MiniServer
   {
   // Routing

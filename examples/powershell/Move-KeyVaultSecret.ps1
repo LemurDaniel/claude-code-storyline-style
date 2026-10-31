@@ -194,6 +194,7 @@ CLEAN {
     # ---------------------------------------------------------------------------
     # Restore context
 
+    # Restores the context switched in LOAD AND VALIDATE SECRETS.
     # CLEAN also runs on errors and Ctrl+C, so the caller never stays in the wrong subscription.
     if ($null -NE $PreviousContext) {
         Write-Verbose "[Move-KeyVaultSecret] Restoring context '$($PreviousContext.Name)'."

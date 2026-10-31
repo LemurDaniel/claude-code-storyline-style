@@ -34,6 +34,35 @@ For other languages only the general rules below apply, plus the language's own 
 
 # General
 
+## The story
+A file is a book. Every rule below gives one part of the book its place in the code:
+
+| Book | Code | Form |
+| --- | --- | --- |
+| Blurb | File header | Usage and prerequisites, see [Reading flow](#reading-flow) |
+| Table of contents | Chapter list in the header | Only in files with three or more chapters |
+| Chapter | Chapter | Three lines of `=`, title in UPPERCASE, see [Comments](#comments) |
+| Chapter intro | Chapter description | Numbered steps or one entry per unit, right below the frame |
+| Section | Section | One line of `-`, title below |
+| Paragraph | Group comment | One comment line inside a unit, no banner |
+| Epilogue | Cleanup | Context reset, outputs, exports: always the last chapter or section |
+
+There are exactly three levels: chapter, section, group comment. No fourth banner level, sub-chapters are sections.
+
+- **When a file gets chapters:** as soon as it tells more than one phase (load, validate, write) or holds more than one kind of unit (helpers plus a main flow). A file with a single phase or a single unit gets by with sections (a Bicep module, `Get-UtilsConfig.ps1`), a tiny file with none (a `.bicepparam`).
+- **Chapter order follows the plot:** setup (settings, helpers, context) → validations → the action → epilogue (cleanup, outputs, exports). Helpers either come first as a collection chapter, so the reader meets them before they act, or live in their own file. Never between two steps of the action.
+- **No character without an introduction:** a variable, constant or config value is declared in the chapter where it first acts, right before its first use. Not collected at the top of the file and not in a later chapter.
+  ```powershell
+  # ---------------------------------------------------------------------------
+  # Secrets
+
+  $Secrets = Get-AzKeyVaultSecret -VaultName $Source
+  | Where-Object -Property Enabled -EQ -Value $true
+
+  $MovedCount   = 0     # counted while moving, reported at the end
+  $SkippedCount = 0
+  ```
+
 ## Reading flow
 - **File header with usage and prerequisites:** Whoever opens the file sees at the top how to call it and what has to exist first.
   ```js
@@ -48,6 +77,17 @@ For other languages only the general rules below apply, plus the language's own 
   #   Requires: Az.Accounts, Az.KeyVault and a logged in context (Connect-AzAccount).
   #
   #   ./Move-KeyVaultSecret.ps1 -Source kv-old -Target kv-new -WhatIf
+  ```
+- **Table of contents in the header:** A file with three or more chapters lists them at the end of the header, in file order, with the exact chapter title on the left and one line on the right. The banner check compares the list with the chapters.
+  ```cpp
+  // NOTE:
+  //   Implementation of MiniServer.h.
+  //
+  //   Chapters:
+  //     HELPERS      Status codes and the prefix check.
+  //     LIFECYCLE    begin and stop.
+  //     ROUTING      Route registration and request handling.
+  //     MIDDLEWARE   Middleware registration.
   ```
 - **Concept before code:** For algorithms, data structures or unfamiliar mechanisms a short explanation comes first, then the implementation.
   ```js
@@ -87,7 +127,7 @@ For other languages only the general rules below apply, plus the language's own 
   }
   ...
   ```
-- **Split files into chapters:** Chapter and section banners structure the file, the format is described under [Comments](#comments).
+- **Split files into chapters:** Chapter and section banners structure the file, the format is described under [Comments](#comments), when and in which order under [The story](#the-story).
 - **Flat main path:** Guard clauses and early `return` instead of nesting.
   ```js
   if (!user) return
@@ -135,11 +175,12 @@ Comments look the same in every language, only the comment character changes. A 
   - YAML pipelines and Docker Compose only use the section level.
 - **Group comments inside a unit:** Inside a class, resource block or parameter list there are no banners. A single comment line in normal case above the group structures it (`# General resource attributes`, `// Get Index`).
 - **Block comment syntax** (`/* */`, `/** */`, `<# #>`) is only for doc comments and multi-line explanations above a block, never for banners.
-- **Chapter description:** Right below the frame it says what happens in the chapter. Empty comment lines above and below set it apart.
-  - In **flow chapters** the steps are numbered. The section name is on the left, a one-line explanation on the right, columns aligned. Continuation lines indent to the explanation column.
+- **Chapter description:** Every chapter has one. Right below the frame it says what happens in the chapter. Empty comment lines above and below set it apart.
+  - In **flow chapters** the steps are numbered. The section name is on the left, exactly as in the section banner, a one-line explanation on the right, columns aligned. Continuation lines indent to the explanation column. The banner check compares the numbered names with the sections of the chapter.
   - In **collection chapters** (helpers, settings) there is one entry per function or section, without numbers.
   - Something that applies to all steps (e.g. "files are only written on change") goes into its own paragraph below.
 - **Block comments:** A short comment per block says *what* it does. The *why* only appears where it is not obvious.
+- **Cross-references name the chapter:** When a block depends on or undoes something from another chapter, the comment says which one, with the chapter title as written in its banner (`# Restores the context switched in LOAD AND VALIDATE SECRETS.`). Across files the file name comes first (`// see MiniServer.h, group Routing`).
 
 ```js
 // ===========================================================================
@@ -467,9 +508,12 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
 # Review checklist
 Use this list for reviews, `/code-review` and `/simplify`. Report each finding with the rule it breaks and a concrete fix. Respect [Scope](#scope): flag untouched code only in a refactoring or when asked.
 
-- [ ] **Header:** usage and prerequisites at the top of the file. → [Reading flow](#reading-flow)
+- [ ] **Header:** usage and prerequisites at the top of the file, a table of contents from three chapters on. → [Reading flow](#reading-flow)
+- [ ] **Chapters:** a file with several phases or kinds of units has chapters, in plot order: setup → validations → action → epilogue. → [The story](#the-story)
+- [ ] **Introductions:** every variable is declared in the chapter where it first acts. → [The story](#the-story)
 - [ ] **Banners:** chapters with `=` frame and centered UPPERCASE title, sections with one `-` line, 75 characters, no other banner styles. → [Comments](#comments)
-- [ ] **Chapter description:** numbered steps in flow chapters, one entry per unit in collection chapters, columns aligned. → [Comments](#comments)
+- [ ] **Chapter description:** every chapter has one, numbered steps in flow chapters match the section titles, one entry per unit in collection chapters, columns aligned. → [Comments](#comments)
+- [ ] **Cross-references:** comments that point elsewhere name the chapter or file. → [Comments](#comments)
 - [ ] **Flat main path:** guard clauses and early `return` instead of nesting. → [Reading flow](#reading-flow)
 - [ ] **Decision trees:** non-trivial blocks are described first and the code follows the description 1:1. → [Reading flow](#reading-flow)
 - [ ] **Structure:** one thing per file, dotted file names, no duplicated logic, one real implementation. → [Structure](#structure)

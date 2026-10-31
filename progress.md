@@ -14,6 +14,10 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Examples are neutral, no private project details. | The plugin is public, private layouts confuse other users. |
 | 2026-10-31 | Banner check as `.scripts/Test-StorylineBanner.ps1`, run locally and in CI. | One real implementation, a check separate from the one writing the rules. |
 | 2026-10-31 | Example files live in the repo root (`examples/<language>/`), not in the plugin. | They document how all rules combine and serve as eval references, without adding to the installed skill. |
+| 2026-10-31 | The book metaphor is the frame: glossary in SKILL.md → "The story", three levels only (chapter, section, group comment), chapters in plot order, TOC from three chapters on. | Gives every rule a place in one picture, a fourth banner level would be noise. |
+| 2026-10-31 | Terraform: every `.tf` file is one chapter of the module. C++ headers with one class get one chapter as the TOC of the class. | Files with one unit had no banner at all, the module as a whole did not read like a book. |
+| 2026-10-31 | First public release is 0.1.0, not 1.x. Releases via tag `v<version>` and `release.yaml`. | No tag existed yet, the rules are still moving, so the version says so. |
+| 2026-10-31 | Banner check also verifies structure: description per chapter, numbered steps vs. sections, TOC vs. chapters. Markdown is exempt, snippets are excerpts. | Rules a script can check do not drift. |
 
 ## Open items
 - [ ] Reference files and examples for Kubernetes manifests / Helm and Dockerfile.
@@ -21,9 +25,8 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 - [ ] Evals with `claude plugin eval`: fixed prompts per language, checked against the rules and example files.
 - [ ] Run `claude plugin validate .` (the CLI was not on the PATH of the shell) and check `displayName` and the `$schema` URLs.
 - [ ] `"skills": ["./skills/"]` in `plugin.json` is the default path, probably removable.
-- [ ] CHANGELOG and a version bump in `plugin.json` for the changes since 1.0.0.
 - [ ] Azure DevOps example files (only GitHub Actions so far).
 - [ ] C++ examples are not compiled yet (no compiler and no `Request.h` / `Response.h`).
 
 ## Next step
-Bump `plugin.json` to 1.1.0 with a CHANGELOG entry, then run `claude plugin validate .`.
+Run `claude plugin validate .`, commit, then `git tag v0.1.0` and push the tag for the first release. Afterwards watch how Claude applies the chapter order and TOC rules in a real session.

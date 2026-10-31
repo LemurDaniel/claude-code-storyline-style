@@ -1,0 +1,66 @@
+# ---------------------------------------------------------------------------
+# Release
+#
+#   Creates a GitHub release when a tag 'v<version>' is pushed:
+#     git tag v0.1.0 && git push origin v0.1.0
+#
+#   The tag must match the version in plugin.json and have an entry in
+#   CHANGELOG.md, the entry becomes the release notes. The banner check
+#   runs first, a broken banner blocks the release.
+#
+#   No secrets needed, GITHUB_TOKEN with 'contents: write' creates the release.
+#
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # Release - checks tag, version and changelog, then publishes the release
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test banners
+        shell: pwsh
+        run: ./.scripts/Test-StorylineBanner.ps1
+
+      - name: Check version and changelog
+        shell: pwsh
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          $Version  = $env:TAG_NAME.TrimStart('v')
+          $Manifest = Get-Content -Path ./plugins/storyline-code-style/.claude-plugin/plugin.json -Raw | ConvertFrom-Json
+
+          if ($Manifest.version -NE $Version) {
+              throw [System.InvalidOperationException]::new("Tag '$env:TAG_NAME' must match plugin.json version '$($Manifest.version)'.")
+          }
+
+          # The release notes are the changelog section of this version, up to the next '## ' heading.
+          $Changelog = Get-Content -Path ./CHANGELOG.md -Raw
+          $Section   = [System.Text.RegularExpressions.Regex]::Match($Changelog, "(?ms)^## $([regex]::Escape($Version))\b[^\n]*\n(?<notes>.*?)(?=^## |\z)")
+
+          if (-NOT $Section.Success) {
+              throw [System.InvalidOperationException]::new("CHANGELOG.md must contain a section '## $Version' for tag '$env:TAG_NAME'.")
+          }
+
+          Set-Content -Path ./release-notes.md -Value $Section.Groups['notes'].Value.Trim()
+          Write-Host "[Release] Version $Version matches, release notes extracted."
+
+      - name: Create release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          gh release create $env:TAG_NAME --title $env:TAG_NAME --notes-file ./release-notes.md --verify-tag
