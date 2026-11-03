@@ -191,7 +191,9 @@ A book has exactly three levels: chapter (`=` frame), section (`-` frame) and pa
                                      utils/banners.parse.js
   ```
 
-- **Every file with sections has chapters:** sections only live inside a chapter, so a file with a single phase gets one chapter around its sections (a Bicep module, `Get-UtilsConfig.ps1`). More chapters as soon as it tells more than one phase (load, validate, write) or holds more than one kind of unit (helpers plus a main flow). Only a tiny file with one unit gets no banner at all (a `.bicepparam`, a values override, a workflow with one job), its header says what it does.
+- **Every file with sections has chapters:** sections only live inside a chapter, so a file with a single phase gets one chapter around its sections (a Bicep module, `Get-UtilsConfig.ps1`). More chapters as soon as it tells more than one phase (load, validate, write) or holds more than one kind of unit (helpers plus a main flow).
+- **Only a tiny file goes without banners:** tiny means one unit that does one step, a `.bicepparam`, a values override, a workflow with one job, a function that maps, formats or delegates in a few lines. Its header still says what it does. One unit per file is no reason to skip the chapter: a function that runs through several steps (validate, mount, read) is a book of its own and gets one chapter with a section per step, see the function file in the language file.
+- **A section outside a chapter gets a chapter, it is never removed:** the step structure is what the reader needs, the missing frame around it is the mistake.
 - **Chapter order follows the plot:** setup (settings, helpers, context) → validations → the action → epilogue (cleanup, outputs, exports). Helpers either come first as a collection chapter, so the reader meets them before they act, or live in their own file. Never between two steps of the action.
 - **No character without an introduction:** a variable or config value is declared in the chapter where it first acts, right before its first use. Not collected at the top of the file and not in a later chapter. The exception is the cast list: imports and module-wide constants (`COMMAND_NAME`, `DEFAULT_TIMEOUT_MS`) stand together below the header, because the whole book uses them.
   ```powershell
@@ -208,7 +210,7 @@ A book has exactly three levels: chapter (`=` frame), section (`-` frame) and pa
   ```
 
 ## Reading flow
-- **File header with usage and prerequisites:** Whoever opens the file sees at the top how to call it and what has to exist first.
+- **File header with usage and prerequisites:** Whoever opens the file sees at the top how to call it and what has to exist first. Every file has one, also a file with one function and a doc comment: the doc comment documents the parameters inside the unit, the header names prerequisites and the call before the reader reaches it.
   ```js
   // NOTE:
   //  node .\day09-part1.js [INPUT|TEST]
@@ -371,6 +373,7 @@ Comments look the same in every language, only the comment character changes. A 
       ```
     - Sections only live inside a chapter. The one section-shaped block outside is the header of a YAML file (pipelines, Compose, Kubernetes) in the first line, its table of contents follows as its own block below the closing line.
   - **Both levels:**
+    - Banners stand on the level of the file or of the body of its unit (a function, a script block level like `BEGIN`/`PROCESS`), indented like the code there. Never inside a loop, a branch, a `try` or a callback handed to another command: such a block is one section, its steps inside are group comments.
     - Every line is 75 characters long, plus the comment character and one space.
     - No other banner styles, so no `/* #### */` boxes, `<# #### #>` blocks, `/*---- * Title *` blocks, `////` or `#####` lines.
 - **Comments in the code:**
@@ -768,11 +771,11 @@ Use this list for reviews, `/code-review` and `/simplify`. Go through every grou
 - **[The story](#the-story)**
   - [ ] **Shelf label:** a folder with more than one file has an entry point or a `README.md` listing the files.
   - [ ] **Shelves:** no flat folder with more than five source files or several roles side by side, every new file stands on its shelf.
-  - [ ] **Chapters:** every file with sections has at least one chapter, a file with several phases or kinds of units has one per phase or kind, only a tiny file with one unit has no banner.
+  - [ ] **Chapters:** every file with sections has at least one chapter, a file with several phases or kinds of units has one per phase or kind, only a tiny file (one unit, one step) has no banner. A file with one function that runs several steps has one chapter with a section per step.
   - [ ] **Plot order:** setup → validations → action → epilogue, helpers first or in their own file, never between two steps.
   - [ ] **Introductions:** every variable is declared in the chapter where it first acts, imports and module-wide constants stand as cast list below the header.
 - **[Reading flow](#reading-flow)**
-  - [ ] **Header:** usage and prerequisites at the top of the file.
+  - [ ] **Header:** usage and prerequisites at the top of every file, also above a single function with doc comment.
   - [ ] **Table of contents:** every file with chapters lists them in its own block below the header, a Terraform module in `main.tf`.
   - [ ] **Describe first:** algorithms and unfamiliar mechanisms get a short concept, non-trivial blocks a decision tree, and the code follows it 1:1.
   - [ ] **Flat main path:** guard clauses and early `return` instead of nesting.

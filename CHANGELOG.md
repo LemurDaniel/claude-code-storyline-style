@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 - 2026-11-04
+- "Tiny file" is defined: one unit that does one step (a `.bicepparam`, a values override, a workflow with one job, a function that maps, formats or delegates). One unit per file is no reason to skip the chapter, a function that runs several steps gets one chapter with a section per step.
+- A section outside a chapter gets a chapter around it, it is never removed.
+- Every file has a header, also a file with one function and a doc comment: the doc comment documents the parameters, the header names prerequisites and the call.
+- Banners stand on the level of the file or of the body of its unit, never inside a loop, a branch, a `try` or a callback; such a block is one section.
+- PowerShell: the shape of a function file (header, table of contents, chapter inside the body after `param`) is shown in `powershell.md`, it was only in the repo example `Get-UtilsConfig.ps1`, which is not shipped with the skill.
+
 ## 0.4.0 - 2026-10-31
 - Sections stand out more: a `-` frame around the title and a one-line description indented by 3 spaces. In a flow chapter the description repeats the explanation of the numbered step. YAML headers use the same frame, `Name - explanation` titles are split into title and description. The banner check fails on a section without description or closing line.
 - Every file with sections has at least one chapter, sections only live inside a chapter. Only a tiny file with one unit (a `.bicepparam`, a values override, a workflow with one job) has no banner. The banner check fails on a section outside a chapter.
