@@ -43,6 +43,7 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Docker Compose: no reverse proxy rule (`expose` vs. `ports`, `external` networks), only "every published port gets a comment". Volumes: no host layout (relative config, absolute payload, `.gitignore`), only comment per mount and `:ro`. No `depends_on` / healthcheck / service name rule. | Owner decision: the proxy layout is one specific architecture, not a coding style. Style rules describe how code reads, not how a system is built. |
 | 2026-10-31 | Kubernetes: values per environment outside the chart in `env/values.<chart>.<env>.yaml`, the chart keeps only `values.yaml` and names no environment. Plain manifests on their own shelf `cluster/`, the root only holds shelves. The tree in `kubernetes.md` starts without a `k8s/` wrapper. | Owner decision: same as `env/<env>.tfvars` next to the Terraform code. Inside the chart `helm package` shipped every environment and a config change forced a new chart version. |
 | 2026-10-31 | YAML pipelines: the Bicep WhatIf artifact snippet is removed, only "WhatIf or plan as an artifact, name carries the stage" stays. | Owner decision: tool-specific pipeline setup is not a coding style, same line as the Docker Compose decision. |
+| 2026-11-04 | "Tiny file" means one unit with one step, a multi-step function file gets a chapter. Every file has a header, also above a function with doc comment. A section outside a chapter gets a chapter, never removed. Banners never inside loops, branches, `try` or callbacks. The function file shape is shown in `powershell.md`. (0.5.0) | In a real project 50 PowerShell function files came out without header and chapters: "one function per file" was read as "tiny file with one unit", the comment-based help was taken as the header, and sections that stood outside a chapter were deleted instead of framed. The right shape only existed in `examples/powershell/Get-UtilsConfig.ps1`, which the skill does not load. |
 
 ## Open items
 - [x] **Before merging 0.4.0:** owner review of all six language files (`yaml-pipelines.md`, `terraform.md`, `kubernetes.md`, `javascript.md`, `docker-compose.md`, `cpp.md`), done 2026-10-31.
@@ -54,6 +55,8 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 - [ ] Run `claude plugin validate .` (the CLI was not on the PATH of the shell) and check `displayName` and the `$schema` URLs.
 - [ ] Azure DevOps example files (only GitHub Actions so far).
 - [ ] C++ examples are not compiled yet (no compiler and no `Request.h` / `Response.h`).
+- [ ] The banner check cannot see a missing chapter: a long multi-step function file without any banner passes. Idea: flag a code file over about 60 lines without a header or without a chapter.
+- [ ] The banner check does not read chapter titles with a comma (`TEST, BUILD AND RELEASE`): it reports the table of contents as unterminated. Either allow commas in titles or name the rule "no punctuation in chapter titles" in SKILL.md.
 
 ## Next step
-Mark PR #7 ready for review and merge it (`feature/priorities`, merging is the release 0.4.0). Then watch in a real session whether Claude reports `Verified` / `Not verified` at the end of a task.
+Review and merge `fix/function-file-chapters` (0.5.0). Then watch in a real session whether function files come out with header and chapter.

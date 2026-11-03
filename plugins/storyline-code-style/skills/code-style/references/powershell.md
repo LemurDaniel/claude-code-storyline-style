@@ -13,6 +13,44 @@
   . $PSScriptRoot/Config/Get-UtilsConfig.ps1
   . $PSScriptRoot/CloudSync/Sync-UtilsCloudFile.ps1
   ```
+- **A function file is a book:** header and table of contents above `function`, the chapter inside the body after `param` and the function-wide constants, one section per step. Only a function with a single step (map, format, delegate) gets the header alone, see `SKILL.md` → "The story".
+  ```powershell
+  # NOTE:
+  #   Part of the Utils module, dot-sourced by Utils.psm1.
+  #
+  #   Get-UtilsConfig -ConfigPath ./utils.config.json
+
+  #
+  #   Chapters:
+  #     READ UTILS CONFIG   Defaults, reading the file and merging both.
+  #
+
+  function Get-UtilsConfig {
+      <#
+      .SYNOPSIS
+          Reads the Utils config file and fills in the defaults.
+      #>
+      [CmdletBinding()]
+      param (...)
+
+      # ===========================================================================
+      # ==========================   READ UTILS CONFIG   ==========================
+      # ===========================================================================
+      #
+      #   1. Defaults         The values every config falls back to.
+      #   2. Read config      Reads the config file, a missing file counts as empty.
+      #   3. Merge defaults   Fills every missing key with its default.
+      #
+
+      # ---------------------------------------------------------------------------
+      # Defaults
+      #   The values every config falls back to.
+      # ---------------------------------------------------------------------------
+
+      $DefaultConfig = [PSCustomObject]@{ Region = 'westeurope'; Interval = 120 }
+      ...
+  }
+  ```
 - Verb-Noun with a module prefix (`Get-UtilsConfig`, `Invoke-AzureRest`), aliases for frequent commands (`[Alias('tf')]`).
   ```powershell
   function Invoke-TerraformCommand {
