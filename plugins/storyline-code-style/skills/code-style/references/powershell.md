@@ -1,17 +1,33 @@
 # Code Style: PowerShell
-- PowerShell 7, 4 spaces. One function per file, folders by domain, the `.psm1` dot-sources the list explicitly, one `meta.json` per module. The tests live next to the module in `<Module>.Tests/`, see the test rule below.
+- PowerShell 7, 4 spaces. One function per file, folders by domain, the `.psm1` dot-sources the list explicitly, one `meta.json` per module. The tests live next to the module in `<Module>.Tests/`, which has the same subfolders as the module and one test file per function, see the test rule below.
   ```
-  Utils/
-    Utils.psm1
+  Utils/                                  the module, only what ships
+    Utils.psm1                            entry point, dot-sources every function file
     meta.json
-    Config/Get-UtilsConfig.ps1
-    CloudSync/Sync-UtilsCloudFile.ps1
-  Utils.Tests/
+    Config/
+      Get-UtilsConfig.ps1
+      Set-UtilsConfig.ps1
+    CloudSync/
+      Sync-UtilsCloudFile.ps1
+    Naming/
+      Get-UtilsResourceName.ps1
+  Utils.Tests/                            the tests, same subfolders as Utils/
+    README.md                             shelf label, one line per test file
+    BeforeAll.ps1                         shared setup, dot-sourced by every test file
+    Config/
+      Get-UtilsConfig.Tests.ps1           tests Config/Get-UtilsConfig.ps1
+      Set-UtilsConfig.Tests.ps1           tests Config/Set-UtilsConfig.ps1
+    CloudSync/
+      Sync-UtilsCloudFile.Tests.ps1       tests CloudSync/Sync-UtilsCloudFile.ps1
+    Naming/
+      Get-UtilsResourceName.Tests.ps1     tests Naming/Get-UtilsResourceName.ps1
   ```
   ```powershell
   # Utils.psm1
   . $PSScriptRoot/Config/Get-UtilsConfig.ps1
+  . $PSScriptRoot/Config/Set-UtilsConfig.ps1
   . $PSScriptRoot/CloudSync/Sync-UtilsCloudFile.ps1
+  . $PSScriptRoot/Naming/Get-UtilsResourceName.ps1
   ```
 - **A function file is a book:** header and table of contents above `function`, the chapter inside the body after `param` and the function-wide constants, one section per step. Only a function with a single step (map, format, delegate) gets the header alone, see `SKILL.md` → "The story".
   ```powershell
@@ -181,13 +197,10 @@
   $SyncProfile = Get-UtilsCloudSyncProfile -Name $ProfileName
   $localDate   = (Get-Item -Path $SyncProfile.Path).LastWriteTime
   ```
-- **Tests in their own folder next to the module:** Pester tests live in `<Module>.Tests/`, not inside the module, so the module folder holds only what ships. The test folder mirrors the subfolders of the module, one test file per function (`Naming/Get-UtilsResourceName.ps1` → `Naming/Get-UtilsResourceName.Tests.ps1`). The shared setup (module import, fixtures in `TestDrive`) lives once in `BeforeAll.ps1` at the root of the test folder, `AfterAll.ps1` next to it when cleanup is needed. Every test file opens with its chapter, see `SKILL.md` → "Errors, logging, tests".
-  ```
-  Utils.Tests/
-    README.md                                 shelf label, one line per test file
-    BeforeAll.ps1                             imports ../Utils, writes the fixtures
-    Config/Get-UtilsConfig.Tests.ps1
-    Naming/Get-UtilsResourceName.Tests.ps1
+- **Tests in their own folder next to the module:** Pester tests live in `<Module>.Tests/`, not inside the module, so the module folder holds only what ships. The test folder mirrors the subfolders of the module, one test file per function (`Naming/Get-UtilsResourceName.ps1` → `Naming/Get-UtilsResourceName.Tests.ps1`), see the tree at the top of this file. A new function file gets its test file at the same relative path. The shared setup (module import, fixtures in `TestDrive`) lives once in `BeforeAll.ps1` at the root of the test folder, `AfterAll.ps1` next to it when cleanup is needed. Every test file opens with its chapter, see `SKILL.md` → "Errors, logging, tests".
+  ```powershell
+  # Utils.Tests/BeforeAll.ps1
+  Import-Module (Join-Path -Path $PSScriptRoot -ChildPath '../Utils') -Force
   ```
   ```powershell
   # Utils.Tests/Naming/Get-UtilsResourceName.Tests.ps1
