@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.0 - 2026-11-04
+- PowerShell: Pester tests live in their own folder `<Module>.Tests/` next to the module instead of `tests/` inside it, so the module folder holds only what ships. The test folder mirrors the subfolders of the module, one test file per function (`Naming/Get-UtilsResourceName.Tests.ps1`). The shared setup lives once in `BeforeAll.ps1` at the root of the test folder and is dot-sourced with `$PSScriptRoot/../BeforeAll.ps1`. The Verify line lints the test folder too.
+
 ## 0.5.0 - 2026-11-04
 - "Tiny file" is defined: one unit that does one step (a `.bicepparam`, a values override, a workflow with one job, a function that maps, formats or delegates). One unit per file is no reason to skip the chapter, a function that runs several steps gets one chapter with a section per step.
 - A section outside a chapter gets a chapter around it, it is never removed.

@@ -1,12 +1,12 @@
 # Code Style: PowerShell
-- PowerShell 7, 4 spaces. One function per file, folders by domain, the `.psm1` dot-sources the list explicitly, one `meta.json` per module.
+- PowerShell 7, 4 spaces. One function per file, folders by domain, the `.psm1` dot-sources the list explicitly, one `meta.json` per module. The tests live next to the module in `<Module>.Tests/`, see the test rule below.
   ```
   Utils/
     Utils.psm1
     meta.json
     Config/Get-UtilsConfig.ps1
     CloudSync/Sync-UtilsCloudFile.ps1
-    tests/
+  Utils.Tests/
   ```
   ```powershell
   # Utils.psm1
@@ -181,10 +181,18 @@
   $SyncProfile = Get-UtilsCloudSyncProfile -Name $ProfileName
   $localDate   = (Get-Item -Path $SyncProfile.Path).LastWriteTime
   ```
-- Tests with Pester in `tests/` per module, `BeforeAll.ps1`/`AfterAll.ps1` for setup.
+- **Tests in their own folder next to the module:** Pester tests live in `<Module>.Tests/`, not inside the module, so the module folder holds only what ships. The test folder mirrors the subfolders of the module, one test file per function (`Naming/Get-UtilsResourceName.ps1` → `Naming/Get-UtilsResourceName.Tests.ps1`). The shared setup (module import, fixtures in `TestDrive`) lives once in `BeforeAll.ps1` at the root of the test folder, `AfterAll.ps1` next to it when cleanup is needed. Every test file opens with its chapter, see `SKILL.md` → "Errors, logging, tests".
+  ```
+  Utils.Tests/
+    README.md                                 shelf label, one line per test file
+    BeforeAll.ps1                             imports ../Utils, writes the fixtures
+    Config/Get-UtilsConfig.Tests.ps1
+    Naming/Get-UtilsResourceName.Tests.ps1
+  ```
   ```powershell
+  # Utils.Tests/Naming/Get-UtilsResourceName.Tests.ps1
   BeforeAll {
-      . $PSScriptRoot/BeforeAll.ps1
+      . $PSScriptRoot/../BeforeAll.ps1
   }
 
   Describe 'Get-UtilsResourceName' {
@@ -208,8 +216,9 @@
       throw [System.InvalidOperationException]::new("terraform init must succeed, got exit code $LASTEXITCODE.")
   }
   ```
-- **Verify** per `SKILL.md` → "Errors, logging, tests": parse every changed file, run `Invoke-ScriptAnalyzer -Severity Warning, Error` and the Pester tests of the module.
+- **Verify** per `SKILL.md` → "Errors, logging, tests": parse every changed file, run `Invoke-ScriptAnalyzer -Severity Warning, Error` on the module and its tests, then the Pester tests of the module.
   ```powershell
   Invoke-ScriptAnalyzer -Path ./Utils -Recurse -Severity Warning, Error
-  Invoke-Pester -Path ./Utils/tests
+  Invoke-ScriptAnalyzer -Path ./Utils.Tests -Recurse -Severity Warning, Error
+  Invoke-Pester -Path ./Utils.Tests
   ```
