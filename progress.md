@@ -44,6 +44,7 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 | 2026-10-31 | Kubernetes: values per environment outside the chart in `env/values.<chart>.<env>.yaml`, the chart keeps only `values.yaml` and names no environment. Plain manifests on their own shelf `cluster/`, the root only holds shelves. The tree in `kubernetes.md` starts without a `k8s/` wrapper. | Owner decision: same as `env/<env>.tfvars` next to the Terraform code. Inside the chart `helm package` shipped every environment and a config change forced a new chart version. |
 | 2026-10-31 | YAML pipelines: the Bicep WhatIf artifact snippet is removed, only "WhatIf or plan as an artifact, name carries the stage" stays. | Owner decision: tool-specific pipeline setup is not a coding style, same line as the Docker Compose decision. |
 | 2026-11-04 | "Tiny file" means one unit with one step, a multi-step function file gets a chapter. Every file has a header, also above a function with doc comment. A section outside a chapter gets a chapter, never removed. Banners never inside loops, branches, `try` or callbacks. The function file shape is shown in `powershell.md`. (0.5.0) | In a real project 50 PowerShell function files came out without header and chapters: "one function per file" was read as "tiny file with one unit", the comment-based help was taken as the header, and sections that stood outside a chapter were deleted instead of framed. The right shape only existed in `examples/powershell/Get-UtilsConfig.ps1`, which the skill does not load. |
+| 2026-11-04 | PowerShell tests in `<Module>.Tests/` next to the module, mirroring its subfolders, one `<Function>.Tests.ps1` per function, shared `BeforeAll.ps1` at the test root. (0.6.0) | Owner request from a real module: one big `tests/Brain.Tests.ps1` inside the module mixed shipped code and tests and did not show which function a test belongs to. |
 
 ## Open items
 - [x] **Before merging 0.4.0:** owner review of all six language files (`yaml-pipelines.md`, `terraform.md`, `kubernetes.md`, `javascript.md`, `docker-compose.md`, `cpp.md`), done 2026-10-31.
@@ -58,5 +59,7 @@ consistent across PowerShell, Terraform, Bicep, YAML pipelines, Docker Compose, 
 - [ ] The banner check cannot see a missing chapter: a long multi-step function file without any banner passes. Idea: flag a code file over about 60 lines without a header or without a chapter.
 - [ ] The banner check does not read chapter titles with a comma (`TEST, BUILD AND RELEASE`): it reports the table of contents as unterminated. Either allow commas in titles or name the rule "no punctuation in chapter titles" in SKILL.md.
 
+- [ ] `examples/powershell/` has no Pester tests yet: add a small module with a mirrored `<Module>.Tests/` folder, so the test layout of 0.6.0 is shown as a full example.
+
 ## Next step
-Review and merge `fix/function-file-chapters` (0.5.0). Then watch in a real session whether function files come out with header and chapter.
+Review and merge `feature/powershell-test-layout` (0.6.0).

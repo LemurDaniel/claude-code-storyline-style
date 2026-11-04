@@ -1,17 +1,33 @@
 # Code Style: PowerShell
-- PowerShell 7, 4 spaces. One function per file, folders by domain, the `.psm1` dot-sources the list explicitly, one `meta.json` per module.
+- PowerShell 7, 4 spaces. One function per file, folders by domain, the `.psm1` dot-sources the list explicitly, one `meta.json` per module. The tests live next to the module in `<Module>.Tests/`, which has the same subfolders as the module and one test file per function, see the test rule below.
   ```
-  Utils/
-    Utils.psm1
+  Utils/                                  the module, only what ships
+    Utils.psm1                            entry point, dot-sources every function file
     meta.json
-    Config/Get-UtilsConfig.ps1
-    CloudSync/Sync-UtilsCloudFile.ps1
-    tests/
+    Config/
+      Get-UtilsConfig.ps1
+      Set-UtilsConfig.ps1
+    CloudSync/
+      Sync-UtilsCloudFile.ps1
+    Naming/
+      Get-UtilsResourceName.ps1
+  Utils.Tests/                            the tests, same subfolders as Utils/
+    README.md                             shelf label, one line per test file
+    BeforeAll.ps1                         shared setup, dot-sourced by every test file
+    Config/
+      Get-UtilsConfig.Tests.ps1           tests Config/Get-UtilsConfig.ps1
+      Set-UtilsConfig.Tests.ps1           tests Config/Set-UtilsConfig.ps1
+    CloudSync/
+      Sync-UtilsCloudFile.Tests.ps1       tests CloudSync/Sync-UtilsCloudFile.ps1
+    Naming/
+      Get-UtilsResourceName.Tests.ps1     tests Naming/Get-UtilsResourceName.ps1
   ```
   ```powershell
   # Utils.psm1
   . $PSScriptRoot/Config/Get-UtilsConfig.ps1
+  . $PSScriptRoot/Config/Set-UtilsConfig.ps1
   . $PSScriptRoot/CloudSync/Sync-UtilsCloudFile.ps1
+  . $PSScriptRoot/Naming/Get-UtilsResourceName.ps1
   ```
 - **A function file is a book:** header and table of contents above `function`, the chapter inside the body after `param` and the function-wide constants, one section per step. Only a function with a single step (map, format, delegate) gets the header alone, see `SKILL.md` → "The story".
   ```powershell
@@ -181,10 +197,15 @@
   $SyncProfile = Get-UtilsCloudSyncProfile -Name $ProfileName
   $localDate   = (Get-Item -Path $SyncProfile.Path).LastWriteTime
   ```
-- Tests with Pester in `tests/` per module, `BeforeAll.ps1`/`AfterAll.ps1` for setup.
+- **Tests in their own folder next to the module:** Pester tests live in `<Module>.Tests/`, not inside the module, so the module folder holds only what ships. The test folder mirrors the subfolders of the module, one test file per function (`Naming/Get-UtilsResourceName.ps1` → `Naming/Get-UtilsResourceName.Tests.ps1`), see the tree at the top of this file. A new function file gets its test file at the same relative path. The shared setup (module import, fixtures in `TestDrive`) lives once in `BeforeAll.ps1` at the root of the test folder, `AfterAll.ps1` next to it when cleanup is needed. Every test file opens with its chapter, see `SKILL.md` → "Errors, logging, tests".
   ```powershell
+  # Utils.Tests/BeforeAll.ps1
+  Import-Module (Join-Path -Path $PSScriptRoot -ChildPath '../Utils') -Force
+  ```
+  ```powershell
+  # Utils.Tests/Naming/Get-UtilsResourceName.Tests.ps1
   BeforeAll {
-      . $PSScriptRoot/BeforeAll.ps1
+      . $PSScriptRoot/../BeforeAll.ps1
   }
 
   Describe 'Get-UtilsResourceName' {
@@ -208,8 +229,9 @@
       throw [System.InvalidOperationException]::new("terraform init must succeed, got exit code $LASTEXITCODE.")
   }
   ```
-- **Verify** per `SKILL.md` → "Errors, logging, tests": parse every changed file, run `Invoke-ScriptAnalyzer -Severity Warning, Error` and the Pester tests of the module.
+- **Verify** per `SKILL.md` → "Errors, logging, tests": parse every changed file, run `Invoke-ScriptAnalyzer -Severity Warning, Error` on the module and its tests, then the Pester tests of the module.
   ```powershell
   Invoke-ScriptAnalyzer -Path ./Utils -Recurse -Severity Warning, Error
-  Invoke-Pester -Path ./Utils/tests
+  Invoke-ScriptAnalyzer -Path ./Utils.Tests -Recurse -Severity Warning, Error
+  Invoke-Pester -Path ./Utils.Tests
   ```
