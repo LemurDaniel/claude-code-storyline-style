@@ -54,6 +54,10 @@ jobs:
           tar -xzf $Archive -C "$HOME/bin" kubeconform
           "$HOME/bin" >> $env:GITHUB_PATH
 
+      # OpenSCAD from the Ubuntu archive, exports STL without a display.
+      - name: Install OpenSCAD
+        run: sudo apt-get update && sudo apt-get install --yes openscad
+
       - name: Install PSScriptAnalyzer
         shell: pwsh
         run: Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force

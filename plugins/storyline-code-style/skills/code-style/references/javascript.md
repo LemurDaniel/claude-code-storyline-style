@@ -16,19 +16,19 @@
       },
   ]
   ```
-- Small projects: folders by role (`commands/`, `routes/`, `views/`, `data/`, `utils/`). When a project grows across several business domains, it is cut by domain (see `SKILL.md`). Files are named `<kind>.<domain>[.<action>].js`, with the kind even when the folder already names it. When a file bundles several units, the kind is plural (`routes.status.js`, `tools.zfs.js` with all ZFS tools), with one unit per file it is singular (`command.repository.download.js`). Consistent within a folder, even when a file currently holds only one unit (`routes.exec.shutdown.js`). Exception: `_index.js` and files in `utils/` and `data/`, which are only named `<domain>[.<action>].js` (`host.exec.js`).
+- Small projects: folders by role (`commands/`, `routes/`, `views/`, `data/`, `utils/`). When a project grows across several business domains, it is cut by domain (see `SKILL.md`). Files are named `<kind>.<domain>[.<action>].js`, with the kind even when the folder already names it. When a file bundles several units, the kind is plural (`routes.status.js`, `tools.zfs.js` with all ZFS tools), with one unit per file it is singular (`command.repository.download.js`). Consistent within a folder, even when a file currently holds only one unit (`routes.exec.shutdown.js`). Exception: the collection file `_index.js` and files in `utils/` and `data/`, which are only named `<domain>[.<action>].js` (`host.exec.js`).
   ```
   src/
     commands/
+      README.md
       _index.js
       command.account.login.js
       command.repository.download.js
     routes/
-      _index.js
+      README.md
       routes.status.js
       routes.exec.shutdown.js
     views/
-      _index.js
       view.repositories.list.js
     data/
       database.js
@@ -46,7 +46,16 @@
 
   import Database from '../data/database.js'
   ```
-- One collection file `_index.js` per folder bundles all modules of the folder. The underscore always sorts it to the top in the explorer, and with ESM Node does not resolve an `index.js` automatically anyway:
+- **The shelf label is a `README.md`.** JavaScript has no entry point that lists a folder, so every folder with more than one source file gets a `README.md` with one line per file (see `SKILL.md` → "The story").
+  ```markdown
+  # Commands
+  | File | Content |
+  | --- | --- |
+  | `_index.js` | Collection file, registers every command in this order. |
+  | `command.account.login.js` | Logs in and caches the token. |
+  | `command.repository.download.js` | Clones every repository of a project. |
+  ```
+- **A collection file `_index.js` only where the folder is loaded as a whole**, e.g. a command registry that imports every command. It is code, not the label, and does not replace the `README.md`. The underscore sorts it to the top in the explorer, and with ESM Node does not resolve an `index.js` automatically anyway. Folders whose modules are imported one by one (`routes/`, `utils/`) have none.
   ```js
   import accountLogin from './command.account.login.js'
   import repositoryDownload from './command.repository.download.js'

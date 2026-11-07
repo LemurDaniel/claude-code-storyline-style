@@ -19,13 +19,13 @@ const { parseBanners } = require('../utils/banners.parse.js')
 const { getBanners } = require('./banners.js')
 
 // Books are source files, Markdown and assets do not stand on the shelves.
-const SOURCE_EXTENSIONS = ['ps1', 'psm1', 'tf', 'tfvars', 'hcl', 'bicep', 'bicepparam', 'yaml', 'yml', 'js', 'h', 'cpp']
+const SOURCE_EXTENSIONS = ['ps1', 'psm1', 'tf', 'tfvars', 'hcl', 'bicep', 'bicepparam', 'yaml', 'yml', 'js', 'h', 'cpp', 'scad']
 const BOOK_GLOB         = `**/*.{${SOURCE_EXTENSIONS.join(',')}}`
 const EXCLUDE_GLOB      = '**/{node_modules,.git,.terraform}/**'
 const MAX_BOOKS         = 5000
 
 // A shelf without README.md is labeled by its entry point.
-const ENTRY_POINT_NAMES      = ['_index.js', 'main.tf', 'main.bicep']
+const ENTRY_POINT_NAMES      = ['main.tf', 'main.bicep']
 const ENTRY_POINT_EXTENSIONS = ['.psm1']
 
 // ===========================================================================

@@ -109,14 +109,14 @@ $MODULE_TOC_ENTRY_PATTERN = '^(?<file>[\w.-]+\.tf)\s{2,}(?<title>[A-Z][A-Z0-9 /-
 #   Checked extensions, comment characters and skipped folders.
 # ---------------------------------------------------------------------------
 
-$FILE_EXTENSIONS = @('.md', '.ps1', '.psm1', '.tf', '.tfvars', '.hcl', '.bicep', '.bicepparam', '.yaml', '.yml', '.js', '.h', '.cpp')
+$FILE_EXTENSIONS = @('.md', '.ps1', '.psm1', '.tf', '.tfvars', '.hcl', '.bicep', '.bicepparam', '.yaml', '.yml', '.js', '.h', '.cpp', '.scad')
 $EXCLUDED_FOLDERS = @('.git', 'node_modules', '.terraform')
 
 # Markdown snippets are excerpts, so only the banner lines are checked there.
 $STRUCTURE_EXTENSIONS = $FILE_EXTENSIONS | Where-Object { $_ -NE '.md' }
 
 # Comment character per extension, '#' for everything not listed here.
-$SLASH_COMMENT_EXTENSIONS = @('.js', '.h', '.cpp', '.bicep', '.bicepparam')
+$SLASH_COMMENT_EXTENSIONS = @('.js', '.h', '.cpp', '.bicep', '.bicepparam', '.scad')
 
 # ===========================================================================
 # ============================   CHECK BANNERS   ============================

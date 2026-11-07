@@ -18,9 +18,10 @@
 .DESCRIPTION
     Checks the shelf rules from SKILL.md -> "The story" for every folder:
     - A folder with more than one source file has a label: an entry point
-      (_index.js, main.tf, main.bicep, *.psm1) or a README.md.
+      (main.tf, main.bicep, *.psm1) or a README.md.
     - A folder holds at most five source files besides its label, more get shelves.
       A Terraform module is exempt, the language loads the folder as one book.
+      A JavaScript collection file (_index.js) is not counted, it only bundles the books.
 
     Source files are code files, Markdown and assets do not count.
     Throws when at least one rule is broken, so CI fails.
@@ -60,11 +61,14 @@ $ErrorActionPreference = 'Stop'
 #   Source files, label names and the flat limit.
 # ---------------------------------------------------------------------------
 
-$SOURCE_EXTENSIONS = @('.ps1', '.psm1', '.tf', '.tfvars', '.hcl', '.bicep', '.bicepparam', '.yaml', '.yml', '.js', '.h', '.cpp')
+$SOURCE_EXTENSIONS = @('.ps1', '.psm1', '.tf', '.tfvars', '.hcl', '.bicep', '.bicepparam', '.yaml', '.yml', '.js', '.h', '.cpp', '.scad')
 
 # Entry points that bundle the folder, else a README.md lists the files.
-$LABEL_NAMES    = @('README.md', '_index.js', 'main.tf', 'main.bicep')
+$LABEL_NAMES    = @('README.md', 'main.tf', 'main.bicep')
 $LABEL_PATTERNS = @('*.psm1')
+
+# Collection files bundle the books of a folder but are no label, see references/javascript.md.
+$COLLECTION_NAMES = @('_index.js')
 
 $MAX_FLAT_FILES = 5
 
@@ -117,7 +121,7 @@ $Shelves = foreach ($folder in $Folders) {
     [PSCustomObject]@{
         Folder      = $folder.FullName
         Name        = $folder.Name
-        SourceFiles = @($files | Where-Object { $_.Extension -IN $SOURCE_EXTENSIONS -AND $_.Name -NE $label.Name })
+        SourceFiles = @($files | Where-Object { $_.Extension -IN $SOURCE_EXTENSIONS -AND $_.Name -NE $label.Name -AND $_.Name -NOTIN $COLLECTION_NAMES })
         Label       = $label
     }
 }
