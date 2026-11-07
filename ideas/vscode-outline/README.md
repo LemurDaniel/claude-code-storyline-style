@@ -16,14 +16,16 @@ src/
   commands/
     commands.banners.js     Quick pick, next, previous and the jump used by library tree and CodeLens.
   views/
-    _index.js               Shelf label: every view of the extension.
+    README.md               Shelf label: the views and what each one shows.
+    _index.js               Collection file: registers every view of the extension.
     view.decorations.js     Colored bands and scrollbar marks.
     view.codelens.js        The line above every chapter.
     view.library.js         The library tree in the explorer.
     view.statusbar.js       The status bar item.
     view.outline.js         Outline symbols and folding ranges.
   data/
-    _index.js               Shelf label: banners and library in one import.
+    README.md               Shelf label: banners and library.
+    _index.js               Collection file: banners and library in one import.
     banners.js              Parses each document once per version, finds the banner at the cursor.
     library.js              Shelves and books of the workspace, shelf labels, the banners of a book.
   utils/

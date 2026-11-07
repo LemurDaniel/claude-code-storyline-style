@@ -1,6 +1,6 @@
 ---
 name: code-style
-description: Storyline code style for every language and codebase - file headers, chapter/section banners, guard clauses, naming, docs, error handling, logging, verification, file naming. Correctness first, then readability. Load BEFORE writing, editing or reviewing code or IaC in any language (PowerShell, Terraform, Bicep, YAML pipelines for GitHub Actions / Azure DevOps, Docker Compose, Kubernetes manifests / Helm, JavaScript / Node.js, C++), even for a small fix or a single new function, and before /code-review or /simplify. Triggers on "code style", "style guide", "banner", "comments", "naming", "review", "clean up", "refactor".
+description: Storyline code style for every language and codebase - file headers, chapter/section banners, guard clauses, naming, docs, error handling, logging, verification, file naming. Correctness first, then readability. Load BEFORE writing, editing or reviewing code or IaC in any language (PowerShell, Terraform, Bicep, YAML pipelines for GitHub Actions / Azure DevOps, Docker Compose, Kubernetes manifests / Helm, JavaScript / Node.js, C++, OpenSCAD), even for a small fix or a single new function, and before /code-review or /simplify. Triggers on "code style", "style guide", "banner", "comments", "naming", "review", "clean up", "refactor".
 ---
 
 # Code Style
@@ -45,6 +45,7 @@ Before writing or reviewing code in one of these languages, read the matching fi
 | Kubernetes manifests / Helm | `references/kubernetes.md` |
 | C++ | `references/cpp.md` |
 | JavaScript / Node.js | `references/javascript.md` |
+| OpenSCAD | `references/openscad.md` |
 
 For other languages only the general rules below apply, plus the language's own conventions.
 
@@ -57,7 +58,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every rule below
 | --- | --- | --- |
 | Library | Codebase | README at the entrance, see [Structure](#structure) |
 | Shelf | Folder, cut by domain | Every shelf with more than one book has a label, see below |
-| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `main.bicep`, else `README.md` |
+| Shelf label | Entry point or folder README | `Utils.psm1`, `main.tf`, `main.bicep`, else `README.md` |
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf, see [Structure](#structure) |
 | Book | File | Header, chapters, epilogue |
 | Blurb | File header | Usage and prerequisites, see [Reading flow](#reading-flow) |
@@ -168,7 +169,7 @@ Proofreading happens after the book is written, outside the file: `Verified: par
 A book has exactly three levels: chapter (`=` frame), section (`-` frame) and paragraph (one group comment inside a unit). There is no fourth level: what feels like a sub-chapter becomes a section, what feels like a sub-section becomes a paragraph.
 
 - **The book is the file**, except where the language loads a folder as one unit (a Terraform module). Then the folder is the book and every file one chapter, see `references/terraform.md`.
-- **Every shelf has a label:** A folder with more than one file has an entry point where the language has one (`_index.js`, `Utils.psm1`, `main.tf`, `main.bicep`, the thin pipeline that calls the templates, the header of a `.cpp`). Where it has none, a short `README.md` in the folder lists the files with one line each. Whoever opens the folder knows what stands on the shelf without opening a book.
+- **Every shelf has a label:** A folder with more than one file has an entry point where the language has one (`Utils.psm1`, `main.tf`, `main.bicep`, the thin pipeline that calls the templates, the header of a `.cpp`). Where it has none (JavaScript, OpenSCAD, a folder of YAML files), a short `README.md` in the folder lists the files with one line each. Whoever opens the folder knows what stands on the shelf without opening a book.
   ```markdown
   # PowerShell examples
   | File | Content |
@@ -182,7 +183,7 @@ A book has exactly three levels: chapter (`=` frame), section (`-` frame) and pa
   extension.js                     src/
   parser.banners.js                  extension.js
   cache.banners.js                   views/
-  decorations.banners.js               _index.js
+  decorations.banners.js               README.md
   codelens.banners.js                  view.decorations.js
   statusbar.banners.js                 view.codelens.js
   commands.banners.js                  view.statusbar.js
@@ -319,7 +320,7 @@ Comments look the same in every language, only the comment character changes. A 
 
 | Comment character | Languages |
 | --- | --- |
-| `//` | JavaScript / Node.js, C++, Bicep |
+| `//` | JavaScript / Node.js, C++, Bicep, OpenSCAD |
 | `#` | PowerShell, Terraform, YAML, Docker Compose, Kubernetes / Helm |
 
 - **Two levels of banners:**
@@ -460,7 +461,7 @@ $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
   The kind comes first even when the folder already names it (`routes/routes.status.js`). That keeps the file name
   unique, also in an editor tab or a search. Plural when a file bundles several units (`routes.`,
   `tools.`), singular for one unit per file (`command.`, `main.`), consistent within a folder. Exceptions:
-  - entry points (`_index.js`, `main.tf`, `main.bicep`, `Utils.psm1`)
+  - entry points (`main.tf`, `main.bicep`, `Utils.psm1`) and collection files (`_index.js`)
   - files whose name a tool expects (`docker-compose.yaml`, `package.json`, `.clang-format`)
   - languages with their own naming convention (PowerShell `Verb-Noun.ps1`, C++ class names)
   - exceptions named in a language file (e.g. `utils/` and `data/` in JavaScript)

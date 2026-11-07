@@ -22,7 +22,7 @@ A codebase is a library, a folder is a shelf, a file is a book. Every part has i
 | --- | --- | --- |
 | Library | Codebase | README at the entrance |
 | Shelf | Folder, cut by domain | Every shelf with more than one book has a label |
-| Shelf label | Entry point or folder README | `_index.js`, `Utils.psm1`, `main.tf`, `main.bicep`, else `README.md` |
+| Shelf label | Entry point or folder README | `Utils.psm1`, `main.tf`, `main.bicep`, else `README.md` |
 | Call number | File name `<kind>.<topic>[.<variant>]` | Sorts the books on the shelf |
 | Book | File | Header, chapters, epilogue (a Terraform module: the folder is the book, each file a chapter) |
 | Blurb | File header | Usage and prerequisites |
@@ -76,6 +76,7 @@ validates every example file with the tools of its language.
 | `references/kubernetes.md` | Kubernetes manifests and Helm charts |
 | `references/javascript.md` | JavaScript / Node.js |
 | `references/cpp.md` | C++ |
+| `references/openscad.md` | OpenSCAD |
 
 The repo also holds [`examples/`](examples/) with complete example files per language, one simple and one more complex.
 They show how all rules work together in one file and are not part of the installed plugin.

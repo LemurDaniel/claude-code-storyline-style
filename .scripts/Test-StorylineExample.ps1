@@ -1,5 +1,5 @@
 # NOTE:
-#   Requires: PowerShell 7. Optional: PSScriptAnalyzer, terraform, bicep, node, docker, helm, kubeconform.
+#   Requires: PowerShell 7. Optional: PSScriptAnalyzer, terraform, bicep, node, docker, helm, kubeconform, openscad.
 #   A missing tool skips its check and is named in the report, -IsStrict fails instead.
 #   C++ is not compiled yet, the examples have no Request.h / Response.h.
 #
@@ -27,6 +27,7 @@
     - Docker Compose   docker compose config.
     - Helm             helm lint and helm template per values.<chart>.<env>.yaml.
     - Kubernetes       kubeconform on the rendered charts and every plain manifest.
+    - OpenSCAD         openscad --hardwarnings, models into an STL, libraries (lib.*.scad) into an echo file.
 
     Terraform runs in a copy of the folder and Helm renders into the work folder,
     so no .terraform folder, lock file or rendered manifest is left in the repo. Throws when at least one check fails, so CI fails.
@@ -85,6 +86,7 @@ $TOOLS = [ordered]@{
     'Docker Compose' = 'docker'
     'Helm'           = 'helm'
     'Kubernetes'     = 'kubeconform'
+    'OpenSCAD'       = 'openscad'
 }
 
 $ANALYZER_SEVERITY = @('Warning', 'Error')
@@ -112,6 +114,9 @@ $HELM_ENVIRONMENT_VALUES_PATTERN = '^values\.{0}\.(?<env>[^.]+)\.ya?ml$'
 $MANIFEST_API_VERSION_PATTERN = '(?m)^apiVersion:\s'
 $MANIFEST_KIND_PATTERN        = '(?m)^kind:\s'
 
+# A library has no geometry of its own, an STL export would fail on the empty model.
+$OPENSCAD_LIBRARY_PATTERN = 'lib.*.scad'
+
 # ===========================================================================
 # ===========================   CHECK EXAMPLES   ============================
 # ===========================================================================
@@ -127,8 +132,9 @@ $MANIFEST_KIND_PATTERN        = '(?m)^kind:\s'
 #   7. Docker Compose   Renders every compose file with placeholder variables.
 #   8. Helm             Lints and renders every chart per values.<chart>.<env>.yaml.
 #   9. Kubernetes       Validates the rendered charts and every plain manifest.
-#   10. Cleanup         Removes the work folder.
-#   11. Report          Lists all findings and skipped checks, fails on a finding.
+#   10. OpenSCAD        Renders every model and evaluates every library.
+#   11. Cleanup         Removes the work folder.
+#   12. Report          Lists all findings and skipped checks, fails on a finding.
 #
 #   Every native command is judged by its exit code, its output only goes into the finding.
 #
@@ -336,6 +342,22 @@ if ($IsInstalled['Kubernetes']) {
     }
     if (Test-Path -Path $RenderedFolder) {
         $Findings.Add((Invoke-ExampleCommand -Check 'kubeconform' -Target $RenderedFolder -Command { kubeconform @KUBECONFORM_ARGUMENTS $RenderedFolder }))
+    }
+}
+
+# ---------------------------------------------------------------------------
+# OpenSCAD
+#   Renders every model and evaluates every library.
+# ---------------------------------------------------------------------------
+
+# --hardwarnings turns every warning into a failure, the output goes into the work folder.
+if ($IsInstalled['OpenSCAD']) {
+    foreach ($file in $Files | Where-Object -Property Extension -EQ '.scad') {
+        # 'case.sensor.scad' => '<WorkFolder>/<guid>.stl', 'lib.boxes.scad' => '<WorkFolder>/<guid>.echo'
+        $isLibrary  = $file.Name -LIKE $OPENSCAD_LIBRARY_PATTERN
+        $outputFile = Join-Path -Path $WorkFolder -ChildPath "$([System.Guid]::NewGuid()).$($isLibrary ? 'echo' : 'stl')"
+
+        $Findings.Add((Invoke-ExampleCommand -Check 'openscad' -Target $file.FullName -Command { openscad --hardwarnings -o $outputFile $file.FullName }))
     }
 }
 

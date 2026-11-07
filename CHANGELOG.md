@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0 - 2026-11-07
+- OpenSCAD: new `references/openscad.md` and `examples/openscad/` (a library and a Customizer model). SETTINGS comes first with one section per Customizer tab, the tab markers and the comment above a parameter keep their Customizer shape. Fixed values in a `/* [Hidden] */` section instead of a getter function, derived sizes once in a `Dimensions` section, `assert()` and `echo("WARNING: ...")` in a `Validations` section. One coordinate system named once, a doc comment on every module, one transform per line, every cut reaches past the faces it cuts, no shadowed variables, preview-only geometry with `%`, libraries with `use`. The example check renders every model with `openscad --hardwarnings`, libraries (`lib.*.scad`) into an echo file. Banner and shelf check read `.scad`.
+- JavaScript: the shelf label is a `README.md`, not `_index.js`. A collection file `_index.js` stays where a folder is loaded as a whole (a command registry), it is code and does not replace the `README.md`. The shelf check no longer accepts `_index.js` as label and does not count it as a book.
+
 ## 0.6.0 - 2026-11-04
 - PowerShell: Pester tests live in their own folder `<Module>.Tests/` next to the module instead of `tests/` inside it, so the module folder holds only what ships. The test folder mirrors the subfolders of the module, one test file per function (`Naming/Get-UtilsResourceName.Tests.ps1`). The shared setup lives once in `BeforeAll.ps1` at the root of the test folder and is dot-sourced with `$PSScriptRoot/../BeforeAll.ps1`. The Verify line lints the test folder too.
 
